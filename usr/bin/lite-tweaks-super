@@ -102,8 +102,6 @@ HNAME() {
 	current_hostname=$(cat /etc/hostname)
 
 	newhost=$(zenity --entry --title="Change Hostname" --text="Your current hostname is:\n\n${current_hostname}\n\nEnter your new hostname or cancel." --entry-text="${current_hostname}")
-	newhost=$(zenity --entry --title="Lite Tweaks: Hostname" --text="Your current hostname is:\n\n${current_hostname}\n\nEnter your new hostname or cancel." --entry-text="${current_hostname}")
-	
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                       return
 	    fi
