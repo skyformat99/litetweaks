@@ -1,10 +1,10 @@
 #! /bin/bash
 #--------------------------------------------------------------------------------------------------------
 # Name: Lite Tweaks Super
-# Version: 1.0-0250
+# Version: 1.0-0230
 # Description: A collection of tools to tweak your Linux Lite system.
 # Authors: Misko_2083, John Jenkins, Jerry Bezencon
-# Date: April 29th, 2015
+# Date: March 12th, 2015
 # Website: https://www.linuxliteos.com
 #--------------------------------------------------------------------------------------------------------
 
@@ -102,6 +102,7 @@ HNAME() {
 	current_hostname=$(cat /etc/hostname)
 
 	newhost=$(zenity --entry --title="Change Hostname" --text="Your current hostname is:\n\n${current_hostname}\n\nEnter your new hostname or cancel." --entry-text="${current_hostname}")
+	
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                       return
 	    fi
@@ -117,11 +118,42 @@ HNAME() {
 	sed -i "s/$current_hostname/$newhost/g" /etc/hosts
 	sed -i "s/$current_hostname/$newhost/g" /etc/hostname
 
+# Reboot dialogue 
+# Credit to xunil: http://bbs.archbang.org/viewtopic.php?id=279
+title="Hostname changed"
+exit_type=`zenity  --width="400" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change." --height="220" --title="$title" --list --radiolist --column="Select" \
+    --column="Exit Type" --column="Description" \
+    TRUE "Reboot" "Reboot your computer"\
+    FALSE "Shutdown" "Shutdown your computer"\
+    FALSE "Cancel" "Continue using your computer" `
+
+# User must select a target type (Check if they cancelled)
+if [ ! "$exit_type" ]; then
+    zenity --error --title="Error" --text="You must make a selection"
 		zenity --info \
 		--title="Hostname changed" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change."
+    exit
+fi
+
+# Action to perform by user
+if [ "$exit_type" = "Reboot" ]
+then
+
+        # Do Reboot here
+	sudo shutdown -r now
+elif [ "$exit_type" = "Shutdown" ]
+then
+       # Do Shutdown here
+	sudo shutdown -h now 
+else
+
+    # Do Cancel here
+		zenity --info \
+		--title="Hostname changed" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change."
+    exit 0
+fi
 return
 }
-
 
 RCONFIG() {
     echo "#Removing residual configuration files..."
