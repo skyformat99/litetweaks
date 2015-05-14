@@ -121,7 +121,7 @@ HNAME() {
 # Reboot dialogue 
 # Credit to xunil: http://bbs.archbang.org/viewtopic.php?id=279
 title="Hostname changed"
-exit_type=`zenity  --width="400" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change." --height="220" --title="$title" --list --radiolist --column="Select" \
+exit_type=`zenity  --width="400" --height="280" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change." --title="$title" --list --radiolist --column="Select" \
     --column="Exit Type" --column="Description" \
     TRUE "Reboot" "Reboot your computer"\
     FALSE "Shutdown" "Shutdown your computer"\
