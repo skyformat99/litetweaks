@@ -387,13 +387,9 @@ zenity --question --title="$APPNAME"  --text="Do you want to proceed? You are ab
                                         return
                 fi
 
-PROCEED=$(zenity --info --title="$APPNAME" --window-icon=/usr/share/icons/zenity-llcc.png --width=270 --text="The cleaner has finished."; echo $?)
-if [ ${PROCEED} -eq 1 ]; then
-    zenity --info --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="$APPNAME Complete."
-    return
-else
-    return
-fi
+zenity --info --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="$APPNAME Complete."
+return
+
 }
 
 FIXBOOTUP() {
