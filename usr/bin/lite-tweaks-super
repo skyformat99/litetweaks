@@ -1,10 +1,8 @@
 #! /bin/bash
 #--------------------------------------------------------------------------------------------------------
 # Name: Lite Tweaks Super
-# Version: 1.0-0230
 # Description: A collection of tools to tweak your Linux Lite system.
 # Authors: Misko_2083, John Jenkins, Jerry Bezencon
-# Date: March 12th, 2015
 # Website: https://www.linuxliteos.com
 #--------------------------------------------------------------------------------------------------------
 
@@ -413,6 +411,13 @@ blue="0x000000"
 ;;
 2.4)
 title="Linux Lite 2.4"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+2.6)
+title="Linux Lite 2.6"
 black="0x000000"
 white="0xffffff"
 brown="0xffff00"
