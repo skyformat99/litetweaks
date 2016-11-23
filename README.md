@@ -1,8 +1,15 @@
 Lite Tweaks 
 =================
 
-Authors - [Jerry Bezencon,](https://github.com/linuxlite/) [Misko-2083,](https://github.com/Misko-2083/) [John Jenkins](https://github.com/shaggytwodope/)
-
 A collection of tools to tweak and clean your Linux Lite system.
 
 ![](http://i.imgur.com/FxwuPR2.png)
+
+## License ![License](https://img.shields.io/badge/license-GPLv2-green.svg)
+
+This project is under the GPLv2 license. Unless otherwise stated in individual files.
+
+##Authors
+- [Jerry Bezencon](https://github.com/linuxlite/)
+- [Misko-2083](https://github.com/Misko-2083/)
+- [Johnathan "ShaggyTwoDope" Jenkins](https://github.com/shaggytwodope/)
