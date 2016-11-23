@@ -3,7 +3,7 @@ Lite Tweaks
 
 A collection of tools to tweak and clean your Linux Lite system.
 
-![](http://i.imgur.com/FxwuPR2.png)
+![](http://i.imgur.com/ualKAdM.png)
 
 ## License ![License](https://img.shields.io/badge/license-GPLv2-green.svg)
 
