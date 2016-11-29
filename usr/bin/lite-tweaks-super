@@ -295,10 +295,8 @@ echo "#Finding Large Files..."
 INSTALLER_TITLE="Find files within a range
 ---------------------------------------------------------------------------------------------------------------------------
 This will find and list all files on your system in a range.
-
 <b>Do not remove a file from your system unless you know what you are doing.
 This is not a removal tool, it is provided as information only.</b>
-
 When you click on Yes, this window will close and the process will begin.
 ---------------------------------------------------------------------------------------------------------------------------
 Click on Yes to continue or No to cancel the system scan.\nWould you like to continue?"
@@ -381,12 +379,9 @@ zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
 
 # Main window dialogue
 DIALOG_TEXT="This will remove kernels you no longer wish to use.
-
 Be sure to select both the header and the image for each version of
 the kernel that you wish to remove.
-
 When you click on Remove, this window will close and the process will begin.
-
 Click on Cancel to halt the cleaning process."
 
 # Call the zenity window icon location.
@@ -567,13 +562,33 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 	if  [ -f /etc/apt/sources.list.save ]; then
 		rm -f /etc/apt/sources.list.save &&  rm -f /etc/apt/sources.list
 		touch /etc/apt/sources.list
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+		echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
+		echo $'\n' >> /etc/apt/sources.list
+		echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
+		echo $'\n' >> /etc/apt/sources.list
+		echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) partner"
 		cp /etc/apt/sources.list /etc/apt/sources.list.save
 	# If file does not exist:
 	elif [ !  -f /etc/apt/sources.list.save ]; then
 		rm -f /etc/apt/sources.list
     		touch /etc/apt/sources.list
-    		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+    		echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
+		echo $'\n' >> /etc/apt/sources.list
+		echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
+		echo $'\n' >> /etc/apt/sources.list
+		echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
+		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) partner"
 		cp /etc/apt/sources.list /etc/apt/sources.list.save
 	fi
 	
