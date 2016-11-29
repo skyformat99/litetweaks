@@ -258,7 +258,8 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
 	esac
 fi
 
-if zenity --question --title="Lite Tweaks" --text="Process(s) complete.\nWould you like to continue using Lite Tweaks?"; then
+if zenity --question --width=280 --height=60 --icon-name=info --title="     Lite Tweaks Info" \
+	  --text="\n<b>Process completed</b>.\n \nWould you like to continue using Lite Tweaks?"; then
     return
 else
     exit 0
