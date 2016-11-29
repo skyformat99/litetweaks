@@ -2,7 +2,7 @@
 #--------------------------------------------------------------------------------------------------------
 # Name: Lite Tweaks
 # Description: A collection of tools to tweak your Linux Lite system.
-# Authors: Misko_2083, John Jenkins, Jerry Bezencon
+# Authors: Misko_2083, John Jenkins, Jerry Bezencon, Ralphy
 # Website: https://www.linuxliteos.com
 #--------------------------------------------------------------------------------------------------------
 
@@ -243,10 +243,23 @@ fi
 # Check if ARRAYB is empty
 # If it is skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
-    gksudo /usr/bin/lite-tweaks-super "${ARRAYB[@]}"      # Open the next file with superuser privileges and pass the array B
+# Check administrative privileges
+   zenity --question --width=420 --height=60 --icon-name=info \
+   	  --title="     Lite Tweaks - Are you Administrator?" \
+	  --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for credentials next. \n \nPress 'No' to exit now or 'Yes' to continue." --no-wrap
+   case $? in
+   	0)
+	gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
+	;;
+    # Abort Dialog
+	1) zenity --info --width=240 --height=60 --icon-name=info --title="     Lite Tweaks - Aborted" \
+		  --text="\nSelected tasks have been aborted. \nNo changes to the system have been made." --no-wrap
+		return
+	esac
 fi
 
-if zenity --question --title="Lite Tweaks" --text="Process(s) complete.\nWould you like to continue using Lite Tweaks?"; then
+if zenity --question --width=280 --height=60 --icon-name=info --title="     Lite Tweaks Info" \
+	  --text="\n<b>Process completed</b>.\n \nWould you like to continue using Lite Tweaks?"; then
     return
 else
     exit 0
