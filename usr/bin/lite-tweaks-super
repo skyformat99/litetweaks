@@ -565,7 +565,7 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 # Check for /etc/apt/sources.list.save file...
 	# If file exists:
 	if  [ -f /etc/apt/sources.list.save ]; then
-		rm -f /etc/apt/sources.list.save &&  rm -f /etc/apt/sources.list.save
+		rm -f /etc/apt/sources.list.save &&  rm -f /etc/apt/sources.list
 		touch /etc/apt/sources.list
 		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
 		cp /etc/apt/sources.list /etc/apt/sources.list.save
@@ -586,14 +586,13 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 			# Check for /etc/apt/sources.list.d/linuxlite.list file... 
 				# If file exists:
 				if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-				rm -f /etc/apt/sources.list.d/linuxlite.list && rm -f /etc/apt/sources.list.d/linuxlite.list.save
+				rm -f /etc/apt/sources.list.d/linuxlite.list.save && rm -f /etc/apt/sources.list.d/linuxlite.list
 				touch /etc/apt/sources.list.d/linuxlite.list
 				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
 				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-				echo "$RELVERSION"
 	
-				 # If file does not exist:
-				elif [ !  -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+				# If file does not exist:
+				elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
 				rm -f /etc/apt/sources.list.d/linuxlite.list
 				touch /etc/apt/sources.list.d/linuxlite.list
 				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
@@ -610,8 +609,8 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
 				echo "$RELVERSION"
 	
-				 # If file does not exist:
-				elif [ !  -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+				# If file does not exist:
+				elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
 				rm -f /etc/apt/sources.list.d/linuxlite.list
 				touch /etc/apt/sources.list.d/linuxlite.list
 				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
@@ -619,9 +618,8 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 				fi
 		# DON'T UPDATE UNSUPPORTED RELEASE - Sample
 		elif [ "$RELNUM" == "4" ]; then
-		 zenity --warning \
-					--width=320 --height=80 \
-                                        --title="     Lite Tweaks - Warning" --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
+		 zenity --warning --width=320 --height=80 --title="     Lite Tweaks - Warning" \
+		 --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
 		next
 	fi
 # Unset variables used during FIXAPT
@@ -629,11 +627,12 @@ unset REL_VERSION_NAME
 unset RELNUM
 unset LLVER
 
-sudo apt-get update
+apt-get update
+
 # Final Stage
 echo "#Final Stage: Repairing the package system."$"\nCompleting Repair..."
+dpkg --configure -a
 
-sudo dpkg --configure -a
 }
 
     x=0
