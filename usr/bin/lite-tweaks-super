@@ -555,7 +555,7 @@ sudo apt-get install -f
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                     echo "#Error"
                     sleep 1
-                    zenity --error --width=320 --height=80 --title="     Lite Tweaks - Error"
+                    zenity --error --width=320 --height=80 --title="     Lite Tweaks - Error" \
 		    	   --text="There was an error while\nInstalling partialy installed packages!"
                     return
             fi
