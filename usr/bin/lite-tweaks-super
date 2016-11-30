@@ -569,7 +569,6 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
 		echo $'\n' >> /etc/apt/sources.list
 		echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) partner"
 		add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 		cp /etc/apt/sources.list /etc/apt/sources.list.save
 	
