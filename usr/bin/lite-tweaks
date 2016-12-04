@@ -246,7 +246,7 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
    zenity --question --width=420 --height=60 --icon-name=info \
    	  --title="     Lite Tweaks - Are you Administrator?" \
-	  --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for credentials next. \n \nPress 'No' to exit now or 'Yes' to continue." --no-wrap
+	  --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nPress 'No' to exit now or 'Yes' to continue." --no-wrap
    case $? in
    	0)
 	gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
