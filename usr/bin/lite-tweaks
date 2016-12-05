@@ -9,48 +9,75 @@
 # Set functions for non-root execution
 # The ones that need root go to the other file: lite-tweaks-super
 FIREFOX() {
-    echo "#Removing the Firefox cache..."
-              rm -rf $HOME/.cache/mozilla/
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error"
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nRemoving the Firefox cache!"
-                        fi
+    echo "#Removing Firefox cache..."
+        rm -rf $HOME/.cache/mozilla/ && sleep 1
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
+        else
+          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nFirefox cache has been cleared!"
+          break
+        fi
 }
-
 CHROME() {
-    echo "#Removing the Google Chrome cache..."
-            rm -rf $HOME/.cache/google-chrome/ 
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error"
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nRemoving the Google Chrome cache!"
-                        fi
+    echo "#Removing Google Chrome cache..."
+        rm -rf $HOME/.cache/google-chrome/ && sleep 1
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome cache!"
+        else
+          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nGoogle Chrome cache has been cleared!"
+          break  
+        fi
 }
-
 CHROMIUM() {
-    echo"#Removing the Chromium cache..."
-            rm -rf $HOME/.cache/chromium/
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error"
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nRemoving the Chromium cache!"
-                        fi
+    echo "#Removing Chromium cache..."
+        rm -rf $HOME/.cache/chromium/ && sleep 1
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium cache!"
+        else
+          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nChromium cache has been cleared!"
+          break  
+        fi
+}
+VIVALDI() {
+    echo "#Removing Vivaldi cache..."
+        rm -rf $HOME/.cache/vivaldi/ && sleep 1
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
+        else
+          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nVivaldi cache has been cleared!"
+          break  
+        fi
+}
+MIDORI() {
+    echo "#Removing Midori cache..."
+        rm -rf $HOME/.cache/midori/ && sleep 1
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori cache!"
+        else
+          zenity --info --width="240" --height="80" --title="  Lite Tweaks" --text="\nMidori cache has been cleared!"
+          break  
+        fi
 }
 
 THUMBNAILS() {
     echo "#Deleting Thumbnail Cache..."
     sleep 1
-             rm -rf $HOME/.cache/thumbnails/*
+            rm -rf $HOME/.cache/thumbnails/*
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error"
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nDeleting Thumbnail Cache!"
-                        fi
+                echo "#Error"
+                sleep 1
+                zenity --error --width="260" --height="80" --title="Error" --text="\nAn error occurred while deleting Thumbnail Cache!"
+            fi
 }
 
 WHISKER() {
@@ -59,14 +86,13 @@ sleep 1
  sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc 
 
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error"
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nCleaning Whisker Menu Recently Used items!"
-                        fi
+                echo "#Error"
+                sleep 1
+                zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!"
+            fi
 echo "#Restarting the panel..."
 dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
-sleep 2
+sleep 1
 }
 
 TRASH() {
@@ -80,6 +106,120 @@ TRASH() {
                                         --title="Error" --text="There was an error while\nEmptying the Trash bin!"
                         fi
 }
+
+DBROWSER() {
+echo "#Setting up default Web Browser..."
+sleep 1
+mimeapps=~/.config/mimeapps.list
+
+# Create mimeapps.list if it doesn't exist
+if [ ! -f $mimeapps ]; then
+      touch $mimeapps
+  echo "[Added Associations]" >> $mimeapps  && echo "[Default Applications]" >> $mimeapps
+  sed -i -e '1a\application/xhtml+xml=firefox.desktop \nx-scheme-handler/http=firefox.desktop \nx-scheme-handler/https=firefox.desktop' -e '/[Default Applications] /a\text/html=firefox.desktop' $mimeapps
+else # If file exists make sure mime options are set before proceeding
+  grep "application/xhtml+xml" $mimeapps || sed -i '/Added Associations/a application/xhtml+xml=firefox.desktop' $mimeapps
+  grep "x-scheme-handler/http" $mimeapps || sed -i '/Added Associations/a x-scheme-handler/http=firefox.desktop' $mimeapps
+  grep "x-scheme-handler/https" $mimeapps || sed -i '/Added Associations/a x-scheme-handler/https=firefox.desktop' $mimeapps
+  grep "text/html" $mimeapps || sed -i '/Default Applications/a text/html=firefox.desktop' $mimeapps
+fi
+
+test_1=(` grep "application/xhtml+xml" $mimeapps`)
+test_2=(` grep "text/html" $mimeapps`)
+test_3=(`grep "x-scheme-handler/http" $mimeapps`)
+test_4=(` grep "x-scheme-handler/https" $mimeapps`)
+
+hash firefox 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
+            firefox=("TRUE" "Firefox" "default" "Firefox is currently your default web browser" )
+    else
+        firefox=("FALSE" "Firefox" "not default" "Set firefox as the default web browser" )
+    fi
+else 
+    firefox=()
+fi
+
+hash google-chrome 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=google-chrome.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
+        googlechrome=("TRUE" "Google Chrome" "default" "Google Chrome is currently your default web browser" )
+    else
+        googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default web browser" )
+    fi
+else
+    googlechrome=()
+fi
+
+hash chromium-browser 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
+        chromium=("TRUE" "Chromium" "default" "Chromium is currently your default web browser" )
+    else
+        chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default web browser" )
+    fi
+else
+    chromium=()
+fi
+
+hash vivaldi 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
+        vivaldi=("TRUE" "Vivaldi" "default" "Vivaldi is currently your default web browser" )
+    else
+        vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default web browser" )
+    fi
+else
+    vivaldi=()
+fi
+
+hash midori 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=midori.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
+        midori=("TRUE" "Midori" "default" "Midori is currently your default web browser" )
+    else
+        midori=("FALSE" "Midori" "not default" "Set Midori as the default web browser" )
+    fi
+else
+    midori=()
+fi
+
+        selection=$(zenity --window-icon="$ic" --list --radiolist --width=650 --height=200 --column="Select" --column="Name" --column="Status" \
+        --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
+        "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${vivaldi[@]}" "${midori[@]}"  )
+        
+        # "The kill switch"
+         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+            return
+        fi
+    case "$selection" in
+    "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" $mimeapps `;
+           `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
+           `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
+           `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;;
+    "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
+       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
+    esac
+        zenity --info --width="260" --height="80" --title="Lite Tweaks - Default Web Browser" \
+               --text="\n $selection is now the default web browser."
+unset mimeapps
+break
+}
+
 
 DU() {
 DU_TEXT="Double click on any <b>Partition</b> to open in the file manager.
@@ -129,11 +269,6 @@ if [ $? = 0 ];then
 ARRAYA+=('FIREFOX')
 fi
 
-echo $selection | grep "Hostname" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('HOSTNAME')
-fi
-
 echo $selection | grep "Chrome" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('CHROME')
@@ -142,6 +277,21 @@ fi
 echo $selection | grep "Chromium" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('CHROMIUM')
+fi
+
+echo $selection | grep "Vivaldi" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('VIVALDI')
+fi
+
+echo $selection | grep "Midori" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('MIDORI')
+fi
+
+echo $selection | grep "Hostname" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('HOSTNAME')
 fi
 
 echo $selection | grep "Display Disk Usage" > /dev/null
@@ -166,7 +316,7 @@ fi
 
 echo $selection | grep "Default Web Browser" > /dev/null
 if [ $? = 0 ];then
-ARRAYB+=('DBROWSER')
+ARRAYA+=('DBROWSER')
 fi
 
 echo $selection | grep "Locate Large Files" > /dev/null
@@ -225,7 +375,7 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
         do
             $line     # Execute functions one by one
             if [ $? = 1 ]; then
-                zenity --error --title="Lite Tweaks" --text="There was an error while performing cleaning:\n ${line}"
+                zenity --error --title="  Lite Tweaks" --text="\nThere was an error while performing cleaning:\n ${line}"
                 exit 1
             fi    
         let i++
@@ -237,32 +387,31 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             sleep 2
         fi
     
-    done| zenity --progress  --title="Lite Tweaks" --auto-kill --auto-close --width=300
+    done| zenity --progress  --title="  Lite Tweaks" --auto-kill --auto-close --width=300
 fi
 
 # Check if ARRAYB is empty
 # If it is skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
-   zenity --question --width=420 --height=60 --icon-name=info \
-   	  --title="     Lite Tweaks - Are you Administrator?" \
-	  --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nPress 'No' to exit now or 'Yes' to continue." --no-wrap
+   zenity --question --width=420 --height=60 --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
+      --title=" Lite Tweaks - Are you Administrator?" \
+      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
    case $? in
-   	0)
-	gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
-	;;
+    0)
+  gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
+  ;;
     # Abort Dialog
-	1) zenity --info --width=240 --height=60 --icon-name=info --title="     Lite Tweaks - Aborted" \
-		  --text="\nSelected tasks have been aborted. \nNo changes to the system have been made." --no-wrap
-		return
-	esac
-fi
-
-if zenity --question --width=280 --height=60 --icon-name=info --title="     Lite Tweaks Info" \
-	  --text="\n<b>Process completed</b>.\n \nWould you like to continue using Lite Tweaks?"; then
+  1) zenity --info --width=240 --height=60 --icon-name=info --title=" Lite Tweaks - Aborted" \
+      --text="\nSelected tasks have been aborted. \nNo changes to the system have been made." --no-wrap
     return
-else
-    exit 0
+  esac
+    #if zenity --question --width=280 --height=60 --title="   Lite Tweaks" \
+    #          --text="\nWould you like to continue using Lite Tweaks?"; then
+    # return
+   #else
+   #  exit 0
+   #fi
 fi
 }
 
@@ -286,7 +435,7 @@ fi
 # Check if firefox cache exists
 if [  -d  "$HOME/.cache/mozilla/" ];then
     FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
-    firefox=("FALSE"  "Firefox" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
+    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
 else
         firefox=()
 fi
@@ -294,7 +443,7 @@ fi
 # Check if the google-chrome cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
     GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
-    chrome=("FALSE" "Chrome" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome cache" )
+    chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome cache" )
     else
         chrome=() 
 fi
@@ -302,9 +451,25 @@ fi
 # Check if the chromium cache exists
 if [  -d  "$HOME/.cache/chromium/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/chromium/ | awk '{print $1}' | sed 's/$/B/')
-    chromium=("FALSE" "Chromium" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium cache" )
+    chromium=("FALSE" "Chromium Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium cache" )
 else
          chromium=() # Main zenity dialogue window
+fi
+
+# Check if  vivaldi-stable cache exists
+if [  -d  "$HOME/.cache/vivaldi/" ]; then
+    CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
+    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi cache" )
+else
+         vivaldi=()
+fi
+
+# Check if  midori cache exists
+if [  -d  "$HOME/.cache/midori/" ]; then
+    CHRCACHESIZE=$(du -sh $HOME/.cache/midori/ | awk '{print $1}' | sed 's/$/B/')
+    midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori cache" )
+else
+         midori=()
 fi
 
 # Check if there are any residual configuration files
@@ -347,25 +512,27 @@ CHECK        # first run the checks
 
 # Main zenity dialogue window
 selection=$(zenity --window-icon="$ic" --list --checklist --width=880 --height=580 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" \
- --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks to perform (password required for some tasks).' --title="Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
+ --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password is required for some tasks).' --title="  Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed for programs that are no longer present" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
 FALSE "Clear Memory" "Clean" "System" "Safe" "Free up memory from your system" \
-FALSE "Default Web Browser" "Preferred" "Browser" "Safe" "Set your default web browser" \
+FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change your computer hostname (you MUST reboot after)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
+"${midori[@]}" \
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
 "${aptcache[@]}" \
 FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package management system to default" \
 "${resconfig[@]}" \
 "${thumbn[@]}" \
 "${trash[@]}" \
+"${vivaldi[@]}" \
 "${whisker_recent[@]}" )
 
 # If Quit is clicked then exit
@@ -376,7 +543,8 @@ fi
 # Check if anything is selected
 echo $selection | grep '[a-zA-Z0-9]'
 if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --title='Lite Tweaks' --text='No option was selected.'
+    zenity --info --width="260" --height="80" --title=' Lite Tweaks' --text='\n<b>No tasks were selected</b>.\nNothing for me to do :) Try again! '
+    return
 fi
 
 ARRAYS   #Separate selected items into arrays A and array B
