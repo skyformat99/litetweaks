@@ -70,10 +70,13 @@ if [ $? = 0 ];then
 ARRAYC+=('FIXAPT')
 fi
 
+# Call the zenity window icon.
+ic="/usr/share/icons/zenity-llcc.png"
+
 CLEAN() {
 echo "#Cleaning the package cache..."
 sleep 2
-    sudo apt-get clean
+    apt-get clean
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error..."
                     sleep 2
@@ -84,19 +87,18 @@ sleep 2
 
 LARCHIVES() {
 echo "#Deleting archived logs..."
-sleep 2
-    sudo find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
+sleep 1
+    find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error..."
-                    sleep 2
+                    sleep 1
                                         zenity --error \
                                         --title="Error" --text="There was an error while\nDeleting archived logs!"
                         fi
 }
 
 NUMLOCK() {
-EDNL=$(zenity --title="Numlock at Login" \
---height=180 --width="240" \
+EDNL=$(zenity --width="240" --height=150 --window-icon=$ic --title=" Numlock at Login" \
 --list --radiolist --text "Select an Option:" \
 --column "Select" --column "Option" \
 FALSE "Enable" \
@@ -105,35 +107,37 @@ FALSE "Disable")
 if [[ "$EDNL" =~ "Enable" ]]; then
     sed -i "s/off/on/g" /etc/lightdm/lightdm.conf
 
-PROCEED=$(zenity --info --title="Numlock at Login" --window-icon=/usr/share/icons/zenity-llcc.png --text="Numlock has been Enabled."; echo $?)
-if [ ${PROCEED} -eq 1 ]; then
-	zenity --info --title="Numlock at Login" --window-icon="/usr/share/icons/zenity-llcc.png" --text="Numlock has been Enabled."
-
-	exit
-	    fi
+    PROCEED=$(zenity --info --title="   Numlock at Login" --window-icon=$ic --text=" \nNumlock has been Enabled."; echo $?)
+    if [ ${PROCEED} -eq 1 ]; then
+	   zenity --info --title=" Numlock at Login" --window-icon=$ic --text="\nNumlock has been Enabled."
+	   break
+	fi
 
 elif [[ "$EDNL" =~ "Disable" ]]; then
     sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
 
-PROCEED=$(zenity --info --title="Numlock at Login" --window-icon=/usr/share/icons/zenity-llcc.png --text="Numlock has been Disabled."; echo $?)
-if [ ${PROCEED} -eq 1 ]; then
-	zenity --info --title="Numlock at Login" --window-icon="/usr/share/icons/zenity-llcc.png" --text="Numlock has been Disabled."
-
-	exit
-	    fi
-	    fi
+    PROCEED=$(zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."; echo $?)
+    if [ ${PROCEED} -eq 1 ]; then
+	   zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."
+       break
+    fi
+    else zenity --info --title="Numlock at Login" --text="\nNo option was selected. No changes have been made."
+fi
 }
 
 REMOVE() {
     echo "#Removing unneeded packages, please wait..."
-    sleep 2
-            sudo apt-get autoremove -y 
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error..."
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nRemoving unneeded packages!"
-                        fi
+    sleep 1
+        apt-get autoclean -y && apt-get autoremove -y
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+            echo "# Error..."
+            sleep 1
+                zenity --error --width="260" --height="80" --title="    Error"
+                       --text="\nAn error occurred while removing unneeded packages!"
+        else
+            zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nUnneeded packages have been removed!"
+            return
+        fi
 }
 
 HNAME() {
@@ -178,11 +182,11 @@ if [ "$exit_type" = "Reboot" ]
 then
 
         # Do Reboot here
-	sudo shutdown -r now
+	shutdown -r now
 elif [ "$exit_type" = "Shutdown" ]
 then
        # Do Shutdown here
-	sudo shutdown -h now 
+	shutdown -h now 
 else
 
     # Do Cancel here
@@ -196,7 +200,7 @@ return
 RCONFIG() {
     echo "#Removing residual configuration files..."
     sleep 1
-            sudo dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'` 
+            dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'` 
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error..."
                     sleep 2
@@ -204,88 +208,6 @@ RCONFIG() {
                                         --title="Error" --text="There was an error while\nRemoving residual configuration files!"
                         fi
 return
-}
-
-BROWSER() {
-echo "#Changing the Default Web Browser..."
-
-file="/etc/gnome/defaults.list"
-test_1=(` grep "application/xhtml+xml" $file`)
-test_2=(` grep "text/html" $file`)
-test_3=(`grep "x-scheme-handler/http" $file`)
-test_4=(` grep "x-scheme-handler/https" $file`)
-
-hash firefox 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
-            firefox=("TRUE" "Firefox" "default" "Firefox is currently your default web browser" )
-    else
-        firefox=("FALSE" "Firefox" "not default" "Set firefox as the default web browser" )
-    fi
-else 
-    firefox=()
-fi
-
-hash chromium-browser 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
-        chromium=("TRUE" "Chromium" "default" "Chromium is currently your default web browser" )
-    else
-        chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default web browser" )
-    fi
-else
-    chromium=()
-fi
-
-hash midori 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=midori.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
-        midori=("TRUE" "Midori" "default" "Midori is currently your default web browser" )
-    else
-        midori=("FALSE" "Midori" "not default" "Set Midori as the default web browser" )
-    fi
-else
-    midori=()
-fi
-
-hash google-chrome 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=google-chrome.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
-        googlechrome=("TRUE" "Google Chrome" "default" "Google Chrome is currently your default web browser" )
-    else
-        googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default web browser" )
-    fi
-else
-    googlechrome=()
-fi
-
-        selection=$(zenity --window-icon="$ic" --list --radiolist --width=650 --height=200 --column="Select" --column="Name" --column="Status" \
-        --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
-        "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${midori[@]}" )
-        
-        # "The kill switch"
-         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            return
-        fi
-    case "$selection" in
-    "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" /etc/gnome/defaults.list `;
-           `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" /etc/gnome/defaults.list `; \
-           `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" /etc/gnome/defaults.list `; \
-           `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" /etc/gnome/defaults.list `;;
-    "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `;;
-    "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `;;
-    "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" /etc/gnome/defaults.list `;;
-    esac
-unset file
 }
 
 FILES() {
@@ -334,7 +256,7 @@ done
 
 size_max=$(echo $scale_max | sed "s/.*/-&M/")
 
-find_large=$(gksudo "stdbuf -oL /bin/bash \-c '(sudo find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
+find_large=$(gksudo "stdbuf -oL /bin/bash \-c '(find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
 stdbuf -oL sed -e '/\*$/ s/^/# /p'|
 zenity --progress --title="Please wait whilst your system is scanned..." --pulsate \
 --width=600 --auto-close )
@@ -348,7 +270,7 @@ zenity --progress --title="Please wait whilst your system is scanned..." --pulsa
             return
           fi
 
-PROCEED=$(zenity --question --title="$APPNAME" --window-icon=/usr/share/icons/zenity-llcc.png --text="Scan complete.\n\nWould you like to view the results?"; echo $?)
+PROCEED=$(zenity --question --title="$APPNAME" --window-icon=$ic --text="Scan complete.\n\nWould you like to view the results?"; echo $?)
 if [ ${PROCEED} -eq 1 ]; then
       zenity --info --title="Scan Complete" --window-icon="${INSTALL_ICON}" --text="Click OK to close."
 else
@@ -384,8 +306,6 @@ the kernel that you wish to remove.
 When you click on Remove, this window will close and the process will begin.
 Click on Cancel to halt the cleaning process."
 
-# Call the zenity window icon location.
-ic="/usr/share/icons/zenity-llcc.png"
 APPNAME="Kernel Cleaner"
 
 # Call the dialog. Don't change the separator here!
@@ -406,7 +326,7 @@ fi
 
 zenity --question --title="$APPNAME"  --text="Do you want to proceed? You are about to remove:\n$okernel"
  if [ "$?" -eq "0" ]; then
-      sudo apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
+      apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
 
                         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         
@@ -475,7 +395,7 @@ return
 ;;
 esac
 
-sudo sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/white=$white/;s/^brown=.*$/brown=$brown/;s/^blue=.*$/blue=$blue/" /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
+sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/white=$white/;s/^brown=.*$/brown=$brown/;s/^blue=.*$/blue=$blue/" /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error"
                     sleep 1
@@ -484,7 +404,7 @@ sudo sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/w
                     return
                         fi
 
- sudo update-initramfs -u
+update-initramfs -u
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error"
                     sleep 1
@@ -493,7 +413,7 @@ sudo sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/w
                     return
                         fi
 
-echo "Linux Lite $LL_VERSION LTS \n \l" | sudo tee /etc/issue
+echo "Linux Lite $LL_VERSION LTS \n \l" | tee /etc/issue
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error"
                     sleep 1
@@ -502,7 +422,7 @@ echo "Linux Lite $LL_VERSION LTS \n \l" | sudo tee /etc/issue
                     return
                         fi
 
-sudo sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION"'"/g' /etc/lsb-release
+sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION"'"/g' /etc/lsb-release
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                         echo "#Error"
                     sleep 1
@@ -514,7 +434,7 @@ sudo sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VE
 
 CLEARMEM() {
     echo "#Freeing up system memory, please standby..."
-sudo sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sudo sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sudo sh -c 'echo 3 >/proc/sys/vm/drop_caches'
+sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
 sleep 2
 }
 
@@ -530,12 +450,12 @@ echo "#Stage 1: Checking for internet connection..."
 	fi
 # Stage 1
 echo "#Stage 1: Repairing the package system."$"\nPlease wait, this might take some time..."
-sudo apt-get clean
+apt-get clean
 cd /var/lib/apt
-sudo mv lists lists.old
-sudo mkdir -p lists/partial
-sudo apt-get clean
-sudo apt-get update
+mv lists lists.old
+mkdir -p lists/partial
+apt-get clean
+apt-get update
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                     echo "#Error"
                     sleep 1
@@ -546,7 +466,7 @@ sudo apt-get update
 # Stage 2
 echo "#Stage 2: Repairing the package system."$"\nPlease wait, this might take some time..."
 
-sudo apt-get install -f
+apt-get install -f
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                     echo "#Error"
                     sleep 1
