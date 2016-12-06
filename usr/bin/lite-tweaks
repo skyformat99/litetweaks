@@ -108,10 +108,9 @@ TRASH() {
 }
 
 DBROWSER() {
-echo "#Setting up default Web Browser..."
-sleep 1
-mimeapps=~/.config/mimeapps.list
-
+echo "#Looking for installed browsers..." && sleep 1
+mimeapps=~/.config/mimeapps.list 
+echo "#Setting up default browser..."
 # Create mimeapps.list if it doesn't exist
 if [ ! -f $mimeapps ]; then
       touch $mimeapps
@@ -130,6 +129,7 @@ test_3=(`grep "x-scheme-handler/http" $mimeapps`)
 test_4=(` grep "x-scheme-handler/https" $mimeapps`)
 
 hash firefox 2>/dev/null
+
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
             firefox=("TRUE" "Firefox" "default" "Firefox is currently your default web browser" )
@@ -184,35 +184,35 @@ else
     midori=()
 fi
 
-        selection=$(zenity --window-icon="$ic" --list --radiolist --width=650 --height=200 --column="Select" --column="Name" --column="Status" \
+        selection=$(zenity --window-icon="$ic" --list --radiolist --width=520 --height=200 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
         "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${vivaldi[@]}" "${midori[@]}"  )
         
         # "The kill switch"
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            return
+            break
         fi
     case "$selection" in
     "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" $mimeapps `;
-           `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
-           `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
-           `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;;
     "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
     "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
     "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
     "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-       `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
     esac
         zenity --info --width="260" --height="80" --title="Lite Tweaks - Default Web Browser" \
                --text="\n $selection is now the default web browser."
@@ -396,7 +396,7 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
    zenity --question --width=420 --height=60 --window-icon=$ic --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
       --title=" Lite Tweaks - Are you Administrator?" \
-      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
+      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick 'Cancel' to exit now or 'Continue' to proceed." --no-wrap
    case $? in
     0)
   gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
