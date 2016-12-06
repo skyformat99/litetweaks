@@ -75,26 +75,34 @@ ic="/usr/share/icons/zenity-llcc.png"
 
 CLEAN() {
 echo "#Cleaning the package cache..."
-sleep 2
+    sleep 1
     apt-get clean
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error..."
-                    sleep 2
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nCleaning the package cache!"
-                        fi
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error..."
+        sleep 1
+            zenity --error --width="260" --height="80" --title="    Error" \
+                   --text="\nAn error occurred while cleaning the package cache!"
+            break
+        else
+        zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nThe package cache has been cleared!"
+        fi
+    exit
 }
 
 LARCHIVES() {
 echo "#Deleting archived logs..."
 sleep 1
     find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error..."
-                    sleep 1
-                                        zenity --error \
-                                        --title="Error" --text="There was an error while\nDeleting archived logs!"
-                        fi
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error..."
+        sleep 1
+        zenity --error --width="260" --height="80" --title="    Error" \
+               --text="\nAn error occurred while deleting archived logs!"
+            break
+        else
+        zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nThe archived logs have been cleared!"
+        fi
+    exit
 }
 
 NUMLOCK() {
