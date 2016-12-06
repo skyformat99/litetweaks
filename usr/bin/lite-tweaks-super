@@ -98,6 +98,7 @@ sleep 1
 }
 
 NUMLOCK() {
+echo "#Configuring Numlock at Login..."
 EDNL=$(zenity --width="240" --height=150 --window-icon=$ic --title=" Numlock at Login" \
 --list --radiolist --text "Select an Option:" \
 --column "Select" --column "Option" \
@@ -109,16 +110,16 @@ if [[ "$EDNL" =~ "Enable" ]]; then
 
     PROCEED=$(zenity --info --title="   Numlock at Login" --window-icon=$ic --text=" \nNumlock has been Enabled."; echo $?)
     if [ ${PROCEED} -eq 1 ]; then
-	   zenity --info --title=" Numlock at Login" --window-icon=$ic --text="\nNumlock has been Enabled."
-	   break
-	fi
+       zenity --info --title=" Numlock at Login" --window-icon=$ic --text="\nNumlock has been Enabled."
+       break
+    fi
 
 elif [[ "$EDNL" =~ "Disable" ]]; then
     sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
 
     PROCEED=$(zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."; echo $?)
     if [ ${PROCEED} -eq 1 ]; then
-	   zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."
+       zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."
        break
     fi
     else zenity --info --title="Numlock at Login" --text="\nNo option was selected. No changes have been made."
@@ -141,60 +142,77 @@ REMOVE() {
 }
 
 HNAME() {
-	current_hostname=$(cat /etc/hostname)
+    current_hostname=$(cat /etc/hostname)
 
-	newhost=$(zenity --entry --width=250 --title="Change Hostname" --text="Your current hostname is:\n\n${current_hostname}\n\nEnter your new hostname or cancel." --entry-text="${current_hostname}")
-	
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                      return
-	    fi
-	
-	#If the user entered only blank spaces or starts with a hashtag, abort
-	echo "$newhost" | egrep "^[[:space:]]*$|^#" >/dev/null
-	if [ $? = 0 ]; then
-		zenity --warning \
-		--title="Hostname not changed" --text="Hostname can not be empty or start with a hash\nHostname hasn't been changed!"
-	 	return
-	fi
-	
-	sed -i "s/$current_hostname/$newhost/g" /etc/hosts
-	sed -i "s/$current_hostname/$newhost/g" /etc/hostname
+    echo "#Changing hostname. Please wait..." && sleep 1
+    echo "#Changing hostname... ${current_hostname}"
 
-# Reboot dialogue 
-# Credit to xunil: http://bbs.archbang.org/viewtopic.php?id=279
-title="Hostname changed"
-exit_type=`zenity  --width="400" --height="280" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change." --title="$title" --list --radiolist --column="Select" \
-    --column="Exit Type" --column="Description" \
-    TRUE "Reboot" "Reboot your computer"\
-    FALSE "Shutdown" "Shutdown your computer"\
-    FALSE "Cancel" "Continue using your computer" `
+    while (true); do
 
-# User must select a target type (Check if they cancelled)
-if [ ! "$exit_type" ]; then
-    zenity --error --title="Error" --text="You must make a selection"
-		zenity --info \
-		--title="Hostname changed" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change."
-    exit
-fi
+    newhost=$(zenity --entry --width="280" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
+                     --text="Your computer's current hostname is:  ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) \nbelow and click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
+        
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                      break
+        fi
+    
+    # If hostname is only blank spaces or starts with a hashtag, warn and loop
+    echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
+    if [ $? = 0 ]; then
+        zenity --warning --width="340" --height="60" --ok-label="Got it!" \
+        --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed!"
+        continue
 
-# Action to perform by user
-if [ "$exit_type" = "Reboot" ]
-then
+    # If old hostname and new hostname are the same, warn and loop
+    elif [ $newhost = $current_hostname ]; then
+         zenity --info --width="340" --height="60" --ok-label="Got it!" \
+                --title=" Hostname not changed" --text="\nThe Hostname did not change... nothing to do here!"
+        continue
 
+    else
+        sed -i "s/$current_hostname/$newhost/g" /etc/hosts
+        sed -i "s/$current_hostname/$newhost/g" /etc/hostname
+
+    fi
+     
+    
+    while (true); do
+    # Reboot dialogue
+    echo "#Changing hostname to ' $newhost ' " && sleep 1
+    title=" Hostname changed"
+    exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" --text="Hostname has been changed to: <b>$newhost</b>\n\nYou must reboot your computer for changes to take effect." --title="$title" --list --radiolist --column="Select" \
+                       --column="Exit Type" --column="Description" \
+                       TRUE "Reboot" "Reboot your computer"\
+                       FALSE "Shutdown" "Shutdown your computer"\
+                       FALSE "Continue" "Continue using your computer" `
+
+    # User must select a target type (Check if they cancelled)
+    if [ ! "$exit_type" ]; then
+        echo "#Reverting hostname changes to... ${current_hostname} " && sleep 1
+        sed -i "s/$newhost/$current_hostname/g" /etc/hosts
+        sed -i "s/$newhost/$current_hostname/g" /etc/hostname
+        zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit."
+        exit 0
+    fi
+
+    # Action to perform by user
+    if [ "$exit_type" = "Reboot" ]
+        then
         # Do Reboot here
-	shutdown -r now
-elif [ "$exit_type" = "Shutdown" ]
-then
-       # Do Shutdown here
-	shutdown -h now 
-else
-
+        shutdown -r now
+    elif [ "$exit_type" = "Shutdown" ]
+        then
+        # Do Shutdown here
+        shutdown -h now 
+    else
     # Do Cancel here
-		zenity --info \
-		--title="Hostname changed" --text="New hostname set to:\n\n<b>$newhost</b>\n\nYou MUST reboot to apply the change."
-    exit 0
-fi
+        zenity --info --width="340" --height="60" \
+               --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect."
+        exit 0
+    fi
+    done
 return
+done
 }
 
 RCONFIG() {
@@ -441,13 +459,13 @@ sleep 2
 FIXAPT() {
 # Check Internet access
 echo "#Stage 1: Checking for internet connection..."
-	if eval "sudo -u ${SUDO_USER:-$USER} curl -sk https://www.linuxliteos.com/" >> /dev/null 2>&1; then
-	: # pass
-	else # Prompt ERROR internet connection
-		(zenity --info --ok-label="Got it!" --title="Lite Tweaks - No Internet connection detected" \
-			--text="\n<b>Your computer does not seem to be connected to the internet</b> \n \nPackage System Repair requires internet access in order to fetch package lists. \nPlease check your Internet connection and try again. The task will now abort." --no-wrap)
-     		break    			
-	fi
+    if eval "sudo -u ${SUDO_USER:-$USER} curl -sk https://www.linuxliteos.com/" >> /dev/null 2>&1; then
+    : # pass
+    else # Prompt ERROR internet connection
+        (zenity --info --ok-label="Got it!" --title="Lite Tweaks - No Internet connection detected" \
+            --text="\n<b>Your computer does not seem to be connected to the internet</b> \n \nPackage System Repair requires internet access in order to fetch package lists. \nPlease check your Internet connection and try again. The task will now abort." --no-wrap)
+            break               
+    fi
 # Stage 1
 echo "#Stage 1: Repairing the package system."$"\nPlease wait, this might take some time..."
 apt-get clean
@@ -460,7 +478,7 @@ apt-get update
                     echo "#Error"
                     sleep 1
                     zenity --error --width=320 --height=80 --title="     Lite Tweaks - Error" \
-			   --text="\nThere was an error while fetching package lists! \n \nCheck your system log for more details."
+               --text="\nThere was an error while fetching package lists! \n \nCheck your system log for more details."
                     break
             fi
 # Stage 2
@@ -471,72 +489,72 @@ apt-get install -f
                     echo "#Error"
                     sleep 1
                     zenity --error --width=320 --height=80 --title="     Lite Tweaks - Error" \
-		    	   --text="There was an error while\nInstalling partialy installed packages!"
+                   --text="There was an error while\nInstalling partialy installed packages!"
                     return
             fi
 # Stage 3    
 echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take some time..."
 
 # Recreate  /etc/apt/sources.list ...
-		rm -f /etc/apt/sources.list.save && rm -f /etc/apt/sources.list && touch /etc/apt/sources.list
-		echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
-		echo $'\n' >> /etc/apt/sources.list
-		echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
-		add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
-		echo $'\n' >> /etc/apt/sources.list
-		echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
-		add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
-		cp /etc/apt/sources.list /etc/apt/sources.list.save
-	
-	#Check the release version to reset /etc/apt/sources.list.d/linuxlite.list 
-		LLVER=$(awk '{print $3}' /etc/llver) 
-		RELNUM=$( echo "$LLVER / 1" | bc )	# Get Release number and remove
-		REL_VERSION_NAME=(beryl citrine)	# Set Release version name array
-		# Update /etc/apt/sources.list.d/linuxlite.list for BERYL
-		if [ "$RELNUM" == "2"  ]; then		
-			# Check for /etc/apt/sources.list.d/linuxlite.list file... 
-				# If file exists:
-				if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-				rm -f /etc/apt/sources.list.d/linuxlite.list.save && rm -f /etc/apt/sources.list.d/linuxlite.list
-				touch /etc/apt/sources.list.d/linuxlite.list
-				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
-				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-	
-				# If file does not exist:
-				elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-				rm -f /etc/apt/sources.list.d/linuxlite.list
-				touch /etc/apt/sources.list.d/linuxlite.list
-				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
-				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-				fi
-		# Update /etc/apt/sources.list.d/linuxlite.list for CITRINE
-		elif [ "$RELNUM" == "3"  ]; then
-			# Check for /etc/apt/sources.list.d/linuxlite.list file... 
-				# If file exists:
-				if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-				rm -f /etc/apt/sources.list.d/linuxlite.list && rm -f /etc/apt/sources.list.d/linuxlite.list.save
-				touch /etc/apt/sources.list.d/linuxlite.list
-				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
-				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-				echo "$RELVERSION"
-	
-				# If file does not exist:
-				elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-				rm -f /etc/apt/sources.list.d/linuxlite.list
-				touch /etc/apt/sources.list.d/linuxlite.list
-				echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
-				cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-				fi
-		# DON'T UPDATE UNSUPPORTED RELEASE - Sample
-		elif [ "$RELNUM" == "4" ]; then
-		 zenity --warning --width=320 --height=80 --title="     Lite Tweaks - Warning" \
-		 --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
-		next
-	fi
+        rm -f /etc/apt/sources.list.save && rm -f /etc/apt/sources.list && touch /etc/apt/sources.list
+        echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
+        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
+        echo $'\n' >> /etc/apt/sources.list
+        echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
+        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
+        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
+        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
+        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
+        echo $'\n' >> /etc/apt/sources.list
+        echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
+        add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+        cp /etc/apt/sources.list /etc/apt/sources.list.save
+    
+    #Check the release version to reset /etc/apt/sources.list.d/linuxlite.list 
+        LLVER=$(awk '{print $3}' /etc/llver) 
+        RELNUM=$( echo "$LLVER / 1" | bc )  # Get Release number and remove
+        REL_VERSION_NAME=(beryl citrine)    # Set Release version name array
+        # Update /etc/apt/sources.list.d/linuxlite.list for BERYL
+        if [ "$RELNUM" == "2"  ]; then      
+            # Check for /etc/apt/sources.list.d/linuxlite.list file... 
+                # If file exists:
+                if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+                rm -f /etc/apt/sources.list.d/linuxlite.list.save && rm -f /etc/apt/sources.list.d/linuxlite.list
+                touch /etc/apt/sources.list.d/linuxlite.list
+                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
+                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+    
+                # If file does not exist:
+                elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+                rm -f /etc/apt/sources.list.d/linuxlite.list
+                touch /etc/apt/sources.list.d/linuxlite.list
+                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
+                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+                fi
+        # Update /etc/apt/sources.list.d/linuxlite.list for CITRINE
+        elif [ "$RELNUM" == "3"  ]; then
+            # Check for /etc/apt/sources.list.d/linuxlite.list file... 
+                # If file exists:
+                if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+                rm -f /etc/apt/sources.list.d/linuxlite.list && rm -f /etc/apt/sources.list.d/linuxlite.list.save
+                touch /etc/apt/sources.list.d/linuxlite.list
+                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
+                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+                echo "$RELVERSION"
+    
+                # If file does not exist:
+                elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+                rm -f /etc/apt/sources.list.d/linuxlite.list
+                touch /etc/apt/sources.list.d/linuxlite.list
+                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
+                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+                fi
+        # DON'T UPDATE UNSUPPORTED RELEASE - Sample
+        elif [ "$RELNUM" == "4" ]; then
+         zenity --warning --width=320 --height=80 --title="     Lite Tweaks - Warning" \
+         --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
+        next
+    fi
 # Unset variables used during FIXAPT
 unset REL_VERSION_NAME
 unset RELNUM

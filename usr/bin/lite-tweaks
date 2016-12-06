@@ -394,7 +394,7 @@ fi
 # If it is skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
-   zenity --question --width=420 --height=60 --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
+   zenity --question --width=420 --height=60 --window-icon=$ic --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
       --title=" Lite Tweaks - Are you Administrator?" \
       --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
    case $? in
@@ -402,7 +402,7 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
   gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
   ;;
     # Abort Dialog
-  1) zenity --info --width=240 --height=60 --icon-name=info --title=" Lite Tweaks - Aborted" \
+  1) zenity --info --width=240 --height=60 --window-icon=$ic --title=" Lite Tweaks - Aborted" \
       --text="\nSelected tasks have been aborted. \nNo changes to the system have been made." --no-wrap
     return
   esac
@@ -512,7 +512,7 @@ CHECK        # first run the checks
 
 # Main zenity dialogue window
 selection=$(zenity --window-icon="$ic" --list --checklist --width=880 --height=580 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" \
- --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password is required for some tasks).' --title="  Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
+ --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' --title="  Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed for programs that are no longer present" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
