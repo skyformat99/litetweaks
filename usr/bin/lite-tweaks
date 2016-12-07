@@ -227,10 +227,10 @@ unset mimeapps
 return
 }
 
-
 DU() {
-DU_TEXT="Double click on any <b>Partition</b> to open in the file manager.
-Click on any Column to sort the information."
+while (true); do
+DU_TEXT="<b>•</b>  Double click on any <b>Partition</b> to open in the file manager.
+<b>•</b>  Click on any Column to sort the information.\n"
 DU_TITLE="Disk Usage"
 TMP_DU=$(mktemp /tmp/diskusage.XXXXX)
 
@@ -241,15 +241,17 @@ df -h -T| tail -n+2 | while read fs type size used rest target; do
     fi
 done | sed -e 's/[ \t]*$//' $1|  tee $TMP_DU 
 
-SEL=$(cat $TMP_DU | zenity --list --width=600 --height=350 --title="${DU_TITLE}" --text="${DU_TEXT}" --column="Device" --column="Filesystem" --column="Size" --column="Used" --column="Free" --column="%Used" --column="Partition" --print-column="7"| cut -d '|' -f2)
+SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-label="Quit" --window-icon="$ic" --width=600 --height=350 --title="  ${DU_TITLE}" --text="${DU_TEXT}" \
+                    --column="Device" --column="Filesystem" --column="Size" --column="Used" --column="Free" --column="%Used" --column="Partition" --print-column="7"| cut -d '|' -f2)
 
-if [ -z "$SEL" ]; then
-rm -f $TMP_DU
-return
-fi
+    if [ -z "$SEL" ]; then
+      rm -f $TMP_DU
+      return
+    fi
 
 thunar "$(echo $SEL)"
-rm -f $TMP_DU
+continue
+done
 }
 
 # Set the dialogue window icon
@@ -403,7 +405,7 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
    zenity --question --width=420 --height=60 --window-icon=$ic --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
       --title=" Lite Tweaks - Are you Administrator?" \
-      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick 'Cancel' to exit now or 'Continue' to proceed." --no-wrap
+      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
    case $? in
     0)
   gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
@@ -557,5 +559,4 @@ fi
 ARRAYS   #Separate selected items into arrays A and array B
 RUN
 done
-
 exit 0
