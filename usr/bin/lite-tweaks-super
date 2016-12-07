@@ -102,30 +102,35 @@ sleep 1
 }
 
 NUMLOCK() {
-echo "#Configuring Numlock at Login..."
-EDNL=$(zenity --width="240" --height=150 --window-icon=$ic --title=" Numlock at Login" \
---list --radiolist --text "Select an Option:" \
---column "Select" --column "Option" \
-FALSE "Enable" \
-FALSE "Disable")
+echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
+APPNAME="   Lite Tweaks - Numlock"
+# The loop
+while (true); do 
+# Get Numlock current status
+grep -q "on" /etc/lightdm/lightdm.conf && echo $?
 
-if [[ "$EDNL" =~ "Enable" ]]; then
-    sed -i "s/off/on/g" /etc/lightdm/lightdm.conf
-
-    PROCEED=$(zenity --info --title="   Numlock at Login" --window-icon=$ic --text=" \nNumlock has been Enabled."; echo $?)
-    if [ ${PROCEED} -eq 1 ]; then
-       zenity --info --title=" Numlock at Login" --window-icon=$ic --text="\nNumlock has been Enabled."
+    if [ $? = 0 ]; then val1=TRUE && val2=FALSE && status=Enabled
+        else val1=FALSE && val2=TRUE && status=Disabled
     fi
 
-elif [[ "$EDNL" =~ "Disable" ]]; then
-    sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
+# Enable/Disable NumLock
+EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="$APPNAME" \
+              --list --radiolist --text "   Numlock current status: <b>$status</b>\n\n   Change status:" \
+              --column "Select" --column "Option" --column "Description" \
+              $val1 "Enable" "(Enables Numlock at login)" \
+              $val2 "Disable" "(Disables Numlock at login)")
 
-    PROCEED=$(zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."; echo $?)
-    if [ ${PROCEED} -eq 1 ]; then
-       zenity --info --title="Numlock at Login" --window-icon=$ic --text="Numlock has been Disabled."
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
     fi
-    else zenity --info --title="Numlock at Login" --text="\nNo option was selected. No changes have been made."
-fi
+
+    if [[ "$EDNL" =~ "Enable" ]]; then # Enable
+        sed -i "s/off/on/g" /etc/lightdm/lightdm.conf
+        continue
+    elif [[ "$EDNL" =~ "Disable" ]]; then # Disable
+        sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
+    fi
+done
 }
 
 REMOVE() {
