@@ -250,7 +250,6 @@ SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-lab
     fi
 
 thunar "$(echo $SEL)"
-continue
 done
 }
 
