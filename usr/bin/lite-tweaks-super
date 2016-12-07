@@ -231,25 +231,28 @@ exit
 }
 
 FILES() {
+echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
 echo "#Finding Large Files..."
 
 # Main window dialogue
-INSTALLER_TITLE="Find files within a range
----------------------------------------------------------------------------------------------------------------------------
-This will find and list all files on your system in a range.
-<b>Do not remove a file from your system unless you know what you are doing.
-This is not a removal tool, it is provided as information only.</b>
-When you click on Yes, this window will close and the process will begin.
----------------------------------------------------------------------------------------------------------------------------
-Click on Yes to continue or No to cancel the system scan.\nWould you like to continue?"
+INSTALLER_TITLE="Find and list all files in your system based on specified size ranges
+\nPlease note:\n
+<b>•</b>  This is not a file removal tool. It is provided for informational purposes only.
+<b>•</b>  Do not remove files from your system unless you are absolutely convinced that it is safe to do so.\n
+Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 
-# Call the zenity window icon location.
-INSTALL_ICON="/usr/share/pixmaps/litecleaner.png"
+# Application Name Variable
 APPNAME="Find files in a range"
 
-    zenity --question --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="${INSTALLER_TITLE}"
-        if [ "$?" -eq "0" ]; then
+    zenity --question --icon-name=info --width="420" --height="200" --title="$APPNAME" --ok-label="Continue" --cancel-label="Quit" --window-icon="$ic" --text="${INSTALLER_TITLE}"
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
 
+    while (true); do echo "#Finding Large Files..." # Start scan loop
+    if [ "$?" -eq "0" ]; then
+    
+    
 # Set the file size range
 scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25)
 
@@ -259,14 +262,14 @@ scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimu
 
 size_min=$(echo $scale_min | sed "s/.*/+&M/")
 
-scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\nMinimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
+scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\n• Minimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         return
     fi
 
 while [ $scale_max -le $scale_min ]; do
-      zenity --info --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="Maximum value must never be smaller or equal  to minimum value.\nSet it again or click Cancel to exit."
+      zenity --info --width="280" --icon-name=error --title="$APPNAME" --window-icon="$ic" --text="\nMaximum value must not be less or equal to minimum value."
             scale_max=$(zenity --title="$APPNAME" --scale --text="Select the maximum file size.\nMinimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -279,7 +282,7 @@ size_max=$(echo $scale_max | sed "s/.*/-&M/")
 find_large=$(gksudo "stdbuf -oL /bin/bash \-c '(find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
 stdbuf -oL sed -e '/\*$/ s/^/# /p'|
 zenity --progress --title="Please wait whilst your system is scanned..." --pulsate \
---width=600 --auto-close )
+--width=400 --auto-close )
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         zenity --error \
@@ -289,13 +292,16 @@ zenity --progress --title="Please wait whilst your system is scanned..." --pulsa
     else
         return
     fi
-
-PROCEED=$(zenity --question --title="$APPNAME" --window-icon=$ic --text="Scan complete.\n\nWould you like to view the results?"; echo $?)
-if [ ${PROCEED} -eq 1 ]; then
-      zenity --info --title="Scan Complete" --window-icon="${INSTALL_ICON}" --text="Click OK to close."
-else
-    leafpad /var/log/findfilesrange.log &
-fi
+    echo "#Displaying scan results..." && gksu -u ${SUDO_USER:-$USER} leafpad /var/log/findfilesrange.log
+    echo "#Waiting for user response..."
+    # Scan loop question
+    zenity --question --width="260" --title="$APPNAME" --window-icon="$ic" --text="\nWould you like to run another scan?"
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    else
+        continue
+    fi
+done
 }
 
 KERNELS() {
