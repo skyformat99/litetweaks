@@ -453,10 +453,11 @@ sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION
                --title="Error" --text="There was an error while\nFixing the bootup!\nUnable to write to /etc/lsb-release"
         return
     fi
+echo "#✔ Bootup fix successfully completed!" && sleep 1
 }
 
 CLEARMEM() {
-    echo "#Freeing up system memory, please standby..."
+    echo "#Freeing up system memory, please wait..." && sleep 1
     sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
     echo "#✔ System memory freed!" && sleep 1
 }
