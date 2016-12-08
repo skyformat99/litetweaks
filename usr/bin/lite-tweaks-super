@@ -74,45 +74,46 @@ fi
 ic="/usr/share/icons/zenity-llcc.png"
 
 CLEAN() {
-echo "#Cleaning the package cache..."
+    echo "#Cleaning the package cache..."
     sleep 1
     apt-get clean
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         echo "#Error..."
         sleep 1
-            zenity --error --width="260" --height="80" --title="    Error" \
-                   --text="\nAn error occurred while cleaning the package cache!"
-            return
-        fi
+        zenity --error --width="260" --height="80" --title="    Error" \
+               --text="\nAn error occurred while cleaning the package cache!"
+        return
+    fi
+    echo "#✔ Package cache cleared!" && sleep 1
 }
 
 LARCHIVES() {
-echo "#Deleting archived logs..."
-sleep 1
+    echo "#Deleting archived logs..."
     find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         echo "#Error..."
         sleep 1
-            zenity --error --width="260" --height="80" --title="    Error" \
-                   --text="\nAn error occurred while deleting archived logs!"
-            return
-        fi
+        zenity --error --width="260" --height="80" --title="    Error" \
+               --text="\nAn error occurred while deleting archived logs!"
+        return
+    fi
+    echo "#✔ Archived logs cleared!" && sleep 1
 }
 
 NUMLOCK() {
-echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
-APPNAME="   Lite Tweaks - Numlock"
-# The loop
-while (true); do 
-# Get Numlock current status
-grep -q "on" /etc/lightdm/lightdm.conf && echo $?
+    echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
+    APPNAME="   Lite Tweaks - Numlock"
+    # The loop
+    while (true); do 
+    # Get Numlock current status
+    grep -q "on" /etc/lightdm/lightdm.conf && echo $?
 
     if [ $? = 0 ]; then val1=TRUE && val2=FALSE && status=Enabled
         else val1=FALSE && val2=TRUE && status=Disabled
     fi
 
-# Enable/Disable NumLock
-EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="$APPNAME" \
+    # Enable/Disable NumLock
+    EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="$APPNAME" \
               --list --radiolist --text "   Numlock current status: <b>$status</b>\n\n   Change status:" \
               --column "Select" --column "Option" --column "Description" \
               $val1 "Enable" "(Enables Numlock at login)" \
@@ -128,20 +129,20 @@ EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Chang
     elif [[ "$EDNL" =~ "Disable" ]]; then # Disable
         sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
     fi
-done
+    done
 }
 
 REMOVE() {
     echo "#Removing unneeded packages, please wait..."
-    sleep 1
-        apt-get autoclean -y && apt-get autoremove -y
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            echo "# Error..."
-            sleep 1
-            zenity --error --width="260" --height="80" --title="    Error"
-                   --text="\nAn error occurred while removing unneeded packages!"
-            return
-        fi
+    apt-get autoclean -y && apt-get autoremove -y
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "# Error..."
+        sleep 1
+        zenity --error --width="260" --height="80" --title="    Error"
+               --text="\nAn error occurred while removing unneeded packages!"
+        return
+    fi
+    echo "#✔ Unneeded packages cleared!" && sleep 1
 }
 
 HNAME() {
@@ -155,9 +156,9 @@ HNAME() {
     newhost=$(zenity --entry --width="280" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
                      --text="Your computer's current hostname is:  ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) \nbelow and click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
         
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            return
-        fi
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
     
     # If hostname is only blank spaces or starts with a hashtag, warn and loop
     echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
@@ -211,15 +212,14 @@ HNAME() {
     # Do Cancel here
         zenity --info --width="340" --height="60" \
                --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect."
+        return
     fi
     done
-    return
 done
 }
 
 RCONFIG() {
     echo "#Removing residual configuration files..."
-    sleep 1
     dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'` 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         echo "#Error..."
@@ -228,11 +228,12 @@ RCONFIG() {
                --text="\nAn error occurred while removing residual configuration files!"
         return
     fi
+    echo "#✔ Residual configuration files cleared!" && sleep 1
 }
 
 FILES() {
-echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
-echo "#Finding Large Files..."
+    echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
+    echo "#Finding Large Files..."
 
 # Main window dialogue
 INSTALLER_TITLE="Find and list all files in your system based on specified size ranges
@@ -241,8 +242,8 @@ INSTALLER_TITLE="Find and list all files in your system based on specified size 
 <b>•</b>  Do not remove files from your system unless you are absolutely convinced that it is safe to do so.\n
 Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 
-# Application Name Variable
-APPNAME="Find files in a range"
+    # Application Name Variable
+    APPNAME="Find files in a range"
 
     zenity --question --icon-name=info --width="420" --height="200" --title="$APPNAME" --ok-label="Continue" --cancel-label="Quit" --window-icon="$ic" --text="${INSTALLER_TITLE}"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -253,36 +254,36 @@ APPNAME="Find files in a range"
     if [ "$?" -eq "0" ]; then
     
     
-# Set the file size range
-scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25)
+    # Set the file size range
+    scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25)
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         return
     fi
 
-size_min=$(echo $scale_min | sed "s/.*/+&M/")
+    size_min=$(echo $scale_min | sed "s/.*/+&M/")
 
-scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\n• Minimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
-
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        return
-    fi
-
-while [ $scale_max -le $scale_min ]; do
-      zenity --info --width="280" --icon-name=error --title="$APPNAME" --window-icon="$ic" --text="\nMaximum value must not be less or equal to minimum value."
-            scale_max=$(zenity --title="$APPNAME" --scale --text="Select the maximum file size.\nMinimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
+    scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\n• Minimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         return
     fi
-done
 
-size_max=$(echo $scale_max | sed "s/.*/-&M/")
+    while [ $scale_max -le $scale_min ]; do
+        zenity --info --width="280" --icon-name=error --title="$APPNAME" --window-icon="$ic" --text="\nMaximum value must not be less or equal to minimum value."
+        scale_max=$(zenity --title="$APPNAME" --scale --text="Select the maximum file size.\nMinimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
 
-find_large=$(gksudo "stdbuf -oL /bin/bash \-c '(find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
-stdbuf -oL sed -e '/\*$/ s/^/# /p'|
-zenity --progress --title="Please wait whilst your system is scanned..." --pulsate \
---width=400 --auto-close )
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
+    done
+
+    size_max=$(echo $scale_max | sed "s/.*/-&M/")
+
+    find_large=$(gksudo "stdbuf -oL /bin/bash \-c '(find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
+    stdbuf -oL sed -e '/\*$/ s/^/# /p'|
+    zenity --progress --title="Please wait whilst your system is scanned..." --pulsate \
+    --width=400 --auto-close )
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         zenity --error \
@@ -301,26 +302,26 @@ zenity --progress --title="Please wait whilst your system is scanned..." --pulsa
     else
         continue
     fi
-done
+    done
 }
 
 KERNELS() {
-# Check current Kernel
-CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
+    # Check current Kernel
+    CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 
-# Define what Kernel packages to look for
-LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
-METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
+    # Define what Kernel packages to look for
+    LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
+    METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
 
-# Find old Kernels
-OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
+    # Find old Kernels
+    OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
 
-# Check if there are old Kernels
-echo $OLDKERNELS | grep linux*
-if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --title="Results" --text="No additional kernels found"
-    return
-fi
+    # Check if there are old Kernels
+    echo $OLDKERNELS | grep linux*
+    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
+        zenity --info --title="Results" --text="No additional kernels found"
+        return
+    fi
 
 # sed command adds all FALSE entries in the column 'Select'
 zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
@@ -332,27 +333,27 @@ the kernel that you wish to remove.
 When you click on Remove, this window will close and the process will begin.
 Click on Cancel to halt the cleaning process."
 
-APPNAME="Kernel Cleaner"
+    APPNAME="Kernel Cleaner"
 
-# Call the dialog. Don't change the separator here!
-okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=500 --height=380   --column="Select" --column="Kernel List" \
---text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Cancel" "${zen[@]}" ) 
+    # Call the dialog. Don't change the separator here!
+    okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=500 --height=380   --column="Select" --column="Kernel List" \
+    --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Cancel" "${zen[@]}" ) 
 
-# If cancel is clicked then exit
-if [ "${PIPESTATUS[0]}" -ne "0" ]; then 
-     return
-fi
+    # If cancel is clicked then exit
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then 
+        return
+    fi
 
-# Check if anything is selected
-echo $okernel | grep linux*
-if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --title='Cleaner' --text='\nNothing was selected.'
-    return
-fi
+    # Check if anything is selected
+    echo $okernel | grep linux*
+    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
+        zenity --info --title='Cleaner' --text='\nNothing was selected.'
+        return
+    fi
 
-zenity --question --title="$APPNAME"  --text="Do you want to proceed? You are about to remove:\n$okernel"
-if [ "$?" -eq "0" ]; then
-      apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
+    zenity --question --title="$APPNAME"  --text="Do you want to proceed? You are about to remove:\n$okernel"
+    if [ "$?" -eq "0" ]; then
+        apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         zenity --error \
@@ -363,12 +364,12 @@ if [ "$?" -eq "0" ]; then
         return
 fi
 
-zenity --info --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="$APPNAME Complete."
+    zenity --info --title="$APPNAME" --window-icon="${INSTALL_ICON}" --text="$APPNAME Complete."
     return
 }
 
 FIXBOOTUP() {
-    echo "#Fixing the bootup, this might take a while..."
+echo "#Fixing the bootup, this might take a while..."
 # Check LL version
 LL_VERSION=$(awk '{print $3}' /etc/llver 2>/dev/null|| echo "Unknown")
 case $LL_VERSION in
@@ -456,13 +457,13 @@ sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION
 
 CLEARMEM() {
     echo "#Freeing up system memory, please standby..."
-sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
-sleep 2
+    sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
+    echo "#✔ System memory freed!" && sleep 1
 }
 
 FIXAPT() {
-# Check Internet access
-echo "#Stage 1: Checking for internet connection..."
+    # Check Internet access
+    echo "#Stage 1: Checking for internet connection..."
     if eval "sudo -u ${SUDO_USER:-$USER} curl -sk google.com/" >> /dev/null 2>&1; then
     : # pass
     else # Prompt ERROR internet connection
@@ -470,14 +471,14 @@ echo "#Stage 1: Checking for internet connection..."
             --text="\n<b>Your computer does not seem to be connected to the internet</b> \n \nPackage System Repair requires internet access in order to fetch package lists. \nPlease check your Internet connection and try again. The task will now abort." --no-wrap)
             break               
     fi
-# Stage 1
-echo "#Stage 1: Repairing the package system."$"\nPlease wait, this might take some time..."
-apt-get clean
-cd /var/lib/apt
-mv lists lists.old
-mkdir -p lists/partial
-apt-get clean
-apt-get update
+    # Stage 1
+    echo "#Stage 1: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
+    apt-get clean
+    cd /var/lib/apt
+    mv lists lists.old
+    mkdir -p lists/partial
+    apt-get clean
+    apt-get update
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                     echo "#Error"
                     sleep 1
@@ -485,10 +486,10 @@ apt-get update
                --text="\nThere was an error while fetching package lists! \n \nCheck your system log for more details."
                     break
             fi
-# Stage 2
-echo "#Stage 2: Repairing the package system."$"\nPlease wait, this might take some time..."
+    # Stage 2
+    echo "#Stage 2: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
 
-apt-get install -f
+    apt-get install -f
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
                     echo "#Error"
                     sleep 1
@@ -496,77 +497,77 @@ apt-get install -f
                    --text="There was an error while\nInstalling partialy installed packages!"
                     return
             fi
-# Stage 3    
-echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take some time..."
+    # Stage 3    
+    echo "#Stage 3: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
 
-# Recreate  /etc/apt/sources.list ...
-        rm -f /etc/apt/sources.list.save && rm -f /etc/apt/sources.list && touch /etc/apt/sources.list
-        echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
-        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
-        echo $'\n' >> /etc/apt/sources.list
-        echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
-        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
-        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
-        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
-        add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
-        echo $'\n' >> /etc/apt/sources.list
-        echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
-        add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
-        cp /etc/apt/sources.list /etc/apt/sources.list.save
+    # Recreate  /etc/apt/sources.list ...
+    rm -f /etc/apt/sources.list.save && rm -f /etc/apt/sources.list && touch /etc/apt/sources.list
+    echo "###### Ubuntu Main Repos" >> /etc/apt/sources.list
+    add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse"
+    echo $'\n' >> /etc/apt/sources.list
+    echo "###### Ubuntu Update Repos" >> /etc/apt/sources.list
+    add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse"
+    add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse"
+    add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-proposed main restricted universe multiverse"
+    add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-backports main restricted universe multiverse"
+    echo $'\n' >> /etc/apt/sources.list
+    echo "###### Ubuntu Partner Repos" >> /etc/apt/sources.list
+    add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+    cp /etc/apt/sources.list /etc/apt/sources.list.save
     
     #Check the release version to reset /etc/apt/sources.list.d/linuxlite.list 
-        LLVER=$(awk '{print $3}' /etc/llver) 
-        RELNUM=$( echo "$LLVER / 1" | bc )  # Get Release number and remove
-        REL_VERSION_NAME=(beryl citrine)    # Set Release version name array
-        # Update /etc/apt/sources.list.d/linuxlite.list for BERYL
-        if [ "$RELNUM" == "2"  ]; then      
-            # Check for /etc/apt/sources.list.d/linuxlite.list file... 
-                # If file exists:
-                if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-                rm -f /etc/apt/sources.list.d/linuxlite.list.save && rm -f /etc/apt/sources.list.d/linuxlite.list
-                touch /etc/apt/sources.list.d/linuxlite.list
-                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
-                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+    LLVER=$(awk '{print $3}' /etc/llver) 
+    RELNUM=$( echo "$LLVER / 1" | bc )  # Get Release number and remove
+    REL_VERSION_NAME=(beryl citrine)    # Set Release version name array
+    # Update /etc/apt/sources.list.d/linuxlite.list for BERYL
+    if [ "$RELNUM" == "2"  ]; then      
+        # Check for /etc/apt/sources.list.d/linuxlite.list file... 
+        # If file exists:
+        if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+            rm -f /etc/apt/sources.list.d/linuxlite.list.save && rm -f /etc/apt/sources.list.d/linuxlite.list
+            touch /etc/apt/sources.list.d/linuxlite.list
+            echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
+            cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
     
-                # If file does not exist:
-                elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-                rm -f /etc/apt/sources.list.d/linuxlite.list
-                touch /etc/apt/sources.list.d/linuxlite.list
-                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
-                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-                fi
+            # If file does not exist:
+        elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+            rm -f /etc/apt/sources.list.d/linuxlite.list
+            touch /etc/apt/sources.list.d/linuxlite.list
+            echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[0]} main" >> /etc/apt/sources.list.d/linuxlite.list
+            cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+        fi
         # Update /etc/apt/sources.list.d/linuxlite.list for CITRINE
-        elif [ "$RELNUM" == "3"  ]; then
-            # Check for /etc/apt/sources.list.d/linuxlite.list file... 
-                # If file exists:
-                if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-                rm -f /etc/apt/sources.list.d/linuxlite.list && rm -f /etc/apt/sources.list.d/linuxlite.list.save
-                touch /etc/apt/sources.list.d/linuxlite.list
-                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
-                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-                echo "$RELVERSION"
+    elif [ "$RELNUM" == "3"  ]; then
+        # Check for /etc/apt/sources.list.d/linuxlite.list file... 
+        # If file exists:
+        if  [ -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+            rm -f /etc/apt/sources.list.d/linuxlite.list && rm -f /etc/apt/sources.list.d/linuxlite.list.save
+            touch /etc/apt/sources.list.d/linuxlite.list
+            echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
+            cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+            echo "$RELVERSION"
     
-                # If file does not exist:
-                elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
-                rm -f /etc/apt/sources.list.d/linuxlite.list
-                touch /etc/apt/sources.list.d/linuxlite.list
-                echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
-                cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
-                fi
-        # DON'T UPDATE UNSUPPORTED RELEASE - Sample
-        elif [ "$RELNUM" == "4" ]; then
-                zenity --warning --width=320 --height=80 --title="     Lite Tweaks - Warning" \
-                       --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
+        # If file does not exist:
+        elif [ ! -f /etc/apt/sources.list.d/linuxlite.list.save ]; then
+            rm -f /etc/apt/sources.list.d/linuxlite.list
+            touch /etc/apt/sources.list.d/linuxlite.list
+            echo "deb http://repo.linuxliteos.com/linuxlite/ ${REL_VERSION_NAME[1]} main" >> /etc/apt/sources.list.d/linuxlite.list
+            cp /etc/apt/sources.list.d/linuxlite.list  /etc/apt/sources.list.d/linuxlite.list.save
+        fi
+    # DON'T UPDATE UNSUPPORTED RELEASE - Sample
+    elif [ "$RELNUM" == "4" ]; then
+        zenity --warning --width=320 --height=80 --title="     Lite Tweaks - Warning" \
+               --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
     fi
-# Unset variables used during FIXAPT
-unset REL_VERSION_NAME
-unset RELNUM
-unset LLVER
+    # Unset variables used during FIXAPT
+    unset REL_VERSION_NAME
+    unset RELNUM
+    unset LLVER
 
-apt-get update
-# Final Stage
-echo "#Final Stage: Repairing the package system."$"\nCompleting Repair..."
-dpkg --configure -a && sleep 2
+    apt-get update
+    # Final Stage
+    echo "#Final Stage: Repairing the package system."$"\n ✔ Completing Repair..."
+    dpkg --configure -a && sleep 2
 }
     x=0
     for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
