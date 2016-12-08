@@ -82,8 +82,7 @@ echo "#Cleaning the package cache..."
         sleep 1
             zenity --error --width="260" --height="80" --title="    Error" \
                    --text="\nAn error occurred while cleaning the package cache!"
-        else
-            zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nThe package cache has been cleared!"
+            return
         fi
 }
 
@@ -96,8 +95,7 @@ sleep 1
         sleep 1
             zenity --error --width="260" --height="80" --title="    Error" \
                    --text="\nAn error occurred while deleting archived logs!"
-        else
-            zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nThe archived logs have been cleared!"
+            return
         fi
 }
 
@@ -142,8 +140,7 @@ REMOVE() {
             sleep 1
             zenity --error --width="260" --height="80" --title="    Error"
                    --text="\nAn error occurred while removing unneeded packages!"
-        else
-            zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nUnneeded packages have been removed!"
+            return
         fi
 }
 
@@ -229,8 +226,7 @@ RCONFIG() {
         sleep 1
         zenity --error --width="260" --height="80" --title="    Error" \
                --text="\nAn error occurred while removing residual configuration files!"
-        else
-        zenity --info --width="300" --height="80" --title="  Lite Tweaks" --text="\nResidual configuration files have been cleared!"
+        return
     fi
 }
 
@@ -462,7 +458,6 @@ CLEARMEM() {
     echo "#Freeing up system memory, please standby..."
 sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
 sleep 2
-zenity --info --window-icon="$ic" --width="300" --height="80" --title="  Lite Tweaks" --text="\nTask freeing up system memory completed!"
 }
 
 FIXAPT() {
@@ -567,10 +562,11 @@ echo "#Stage 3: Repairing the package system."$"\nPlease wait, this might take s
 unset REL_VERSION_NAME
 unset RELNUM
 unset LLVER
+
 apt-get update
 # Final Stage
 echo "#Final Stage: Repairing the package system."$"\nCompleting Repair..."
-dpkg --configure -a
+dpkg --configure -a && sleep 2
 }
     x=0
     for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
