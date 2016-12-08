@@ -15,10 +15,8 @@ FIREFOX() {
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
-        else
-          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nFirefox cache has been cleared!"
+          return
         fi
-    return
 }
 CHROME() {
     echo "#Removing Google Chrome cache..."
@@ -27,10 +25,8 @@ CHROME() {
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome cache!"
-        else
-          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nGoogle Chrome cache has been cleared!"
+          return
         fi
-    return
 }
 CHROMIUM() {
     echo "#Removing Chromium cache..."
@@ -39,10 +35,8 @@ CHROMIUM() {
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium cache!"
-        else
-          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nChromium cache has been cleared!"  
+          return
         fi
-    return
 }
 VIVALDI() {
     echo "#Removing Vivaldi cache..."
@@ -51,10 +45,8 @@ VIVALDI() {
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
-        else
-          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nVivaldi cache has been cleared!"  
+          return
         fi
-    return
 }
 MIDORI() {
     echo "#Removing Midori cache..."
@@ -63,10 +55,8 @@ MIDORI() {
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori cache!"
-        else
-          zenity --info --width="240" --height="80" --title="  Lite Tweaks" --text="\nMidori cache has been cleared!"  
+          return
         fi
-    return
 }
 
 THUMBNAILS() {
@@ -77,10 +67,8 @@ THUMBNAILS() {
           echo "#Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!"
-        else
-          zenity --info --width="240" --height="80" --title="  Lite Tweaks" --text="\nThumbnail Cache has been cleared!"  
+          return
         fi
-    return
 }
 
 WHISKER() {
@@ -91,14 +79,12 @@ WHISKER() {
           echo "#Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!"
-        else
-          zenity --info --width="260" --height="80" --title="  Lite Tweaks" --text="\nWhisker Menu Recently Used items have been cleared!"
+          return
         fi
 
     echo "#Restarting the panel..."
     dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
     sleep 2
-  return
 }
 
 TRASH() {
@@ -108,10 +94,9 @@ TRASH() {
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         echo "#Error"
         sleep 1
-        zenity --error \
-               --title="Error" --text="There was an error while\nEmptying the Trash bin!"
+        zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
+        return
       fi
-    return
 }
 
 DBROWSER() {
@@ -221,10 +206,7 @@ fi
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
     esac
-        zenity --info --width="260" --height="80" --title="Lite Tweaks - Default Web Browser" \
-               --text="\n $selection is now the default web browser."
 unset mimeapps
-return
 }
 
 DU() {
@@ -417,9 +399,9 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
     #if zenity --question --width=280 --height=60 --title="   Lite Tweaks" \
     #          --text="\nWould you like to continue using Lite Tweaks?"; then
     # return
-   #else
-   #  exit 0
-   #fi
+    #else
+    #  exit 0
+    #fi
 fi
 }
 
@@ -482,7 +464,7 @@ fi
 
 # Check if there are any residual configuration files
 if [ ! -z  "$(dpkg -l | grep '^rc')"  ]; then
-        RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
+    RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
     resconfig=(FALSE "Residual Config Files" "Clean" "Packages" "Safe" "You currently have $RESCONFIGQTY residual configuration files you can remove" )
 else
         resconfig=() 
@@ -490,7 +472,7 @@ fi
 
 # Check if any thumbnails exist
 if [ $(du -sk $HOME/.cache/thumbnails/ | awk '{print $1}')  -gt 100  ]; then
-        THUMBCACHESIZE=$(du -sh $HOME/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
+    THUMBCACHESIZE=$(du -sh $HOME/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
     thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove $THUMBCACHESIZE from your thumbnail cache" )
 else
         thumbn=( "FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" ) 
@@ -558,4 +540,5 @@ fi
 ARRAYS   #Separate selected items into arrays A and array B
 RUN
 done
+
 exit 0
