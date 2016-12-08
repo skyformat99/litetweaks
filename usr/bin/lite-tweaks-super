@@ -461,8 +461,8 @@ echo "#✔ Bootup fix successfully completed!" && sleep 1
 
 CLEARMEM() {
     echo "#Freeing up system memory, please wait..." && sleep 1
-    sh -c 'echo 1 >/proc/sys/vm/drop_caches' && sh -c 'echo 2 >/proc/sys/vm/drop_caches' && sh -c 'echo 3 >/proc/sys/vm/drop_caches'
-    echo "#✔ System memory freed!" && sleep 1
+    sh -c 'echo 3 >/proc/sys/vm/drop_caches'
+    echo "#✔ System memory freed!" && sleep 2
 }
 
 FIXAPT() {
