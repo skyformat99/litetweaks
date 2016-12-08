@@ -9,78 +9,83 @@
 # Set functions for non-root execution
 # The ones that need root go to the other file: lite-tweaks-super
 FIREFOX() {
-    echo "#Removing Firefox cache..."
-        rm -rf $HOME/.cache/mozilla/ && sleep 1
+    echo "#Removing Firefox cache..." && sleep 1
+        rm -rf $HOME/.cache/mozilla/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
           return
         fi
+        echo "#✔ Firefox cache cleared!" && sleep 1
 }
 CHROME() {
-    echo "#Removing Google Chrome cache..."
-        rm -rf $HOME/.cache/google-chrome/ && sleep 1
+    echo "#Removing Google Chrome cache..." && sleep 1
+        rm -rf $HOME/.cache/google-chrome/ 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome cache!"
           return
         fi
+        echo "#✔ Google Chrome cache cleared!" && sleep 1
 }
 CHROMIUM() {
-    echo "#Removing Chromium cache..."
-        rm -rf $HOME/.cache/chromium/ && sleep 1
+    echo "#Removing Chromium cache..." && sleep 1
+        rm -rf $HOME/.cache/chromium/ 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium cache!"
           return
         fi
+        echo "#✔ Chromium cache cleared!" && sleep 1
 }
 VIVALDI() {
-    echo "#Removing Vivaldi cache..."
-        rm -rf $HOME/.cache/vivaldi/ && sleep 1
+    echo "#Removing Vivaldi cache..." && sleep 1
+        rm -rf $HOME/.cache/vivaldi/ 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
           return
         fi
+        echo "#✔ Vivaldi cache cleared!" && sleep 1
 }
 MIDORI() {
-    echo "#Removing Midori cache..."
-        rm -rf $HOME/.cache/midori/ && sleep 1
+    echo "#Removing Midori cache..." && sleep 1
+        rm -rf $HOME/.cache/midori/ 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori cache!"
           return
         fi
+        echo "#✔ Midori cache cleared!" && sleep 1
 }
 
 THUMBNAILS() {
-    echo "#Deleting Thumbnail Cache..."
-    sleep 1
-        rm -rf $HOME/.cache/thumbnails/*
+    echo "#Deleting Thumbnail Cache..." && sleep 1
+        rm -rf $HOME/.cache/thumbnails/* 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "#Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!"
           return
         fi
+        echo "#✔ Thumbnail Cache cleared!" && sleep 1
 }
 
 WHISKER() {
-    echo "#Cleaning Whisker Menu Recent items..."
-    sleep 1
-    sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc 
+    echo "#Cleaning Whisker Menu Recent items..." && sleep 1
+        sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "#Error"
           sleep 1
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!"
           return
         fi
+        echo "#✔ Whisker Menu Recent items cleared!" && sleep 1
 
     echo "#Restarting the panel..."
     dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
@@ -88,15 +93,15 @@ WHISKER() {
 }
 
 TRASH() {
-    echo "#Emptying the Trash bin..."
-    sleep 1
-    rm -rf $HOME/.local/share/Trash/files/*
-      if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error"
-        sleep 1
-        zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
-        return
-      fi
+    echo "#Emptying the Trash bin..." && sleep 1
+        rm -rf $HOME/.local/share/Trash/files/*
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "#Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
+          return
+        fi
+        echo "#✔ Trash bin emptied!" && sleep 1
 }
 
 DBROWSER() {
@@ -184,6 +189,7 @@ fi
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
             return
         fi
+    sleep 1
     case "$selection" in
     "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" $mimeapps `;
         `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
@@ -206,6 +212,7 @@ fi
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
     esac
+echo "#✔ $selection is now the default browser!" && sleep 1
 unset mimeapps
 }
 
