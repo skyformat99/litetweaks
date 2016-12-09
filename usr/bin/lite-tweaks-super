@@ -330,8 +330,8 @@ KERNELS() {
 # Main window dialogue
 DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
 \n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
-<b>•</b>  After clicking <b>Remove</b>, this window closes and the selected kernel removal begins.
-<b>•</b>  Click <b>Cancel</b> to halt the cleaning process.\n"
+<b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
+<i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
 
     APPNAME="Kernel Cleaner"
 
