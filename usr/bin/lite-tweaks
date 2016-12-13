@@ -355,6 +355,11 @@ echo $selection | grep "Package System Repair" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('FIXAPT')
 fi
+
+echo $selection | grep "Preload" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('PRELOAD')
+fi
 }
 
 RUN() {
@@ -500,6 +505,14 @@ if [  "$(ls -A $HOME/.local/share/Trash/files/)" ]; then
 else
         trash=() 
 fi
+
+# Check if preload is installed
+if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into memory for faster startup times")
+else
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed - Modify...")
+fi
+
 }
 
 # Main loop
@@ -526,6 +539,7 @@ FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your 
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
 "${aptcache[@]}" \
 FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package management system to default" \
+"${preload[@]}" \
 "${resconfig[@]}" \
 "${thumbn[@]}" \
 "${trash[@]}" \
@@ -547,5 +561,4 @@ fi
 ARRAYS   #Separate selected items into arrays A and array B
 RUN
 done
-
 exit 0
