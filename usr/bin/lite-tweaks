@@ -527,7 +527,7 @@ FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
-FALSE "Clear Memory" "Clean" "System" "Safe" "Free up memory from your system" \
+FALSE "Clear Memory" "Performance" "System" "Safe" "Free up memory from your system" \
 FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
