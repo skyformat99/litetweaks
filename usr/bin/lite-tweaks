@@ -510,7 +510,7 @@ fi
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
         preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into memory for faster startup times")
 else
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed - Modify...")
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
 fi
 
 }
