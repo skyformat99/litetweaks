@@ -70,8 +70,103 @@ if [ $? = 0 ];then
 ARRAYC+=('FIXAPT')
 fi
 
+echo $FRM | grep "PRELOAD" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('PRELOAD')
+fi
+
 # Call the zenity window icon.
 ic="/usr/share/icons/zenity-llcc.png"
+
+PRELOAD() {
+    echo "#Getting Apps Preload status. Please wait..." && sleep 1 && echo "#Configuring Preload..."
+    APPNAME="   Lite Tweaks - Preload Apps"
+    SERVICE="preload"
+    # the loop
+    while (true); do 
+    # Is preload installed?
+    if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
+        # if not installed, then prompt user for installation
+        zenity --question --width="290" --height="80" --title="    $APPNAME" \
+               --text="\nPreload is currently not installed in your system.\n Would you like to install Preload now?"
+               answer=$?
+        # Check Internet access
+        if eval "sudo -u ${SUDO_USER:-$USER} curl -sk google.com" >> /dev/null 2>&1; then
+            : # pass
+            else # Prompt ERROR internet connection
+            (zenity --info --width="460" --height="80" --ok-label="Got it!" --title="Lite Tweaks - No Internet connection detected" \
+                    --text="\n<b>Your computer doesn't seem to be connected to the Internet</b> \n \nLite Tweaks will install Preload from your local cache if it's available. \
+            \nIf the package does not exist in your system cache, Preload installation will fail. \nYou can always check your Internet connection and try again at a later time.")               
+        fi
+                if [ "$answer" -eq "0" ]; then 
+                    echo "#Installing Preload. Please wait..." && sleep 1
+                    apt-get install preload -y # install preload
+                    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                        echo "#Error..." && sleep 1
+                        zenity --error --width="260" --height="80" --title="    Error" \
+                               --text="\nAn error occurred while installing Preload!"
+                        return
+                    else
+                        echo "#✔ Preload successfully installed!..." && sleep 1 
+                        continue
+                    fi
+                else # when user refuses installation, exit out Preload Apps Tweak
+                    exit 1 
+                fi
+    fi
+    # check if preload service is running and assign variables 
+    if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+        val1=TRUE && val2=FALSE && val3=FALSE && status="Running ✔"
+    else val1=FALSE && val2=TRUE && val3=FALSE && status="Stopped ✘"
+    fi
+
+    # Preload Status Main window
+    echo "#Configuring Preload..."
+    PRLOAD=$(zenity --width="360" --height=180 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="   $APPNAME" \
+              --list --radiolist --text "   Preload Status: <b>$status</b>\n\n   Change status:" \
+              --column "Select" --column "Option" --column "Description" \
+              $val1 "Running" "(Preload is currently running)" \
+              $val2 "Stopped" "(Preload is currently stopped )" \
+              $val3 "Remove" "(Remove Preload)")
+
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
+
+    if [[ $PRLOAD =~ Running ]]; then # Start
+            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+                echo "#Service is already running..." && sleep 1
+                continue
+            else
+                echo "#Starting Preload..." && sleep 1
+                service preload start
+                echo "#✔ Preload has been started!" && sleep 1
+                continue
+            fi
+    elif [[ $PRLOAD =~ Stopped ]]; then # Stop
+            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+                echo "#Stopping Preload..." && sleep 1
+                service preload stop
+                echo "#✔ Preload has been stopped!" && sleep 1
+            else
+                echo "#Service is not running..." && sleep 1
+                continue
+            fi
+    elif [[ $PRLOAD =~ Remove ]]; then # Remove Preload
+        echo "#Removing Preload. Please wait..."
+        service preload stop && apt-get remove preload -y
+            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                echo "#Error..." && sleep 1
+                zenity --error --width="260" --height="80" --title="    Error" \
+                       --text="\nAn error occurred while removing Preload!"
+                return
+            else
+                echo "#✔ Preload successfully removed!" && sleep 1
+                return
+            fi
+    fi
+    done
+}
 
 CLEAN() {
     echo "#Cleaning the package cache..."
