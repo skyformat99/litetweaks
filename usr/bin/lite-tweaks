@@ -247,24 +247,10 @@ ic="/usr/share/pixmaps/litetweaks.png"
 
 ARRAYS() {
 # Invoke arrays
-ARRAYA=()       # Array for automatic cleaning tool
+ARRAYA=()    # Array for automatic cleaning tool
 ARRAYB=()    # Array for cleaning tools that require root
  
-# Populate arrays
-echo $selection | grep "Package Cache" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('APTGETCLEAN')
-fi
-
-echo $selection | grep "Autoremove Packages" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('AUTOREMOVE')
-fi
-
-echo $selection | grep "Firefox" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('FIREFOX')
-fi
+# Populate arrays - ARRAY A
 
 echo $selection | grep "Chrome" > /dev/null
 if [ $? = 0 ];then
@@ -276,19 +262,9 @@ if [ $? = 0 ];then
 ARRAYA+=('CHROMIUM')
 fi
 
-echo $selection | grep "Vivaldi" > /dev/null
+echo $selection | grep "Default Web Browser" > /dev/null
 if [ $? = 0 ];then
-ARRAYA+=('VIVALDI')
-fi
-
-echo $selection | grep "Midori" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('MIDORI')
-fi
-
-echo $selection | grep "Hostname" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('HOSTNAME')
+ARRAYA+=('DBROWSER')
 fi
 
 echo $selection | grep "Display Disk Usage" > /dev/null
@@ -296,14 +272,19 @@ if [ $? = 0 ];then
 ARRAYA+=('DU')
 fi
 
+echo $selection | grep "Firefox" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('FIREFOX')
+fi
+
+echo $selection | grep "Midori" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('MIDORI')
+fi
+
 echo $selection | grep "Thumbnail Cache" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('THUMBNAILS')
-fi
-
-echo $selection | grep "Whisker Menu" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('WHISKER')
 fi
 
 echo $selection | grep "Trash Bin" > /dev/null
@@ -311,34 +292,21 @@ if [ $? = 0 ];then
 ARRAYA+=('TRASH')
 fi
 
-echo $selection | grep "Default Web Browser" > /dev/null
+echo $selection | grep "Vivaldi" > /dev/null
 if [ $? = 0 ];then
-ARRAYA+=('DBROWSER')
+ARRAYA+=('VIVALDI')
 fi
 
-echo $selection | grep "Locate Large Files" > /dev/null
+echo $selection | grep "Whisker Menu" > /dev/null
 if [ $? = 0 ];then
-ARRAYB+=('FILESIZES')
+ARRAYA+=('WHISKER')
 fi
 
-echo $selection | grep "Kernel Removal" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('REMKERNELS')
-fi
+# Populate arrays - ARRAY B
 
-echo $selection | grep "Log Archives" > /dev/null
+echo $selection | grep "Autoremove Packages" > /dev/null
 if [ $? = 0 ];then
-ARRAYB+=('LOGARCHIVES')
-fi
-
-echo $selection | grep "Numlock" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('EDNUMLOCK')
-fi
-
-echo $selection | grep "Residual Config Files" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('RESIDCONFIG')
+ARRAYB+=('AUTOREMOVE')
 fi
 
 echo $selection | grep "Bootup Fix" > /dev/null
@@ -351,6 +319,36 @@ if [ $? = 0 ];then
 ARRAYB+=('CLEARMEM')
 fi
 
+echo $selection | grep "Hostname" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('HOSTNAME')
+fi
+
+echo $selection | grep "Kernel Removal" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('REMKERNELS')
+fi
+
+echo $selection | grep "Locate Large Files" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('FILESIZES')
+fi
+
+echo $selection | grep "Log Archives" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('LOGARCHIVES')
+fi
+
+echo $selection | grep "Numlock" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('EDNUMLOCK')
+fi
+
+echo $selection | grep "Package Cache" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('APTGETCLEAN')
+fi
+
 echo $selection | grep "Package System Repair" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('FIXAPT')
@@ -360,11 +358,15 @@ echo $selection | grep "Preload" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('PRELOAD')
 fi
+
+echo $selection | grep "Residual Config Files" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('RESIDCONFIG')
+fi
 }
 
 RUN() {
-# Check if ARRAYA is empty
-# If it is skip the execution
+# Check if ARRAYA is empty. If empty, skip the execution
 if [ ${#ARRAYA[@]} -ne 0 ]; then
 
     x=0
@@ -389,11 +391,10 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             sleep 1
         fi
     
-    done| zenity --progress  --title="  Lite Tweaks" --auto-kill --auto-close --width=300
+    done| zenity --progress --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close --width=320
 fi
 
-# Check if ARRAYB is empty
-# If it is skip the execution
+# Check if ARRAYB is empty. If empty, skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
 # Check administrative privileges
    zenity --question --width=420 --height=60 --window-icon=$ic --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
@@ -401,47 +402,18 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
       --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
    case $? in
     0)
-  gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open the next file with superuser privileges and pass the array B
+  gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open lite-tweaks-super with superuser privileges and pass the array B
   ;;
-    # Abort Dialog
-  1) zenity --info --width=240 --height=60 --window-icon=$ic --title=" Lite Tweaks - Aborted" \
-      --text="\nSelected tasks have been aborted. \nNo changes to the system have been made." --no-wrap
+    # Abort dialog
+  1) zenity --info --width=300 --height=60 --window-icon=$ic --timeout=5 --title=" Lite Tweaks - Aborted" \
+      --text="\nSelected tasks requiring administrative privileges have been aborted."
     return
   esac
-    #if zenity --question --width=280 --height=60 --title="   Lite Tweaks" \
-    #          --text="\nWould you like to continue using Lite Tweaks?"; then
-    # return
-    #else
-    #  exit 0
-    #fi
 fi
 }
 
-CHECK() {
-# Check package cache exists
-if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ];  then
-    APTCACHESIZE=$(du -sh /var/cache/apt/archives/ | awk '{print $1}' | sed 's/$/B/')
-    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove $APTCACHESIZE worth of files from your package cache" )
-else
-    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
-fi
-
-# Check if archived /var/log files exist
-if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -maxdepth 100 -size +1k)" ];  then
-    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
-    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove $LOGARCHIVESIZE worth of archived logs" )
-else
-    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
-fi
-
-# Check if firefox cache exists
-if [  -d  "$HOME/.cache/mozilla/" ];then
-    FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
-    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
-else
-        firefox=()
-fi
-
+CHECK() { 
+# Execute checks - organized following Main zenity dialog window order
 # Check if the google-chrome cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
     GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
@@ -458,12 +430,20 @@ else
          chromium=() # Main zenity dialogue window
 fi
 
-# Check if  vivaldi-stable cache exists
-if [  -d  "$HOME/.cache/vivaldi/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
-    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi cache" )
+# Check if firefox cache exists
+if [  -d  "$HOME/.cache/mozilla/" ];then
+    FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
+    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
 else
-         vivaldi=()
+        firefox=()
+fi
+
+# Check if archived /var/log files exist
+if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -maxdepth 100 -size +1k)" ];  then
+    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
+    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove $LOGARCHIVESIZE worth of archived logs" )
+else
+    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
 fi
 
 # Check if  midori cache exists
@@ -472,6 +452,21 @@ if [  -d  "$HOME/.cache/midori/" ]; then
     midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori cache" )
 else
          midori=()
+fi
+
+# Check package cache exists
+if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ];  then
+    APTCACHESIZE=$(du -sh /var/cache/apt/archives/ | awk '{print $1}' | sed 's/$/B/')
+    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove $APTCACHESIZE worth of files from your package cache" )
+else
+    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
+fi
+
+# Check if preload is installed
+if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into memory for faster startup times")
+else
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
 fi
 
 # Check if there are any residual configuration files
@@ -490,14 +485,6 @@ else
         thumbn=( "FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" ) 
 fi
 
-# Check if Whisker Menu has Recently Used items
-if [ -z "$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2)" ]; then
-    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "Whisker Menu has no Recently Used items to clean" )
-else
-    whisker_test=$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
-    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove $whisker_test Recently Used items from your Whisker Menu" )
-fi
-
 # Check if the Trash is empty
 if [  "$(ls -A $HOME/.local/share/Trash/files/)" ]; then
         TRASHCACHESIZE=$(du -sh $HOME/.local/share/Trash/ | awk '{print $1}' | sed 's/$/B/')
@@ -506,21 +493,28 @@ else
         trash=() 
 fi
 
-# Check if preload is installed
-if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into memory for faster startup times")
+# Check if  vivaldi-stable cache exists
+if [  -d  "$HOME/.cache/vivaldi/" ]; then
+    CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
+    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi cache" )
 else
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
+         vivaldi=()
 fi
 
+# Check if Whisker Menu has Recently Used items
+if [ -z "$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2)" ]; then
+    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "Whisker Menu has no Recently Used items to clean" )
+else
+    whisker_test=$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
+    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove $whisker_test Recently Used items from your Whisker Menu" )
+fi
 }
 
 # Main loop
 while (true); do
+CHECK        # first run the checks 
 
-CHECK        # first run the checks
-
-# Main zenity dialogue window
+# Main zenity dialog window
 selection=$(zenity --window-icon="$ic" --list --checklist --width=880 --height=580 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" \
  --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' --title="  Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed for programs that are no longer present" \
@@ -561,4 +555,5 @@ fi
 ARRAYS   #Separate selected items into arrays A and array B
 RUN
 done
+
 exit 0
