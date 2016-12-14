@@ -7,18 +7,7 @@
 #--------------------------------------------------------------------------------------------------------
 
 # Set functions for non-root execution
-# The ones that need root go to the other file: lite-tweaks-super
-FIREFOX() {
-    echo "#Removing Firefox cache..." && sleep 1
-        rm -rf $HOME/.cache/mozilla/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
-          return
-        fi
-        echo "#✔ Firefox cache cleared!" && sleep 1
-}
+# The ones that need administrative privileges go to the other file: lite-tweaks-super
 CHROME() {
     echo "#Removing Google Chrome cache..." && sleep 1
         rm -rf $HOME/.cache/google-chrome/ 
@@ -41,16 +30,16 @@ CHROMIUM() {
         fi
         echo "#✔ Chromium cache cleared!" && sleep 1
 }
-VIVALDI() {
-    echo "#Removing Vivaldi cache..." && sleep 1
-        rm -rf $HOME/.cache/vivaldi/ 
+FIREFOX() {
+    echo "#Removing Firefox cache..." && sleep 1
+        rm -rf $HOME/.cache/mozilla/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
           return
         fi
-        echo "#✔ Vivaldi cache cleared!" && sleep 1
+        echo "#✔ Firefox cache cleared!" && sleep 1
 }
 MIDORI() {
     echo "#Removing Midori cache..." && sleep 1
@@ -63,7 +52,17 @@ MIDORI() {
         fi
         echo "#✔ Midori cache cleared!" && sleep 1
 }
-
+VIVALDI() {
+    echo "#Removing Vivaldi cache..." && sleep 1
+        rm -rf $HOME/.cache/vivaldi/ 
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
+          return
+        fi
+        echo "#✔ Vivaldi cache cleared!" && sleep 1
+}
 THUMBNAILS() {
     echo "#Deleting Thumbnail Cache..." && sleep 1
         rm -rf $HOME/.cache/thumbnails/* 
@@ -75,7 +74,17 @@ THUMBNAILS() {
         fi
         echo "#✔ Thumbnail Cache cleared!" && sleep 1
 }
-
+TRASH() {
+    echo "#Emptying the Trash bin..." && sleep 1
+        rm -rf $HOME/.local/share/Trash/files/*
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "#Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
+          return
+        fi
+        echo "#✔ Trash bin emptied!" && sleep 1
+}
 WHISKER() {
     echo "#Cleaning Whisker Menu Recent items..." && sleep 1
         sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
@@ -91,19 +100,6 @@ WHISKER() {
     dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
     sleep 2
 }
-
-TRASH() {
-    echo "#Emptying the Trash bin..." && sleep 1
-        rm -rf $HOME/.local/share/Trash/files/*
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "#Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
-          return
-        fi
-        echo "#✔ Trash bin emptied!" && sleep 1
-}
-
 DBROWSER() {
 echo "#Looking for installed browsers..." && sleep 1
 mimeapps=~/.config/mimeapps.list 
@@ -215,7 +211,6 @@ fi
 echo "#✔ $selection is now the default browser!" && sleep 1
 unset mimeapps
 }
-
 DU() {
 while (true); do
 DU_TEXT="<b>•</b>  Double click on any <b>Partition</b> to open in the file manager.
@@ -439,8 +434,8 @@ else
 fi
 
 # Check if archived /var/log files exist
-if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -maxdepth 100 -size +1k)" ];  then
-    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
+if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ];  then
+    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/') 
     logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove $LOGARCHIVESIZE worth of archived logs" )
 else
     logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
@@ -456,7 +451,7 @@ fi
 
 # Check package cache exists
 if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ];  then
-    APTCACHESIZE=$(du -sh /var/cache/apt/archives/ | awk '{print $1}' | sed 's/$/B/')
+    APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/')
     aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove $APTCACHESIZE worth of files from your package cache" )
 else
     aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
@@ -515,8 +510,9 @@ while (true); do
 CHECK        # first run the checks 
 
 # Main zenity dialog window
-selection=$(zenity --window-icon="$ic" --list --checklist --width=880 --height=580 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" \
- --column="Description" --text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' --title="  Lite Tweaks" --ok-label="Begin" --cancel-label="Quit" \
+selection=$(zenity --list --checklist --width=880 --height=580 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
+--column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
+--text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed for programs that are no longer present" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
