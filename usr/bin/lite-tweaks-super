@@ -6,6 +6,15 @@
 # Website: https://www.linuxliteos.com
 #--------------------------------------------------------------------------------------------------------
 
+# Kill off package managers if running
+if [ "$(pidof synaptic)" ];then
+    killall -9 synaptic
+fi
+
+if [ ! -z "$(pgrep gdebi-gtk)" ];then
+    killall -9 gdebi-gtk
+fi
+
 # Get input from a previous file
 FRM="$@"
 
