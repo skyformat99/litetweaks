@@ -15,24 +15,29 @@ if [ $? = 0 ];then
 ARRAYC+=('CLEAN')
 fi
 
-echo $FRM | grep "AUTOREMOVE" > /dev/null
+echo $FRM | grep "CLEARMEM" > /dev/null
 if [ $? = 0 ];then
-ARRAYC+=('REMOVE')
-fi
-
-echo $FRM | grep "DBROWSER" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('BROWSER')
-fi
-
-echo $FRM | grep "HOSTNAME" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('HNAME')
+ARRAYC+=('CLEARMEM')
 fi
 
 echo $FRM| grep "FILESIZES" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('FILES')
+fi
+
+echo $FRM | grep "FIXAPT" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('FIXAPT')
+fi
+
+echo $FRM | grep "FIXBOOTUP" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('FIXBOOTUP')
+fi
+
+echo $FRM | grep "HOSTNAME" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('HNAME')
 fi
 
 echo $FRM | grep "REMKERNELS" > /dev/null
@@ -50,123 +55,23 @@ if [ $? = 0 ];then
 ARRAYC+=('NUMLOCK')
 fi
 
-echo $FRM | grep "RESIDCONFIG" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('RCONFIG')
-fi
-
-echo $FRM | grep "FIXBOOTUP" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('FIXBOOTUP')
-fi
-
-echo $FRM | grep "CLEARMEM" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('CLEARMEM')
-fi
-
-echo $FRM | grep "FIXAPT" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('FIXAPT')
-fi
-
 echo $FRM | grep "PRELOAD" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('PRELOAD')
 fi
 
+echo $FRM | grep "RESIDCONFIG" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('RCONFIG')
+fi
+
+echo $FRM | grep "AUTOREMOVE" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('REMOVE')
+fi
+
 # Call the zenity window icon.
 ic="/usr/share/icons/zenity-llcc.png"
-
-PRELOAD() {
-    echo "#Getting Apps Preload status. Please wait..." && sleep 1 && echo "#Configuring Preload..."
-    APPNAME="   Lite Tweaks - Preload Apps"
-    SERVICE="preload"
-    # the loop
-    while (true); do 
-    # Is preload installed?
-    if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
-        # if not installed, then prompt user for installation
-        zenity --question --width="290" --height="80" --title="    $APPNAME" \
-               --text="\nPreload is currently not installed in your system.\n Would you like to install Preload now?"
-               answer=$?
-        # Check Internet access
-        if eval "sudo -u ${SUDO_USER:-$USER} curl -sk google.com" >> /dev/null 2>&1; then
-            : # pass
-            else # Prompt ERROR internet connection
-            (zenity --info --width="460" --height="80" --ok-label="Got it!" --title="Lite Tweaks - No Internet connection detected" \
-                    --text="\n<b>Your computer doesn't seem to be connected to the Internet</b> \n \nLite Tweaks will install Preload from your local cache if it's available. \
-            \nIf the package does not exist in your system cache, Preload installation will fail. \nYou can always check your Internet connection and try again at a later time.")               
-        fi
-                if [ "$answer" -eq "0" ]; then 
-                    echo "#Installing Preload. Please wait..." && sleep 1
-                    apt-get install preload -y # install preload
-                    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                        echo "#Error..." && sleep 1
-                        zenity --error --width="260" --height="80" --title="    Error" \
-                               --text="\nAn error occurred while installing Preload!"
-                        return
-                    else
-                        echo "#✔ Preload successfully installed!..." && sleep 1 
-                        continue
-                    fi
-                else # when user refuses installation, exit out Preload Apps Tweak
-                    exit 1 
-                fi
-    fi
-    # check if preload service is running and assign variables 
-    if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
-        val1=TRUE && val2=FALSE && val3=FALSE && status="Running ✔"
-    else val1=FALSE && val2=TRUE && val3=FALSE && status="Stopped ✘"
-    fi
-
-    # Preload Status Main window
-    echo "#Configuring Preload..."
-    PRLOAD=$(zenity --width="360" --height=180 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="   $APPNAME" \
-              --list --radiolist --text "   Preload Status: <b>$status</b>\n\n   Change status:" \
-              --column "Select" --column "Option" --column "Description" \
-              $val1 "Running" "(Preload is currently running)" \
-              $val2 "Stopped" "(Preload is currently stopped )" \
-              $val3 "Remove" "(Remove Preload)")
-
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        return
-    fi
-
-    if [[ $PRLOAD =~ Running ]]; then # Start
-            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
-                echo "#Service is already running..." && sleep 1
-                continue
-            else
-                echo "#Starting Preload..." && sleep 1
-                service preload start
-                echo "#✔ Preload has been started!" && sleep 1
-                continue
-            fi
-    elif [[ $PRLOAD =~ Stopped ]]; then # Stop
-            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
-                echo "#Stopping Preload..." && sleep 1
-                service preload stop
-                echo "#✔ Preload has been stopped!" && sleep 1
-            else
-                echo "#Service is not running..." && sleep 1
-                continue
-            fi
-    elif [[ $PRLOAD =~ Remove ]]; then # Remove Preload
-        echo "#Removing Preload. Please wait..."
-        service preload stop && apt-get remove preload -y
-            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-                echo "#Error..." && sleep 1
-                zenity --error --width="260" --height="80" --title="    Error" \
-                       --text="\nAn error occurred while removing Preload!"
-                return
-            else
-                echo "#✔ Preload successfully removed!" && sleep 1
-                return
-            fi
-    fi
-    done
-}
 
 CLEAN() {
     echo "#Cleaning the package cache..."
@@ -181,151 +86,11 @@ CLEAN() {
     fi
     echo "#✔ Package cache cleared!" && sleep 1
 }
-
-LARCHIVES() {
-    echo "#Deleting archived logs..."
-    find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error..."
-        sleep 1
-        zenity --error --width="260" --height="80" --title="    Error" \
-               --text="\nAn error occurred while deleting archived logs!"
-        return
-    fi
-    echo "#✔ Archived logs cleared!" && sleep 1
+CLEARMEM() {
+    echo "#Freeing up system memory, please wait..." && sleep 1
+    sh -c 'echo 3 >/proc/sys/vm/drop_caches'
+    echo "#✔ System memory freed!" && sleep 1
 }
-
-NUMLOCK() {
-    echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
-    APPNAME="   Lite Tweaks - Numlock"
-    # The loop
-    while (true); do 
-    # Get Numlock current status
-    grep -q "on" /etc/lightdm/lightdm.conf && echo $?
-
-    if [ $? = 0 ]; then val1=TRUE && val2=FALSE && status=Enabled
-        else val1=FALSE && val2=TRUE && status=Disabled
-    fi
-
-    # Enable/Disable NumLock
-    EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="$APPNAME" \
-              --list --radiolist --text "   Numlock current status: <b>$status</b>\n\n   Change status:" \
-              --column "Select" --column "Option" --column "Description" \
-              $val1 "Enable" "(Enables Numlock at login)" \
-              $val2 "Disable" "(Disables Numlock at login)")
-
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        return
-    fi
-
-    if [[ "$EDNL" =~ "Enable" ]]; then # Enable
-        sed -i "s/off/on/g" /etc/lightdm/lightdm.conf
-        continue
-    elif [[ "$EDNL" =~ "Disable" ]]; then # Disable
-        sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
-    fi
-    done
-}
-
-REMOVE() {
-    echo "#Removing unneeded packages, please wait..."
-    apt-get autoclean -y && apt-get autoremove -y
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "# Error..."
-        sleep 1
-        zenity --error --width="260" --height="80" --title="    Error"
-               --text="\nAn error occurred while removing unneeded packages!"
-        return
-    fi
-    echo "#✔ Unneeded packages cleared!" && sleep 1
-}
-
-HNAME() {
-    current_hostname=$(cat /etc/hostname)
-
-    echo "#Changing hostname. Please wait..." && sleep 1
-    echo "#Changing hostname... ${current_hostname}"
-
-    while (true); do
-
-    newhost=$(zenity --entry --width="280" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
-                     --text="Your computer's current hostname is:  ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) \nbelow and click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
-        
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        return
-    fi
-    
-    # If hostname is only blank spaces or starts with a hashtag, warn and loop
-    echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
-    if [ $? = 0 ]; then
-        zenity --warning --width="340" --height="60" --ok-label="Got it!" \
-        --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed!"
-        continue
-
-    # If old hostname and new hostname are the same, warn and loop
-    elif [ $newhost = $current_hostname ]; then
-         zenity --info --width="340" --height="60" --ok-label="Got it!" \
-                --title=" Hostname not changed" --text="\nThe Hostname did not change... nothing to do here!"
-        continue
-
-    else
-        sed -i "s/$current_hostname/$newhost/g" /etc/hosts
-        sed -i "s/$current_hostname/$newhost/g" /etc/hostname
-
-    fi
-     
-    
-    while (true); do
-    # Reboot dialogue
-    echo "#Changing hostname to ' $newhost ' " && sleep 1
-    title=" Hostname changed"
-    exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" --text="Hostname has been changed to: <b>$newhost</b>\n\nYou must reboot your computer for changes to take effect." --title="$title" --list --radiolist --column="Select" \
-                       --column="Exit Type" --column="Description" \
-                       TRUE "Reboot" "Reboot your computer"\
-                       FALSE "Shutdown" "Shutdown your computer"\
-                       FALSE "Continue" "Continue using your computer" `
-
-    # User must select a target type (Check if they cancelled)
-    if [ ! "$exit_type" ]; then
-        echo "#Reverting hostname changes to... ${current_hostname} " && sleep 1
-        sed -i "s/$newhost/$current_hostname/g" /etc/hosts
-        sed -i "s/$newhost/$current_hostname/g" /etc/hostname
-        zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit."
-        return
-    fi
-
-    # Action to perform by user
-    if [ "$exit_type" = "Reboot" ]
-        then
-        # Do Reboot here
-        shutdown -r now
-    elif [ "$exit_type" = "Shutdown" ]
-        then
-        # Do Shutdown here
-        shutdown -h now 
-    else
-    # Do Cancel here
-        zenity --info --width="340" --height="60" \
-               --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect."
-        return
-    fi
-    done
-done
-}
-
-RCONFIG() {
-    echo "#Removing residual configuration files..."
-    dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'` 
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error..."
-        sleep 1
-        zenity --error --width="260" --height="80" --title="    Error" \
-               --text="\nAn error occurred while removing residual configuration files!"
-        return
-    fi
-    echo "#✔ Residual configuration files cleared!" && sleep 1
-}
-
 FILES() {
     echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
     echo "#Finding Large Files..."
@@ -398,163 +163,6 @@ Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
     fi
     done
 }
-
-KERNELS() {
-    while (true); do
-    # Check current Kernel
-    CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
-
-    # Define what Kernel packages to look for
-    LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
-    METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
-
-    # Find old Kernels
-    OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
-
-    # Check if there are old Kernels
-    echo $OLDKERNELS | grep linux*
-    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-        zenity --info --width="200" --height="60" --title=" Results" --text="\nNo additional kernels found."
-        return
-    fi
-
-    # sed command adds all FALSE entries in the column 'Select'
-    zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
-
-# Main dialog window
-DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
-\n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
-<b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
-<i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
-
-    APPNAME="Kernel Cleaner"
-
-    # Call the dialog. Don't change the separator here!
-    okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
-    --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" ) 
-    
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then # If cancel is clicked then exit
-        return
-    fi
-    # Check if anything is selected
-    echo $okernel | grep linux*
-    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-        zenity --info --width="260" --height="60" --window-icon="$ic" --title=" $APPNAME" --text="\nNo kernel header and image were selected for removal. Try again."
-        continue
-    fi
-    # Split kernel selection
-    selection_array=($okernel)
-    KN_NAMES=""
-    for ((i=0; i<${#selection_array[@]}; ++i)); do
-        KN_NAMES=$KN_NAMES"✔ "${selection_array[$i]}"\n"
-    done
-    # Confirm kernel selection removal 
-    zenity --question --window-icon="$ic" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?"
-    if [ "$?" -eq "0" ]; then
-        apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
-        zenity --info --width="270" --title="$APPNAME" --window-icon="$ic" --text="\nSelected kernels were successfully removed."
-        return
-    
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed."
-            return
-        fi
-    fi
-done
-}
-
-FIXBOOTUP() {
-echo "#Fixing the bootup. This might take a while..."
-# Check LL version
-LL_VERSION=$(awk '{print $3}' /etc/llver 2>/dev/null|| echo "Unknown")
-case $LL_VERSION in
-3.0)
-title="Linux Lite 3.0"
-black="0x000000"
-white="0xffffff"
-brown="0xffff00"
-blue="0x000000"
-;;
-3.2)
-title="Linux Lite 3.2"
-black="0x000000"
-white="0xffffff"
-brown="0xffff00"
-blue="0x000000"
-;;
-3.4)
-title="Linux Lite 3.4"
-black="0x000000"
-white="0xffffff"
-brown="0xffff00"
-blue="0x000000"
-;;
-3.6)
-title="Linux Lite 3.6"
-black="0x000000"
-white="0xffffff"
-brown="0xffff00"
-blue="0x000000"
-;;
-3.8)
-title="Linux Lite 3.8"
-black="0x000000"
-white="0xffffff"
-brown="0xffff00"
-blue="0x000000"
-;;
-Unknown)
-zenity --info --title="Bootup fix" --text="Unknown OS"
-return
-;;
-*)
-zenity --info --title="Lite Tweaks" --text="Bootup fix\nRelease not supported!"
-return
-;;
-esac
-
-APPNAME_ERROR=" Bootup Fix - Error"
-
-sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/white=$white/;s/^brown=.*$/brown=$brown/;s/^blue=.*$/blue=$blue/" /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error" && sleep 1
-        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"
-        return
-    fi
-
-update-initramfs -u
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error" && sleep 1
-        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-               --text="An error occurred while fixing the bootup! \n \nStatus: update-initramfs failed"
-        return
-    fi
-
-echo "Linux Lite $LL_VERSION LTS \n \l" | tee /etc/issue
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error" && sleep 1
-        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/issue"
-        return
-    fi
-
-sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION"'"/g' /etc/lsb-release
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-        echo "#Error" && sleep 1
-        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"
-        return
-    fi
-echo "#✔ Bootup fix successfully completed!" && sleep 1
-}
-
-CLEARMEM() {
-    echo "#Freeing up system memory, please wait..." && sleep 1
-    sh -c 'echo 3 >/proc/sys/vm/drop_caches'
-    echo "#✔ System memory freed!" && sleep 1
-}
-
 FIXAPT() {
     # Check Internet access
     echo "#Stage 1: Checking for internet connection..."
@@ -663,8 +271,385 @@ FIXAPT() {
     echo "#Final Stage: Repairing the package system."$"\n ✔ Completing Repair..."
     dpkg --configure -a && sleep 2
 }
-    x=0
-    for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
+FIXBOOTUP() {
+echo "#Fixing the bootup. This might take a while..."
+# Check LL version
+LL_VERSION=$(awk '{print $3}' /etc/llver 2>/dev/null|| echo "Unknown")
+case $LL_VERSION in
+3.0)
+title="Linux Lite 3.0"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+3.2)
+title="Linux Lite 3.2"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+3.4)
+title="Linux Lite 3.4"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+3.6)
+title="Linux Lite 3.6"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+3.8)
+title="Linux Lite 3.8"
+black="0x000000"
+white="0xffffff"
+brown="0xffff00"
+blue="0x000000"
+;;
+Unknown)
+zenity --info --title="Bootup fix" --text="Unknown OS"
+return
+;;
+*)
+zenity --info --title="Lite Tweaks" --text="Bootup fix\nRelease not supported!"
+return
+;;
+esac
+
+APPNAME_ERROR=" Bootup Fix - Error"
+
+sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/white=$white/;s/^brown=.*$/brown=$brown/;s/^blue=.*$/blue=$blue/" /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error" && sleep 1
+        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
+               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"
+        return
+    fi
+
+update-initramfs -u
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error" && sleep 1
+        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
+               --text="An error occurred while fixing the bootup! \n \nStatus: update-initramfs failed"
+        return
+    fi
+
+echo "Linux Lite $LL_VERSION LTS \n \l" | tee /etc/issue
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error" && sleep 1
+        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
+               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/issue"
+        return
+    fi
+
+sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION"'"/g' /etc/lsb-release
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error" && sleep 1
+        zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
+               --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"
+        return
+    fi
+echo "#✔ Bootup fix successfully completed!" && sleep 1
+}
+HNAME() {
+    current_hostname=$(cat /etc/hostname)
+
+    echo "#Changing hostname. Please wait..." && sleep 1
+    echo "#Changing hostname... ${current_hostname}"
+
+    while (true); do
+
+    newhost=$(zenity --entry --width="280" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
+                     --text="Your computer's current hostname is:  ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) \nbelow and click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
+        
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
+    
+    # If hostname is only blank spaces or starts with a hashtag, warn and loop
+    echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
+    if [ $? = 0 ]; then
+        zenity --warning --width="340" --height="60" --ok-label="Got it!" \
+        --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed!"
+        continue
+
+    # If old hostname and new hostname are the same, warn and loop
+    elif [ $newhost = $current_hostname ]; then
+         zenity --info --width="340" --height="60" --ok-label="Got it!" \
+                --title=" Hostname not changed" --text="\nThe Hostname did not change... nothing to do here!"
+        continue
+
+    else
+        sed -i "s/$current_hostname/$newhost/g" /etc/hosts
+        sed -i "s/$current_hostname/$newhost/g" /etc/hostname
+
+    fi
+     
+    
+    while (true); do
+    # Reboot dialogue
+    echo "#Changing hostname to ' $newhost ' " && sleep 1
+    title=" Hostname changed"
+    exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" --text="Hostname has been changed to: <b>$newhost</b>\n\nYou must reboot your computer for changes to take effect." --title="$title" --list --radiolist --column="Select" \
+                       --column="Exit Type" --column="Description" \
+                       TRUE "Reboot" "Reboot your computer"\
+                       FALSE "Shutdown" "Shutdown your computer"\
+                       FALSE "Continue" "Continue using your computer" `
+
+    # User must select a target type (Check if they cancelled)
+    if [ ! "$exit_type" ]; then
+        echo "#Reverting hostname changes to... ${current_hostname} " && sleep 1
+        sed -i "s/$newhost/$current_hostname/g" /etc/hosts
+        sed -i "s/$newhost/$current_hostname/g" /etc/hostname
+        zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit."
+        return
+    fi
+
+    # Action to perform by user
+    if [ "$exit_type" = "Reboot" ]
+        then
+        # Do Reboot here
+        shutdown -r now
+    elif [ "$exit_type" = "Shutdown" ]
+        then
+        # Do Shutdown here
+        shutdown -h now 
+    else
+    # Do Cancel here
+        zenity --info --width="340" --height="60" \
+               --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect."
+        return
+    fi
+    done
+done
+}
+KERNELS() {
+    while (true); do
+    # Check current Kernel
+    CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
+
+    # Define what Kernel packages to look for
+    LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
+    METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
+
+    # Find old Kernels
+    OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
+
+    # Check if there are old Kernels
+    echo $OLDKERNELS | grep linux*
+    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
+        zenity --info --width="200" --height="60" --title=" Results" --text="\nNo additional kernels found."
+        return
+    fi
+
+    # sed command adds all FALSE entries in the column 'Select'
+    zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
+
+# Main dialog window
+DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
+\n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
+<b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
+<i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
+
+    APPNAME="Kernel Cleaner"
+
+    # Call the dialog. Don't change the separator here!
+    okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
+    --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" ) 
+    
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then # If cancel is clicked then exit
+        return
+    fi
+    # Check if anything is selected
+    echo $okernel | grep linux*
+    if [ "${PIPESTATUS[1]}" -ne "0" ]; then
+        zenity --info --width="260" --height="60" --window-icon="$ic" --title=" $APPNAME" --text="\nNo kernel header and image were selected for removal. Try again."
+        continue
+    fi
+    # Split kernel selection
+    selection_array=($okernel)
+    KN_NAMES=""
+    for ((i=0; i<${#selection_array[@]}; ++i)); do
+        KN_NAMES=$KN_NAMES"✔ "${selection_array[$i]}"\n"
+    done
+    # Confirm kernel selection removal 
+    zenity --question --window-icon="$ic" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?"
+    if [ "$?" -eq "0" ]; then
+        apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
+        zenity --info --width="270" --title="$APPNAME" --window-icon="$ic" --text="\nSelected kernels were successfully removed."
+        return
+    
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+            zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed."
+            return
+        fi
+    fi
+done
+}
+LARCHIVES() {
+    echo "#Deleting archived logs..."
+    find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error..."
+        sleep 1
+        zenity --error --width="260" --height="80" --title="    Error" \
+               --text="\nAn error occurred while deleting archived logs!"
+        return
+    fi
+    echo "#✔ Archived logs cleared!" && sleep 1
+}
+NUMLOCK() {
+    echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
+    APPNAME="   Lite Tweaks - Numlock"
+    # The loop
+    while (true); do 
+    # Get Numlock current status
+    grep -q "on" /etc/lightdm/lightdm.conf && echo $?
+
+    if [ $? = 0 ]; then val1=TRUE && val2=FALSE && status=Enabled
+        else val1=FALSE && val2=TRUE && status=Disabled
+    fi
+
+    # Enable/Disable NumLock
+    EDNL=$(zenity --width="330" --height=140 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="$APPNAME" \
+              --list --radiolist --text "   Numlock current status: <b>$status</b>\n\n   Change status:" \
+              --column "Select" --column "Option" --column "Description" \
+              $val1 "Enable" "(Enables Numlock at login)" \
+              $val2 "Disable" "(Disables Numlock at login)")
+
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
+
+    if [[ "$EDNL" =~ "Enable" ]]; then # Enable
+        sed -i "s/off/on/g" /etc/lightdm/lightdm.conf
+        continue
+    elif [[ "$EDNL" =~ "Disable" ]]; then # Disable
+        sed -i "s/on/off/g" /etc/lightdm/lightdm.conf
+    fi
+    done
+}
+PRELOAD() {
+    echo "#Getting Apps Preload status. Please wait..." && sleep 1 && echo "#Configuring Preload..."
+    APPNAME="   Lite Tweaks - Preload Apps"
+    SERVICE="preload"
+    # the loop
+    while (true); do 
+    # Is preload installed?
+    if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
+        # if not installed, then prompt user for installation
+        zenity --question --width="290" --height="80" --title="    $APPNAME" \
+               --text="\nPreload is currently not installed in your system.\n Would you like to install Preload now?"
+               answer=$?
+        # Check Internet access
+        if eval "sudo -u ${SUDO_USER:-$USER} curl -sk google.com" >> /dev/null 2>&1; then
+            : # pass
+            else # Prompt ERROR internet connection
+            (zenity --info --width="460" --height="80" --ok-label="Got it!" --title="Lite Tweaks - No Internet connection detected" \
+                    --text="\n<b>Your computer doesn't seem to be connected to the Internet</b> \n \nLite Tweaks will install Preload from your local cache if it's available. \
+            \nIf the package does not exist in your system cache, Preload installation will fail. \nYou can always check your Internet connection and try again at a later time.")               
+        fi
+                if [ "$answer" -eq "0" ]; then 
+                    echo "#Installing Preload. Please wait..." && sleep 1
+                    apt-get install preload -y # install preload
+                    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                        echo "#Error..." && sleep 1
+                        zenity --error --width="260" --height="80" --title="    Error" \
+                               --text="\nAn error occurred while installing Preload!"
+                        return
+                    else
+                        echo "#✔ Preload successfully installed!..." && sleep 1 
+                        continue
+                    fi
+                else # when user refuses installation, exit out Preload Apps Tweak
+                    exit 1 
+                fi
+    fi
+    # check if preload service is running and assign variables 
+    if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+        val1=TRUE && val2=FALSE && val3=FALSE && status="Running ✔"
+    else val1=FALSE && val2=TRUE && val3=FALSE && status="Stopped ✘"
+    fi
+
+    # Preload Status Main window
+    echo "#Configuring Preload..."
+    PRLOAD=$(zenity --width="360" --height=180 --cancel-label="Quit" --ok-label="Change Status" --hide-header --window-icon=$ic --title="   $APPNAME" \
+              --list --radiolist --text "   Preload Status: <b>$status</b>\n\n   Change status:" \
+              --column "Select" --column "Option" --column "Description" \
+              $val1 "Running" "(Preload is currently running)" \
+              $val2 "Stopped" "(Preload is currently stopped )" \
+              $val3 "Remove" "(Remove Preload)")
+
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        return
+    fi
+
+    if [[ $PRLOAD =~ Running ]]; then # Start
+            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+                echo "#Service is already running..." && sleep 1
+                continue
+            else
+                echo "#Starting Preload..." && sleep 1
+                service preload start
+                echo "#✔ Preload has been started!" && sleep 1
+                continue
+            fi
+    elif [[ $PRLOAD =~ Stopped ]]; then # Stop
+            if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
+                echo "#Stopping Preload..." && sleep 1
+                service preload stop
+                echo "#✔ Preload has been stopped!" && sleep 1
+            else
+                echo "#Service is not running..." && sleep 1
+                continue
+            fi
+    elif [[ $PRLOAD =~ Remove ]]; then # Remove Preload
+        echo "#Removing Preload. Please wait..."
+        service preload stop && apt-get remove preload -y
+            if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                echo "#Error..." && sleep 1
+                zenity --error --width="260" --height="80" --title="    Error" \
+                       --text="\nAn error occurred while removing Preload!"
+                return
+            else
+                echo "#✔ Preload successfully removed!" && sleep 1
+                return
+            fi
+    fi
+    done
+}
+RCONFIG() {
+    echo "#Removing residual configuration files..."
+    dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'` 
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "#Error..."
+        sleep 1
+        zenity --error --width="260" --height="80" --title="    Error" \
+               --text="\nAn error occurred while removing residual configuration files!"
+        return
+    fi
+    echo "#✔ Residual configuration files cleared!" && sleep 1
+}
+REMOVE() {
+    echo "#Removing unneeded packages, please wait..."
+    apt-get autoclean -y && apt-get autoremove -y
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+        echo "# Error..."
+        sleep 1
+        zenity --error --width="260" --height="80" --title="    Error"
+               --text="\nAn error occurred while removing unneeded packages!"
+        return
+    fi
+    echo "#✔ Unneeded packages cleared!" && sleep 1
+}
+## Arrays execution
+x=0
+for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
 
     TOTAL_LINES=$x
 
