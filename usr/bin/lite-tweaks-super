@@ -330,7 +330,7 @@ FILES() {
     echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
     echo "#Finding Large Files..."
 
-# Main window dialogue
+# Main dialog window
 INSTALLER_TITLE="Find and list all files in your system based on specified size ranges
 \nPlease note:\n
 <b>•</b>  This is not a file removal tool. It is provided for informational purposes only.
@@ -347,7 +347,6 @@ Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 
     while (true); do echo "#Finding Large Files..." # Start scan loop
     if [ "$?" -eq "0" ]; then
-    
     
     # Set the file size range
     scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25)
@@ -422,7 +421,7 @@ KERNELS() {
     # sed command adds all FALSE entries in the column 'Select'
     zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
 
-# Main window dialogue
+# Main dialog window
 DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
 \n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
 <b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
@@ -433,26 +432,22 @@ DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish 
     # Call the dialog. Don't change the separator here!
     okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
     --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" ) 
-
-    # If cancel is clicked then exit
-    if [ "${PIPESTATUS[0]}" -ne "0" ]; then 
+    
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then # If cancel is clicked then exit
         return
     fi
-
     # Check if anything is selected
     echo $okernel | grep linux*
     if [ "${PIPESTATUS[1]}" -ne "0" ]; then
         zenity --info --width="260" --height="60" --window-icon="$ic" --title=" $APPNAME" --text="\nNo kernel header and image were selected for removal. Try again."
         continue
     fi
-
     # Split kernel selection
     selection_array=($okernel)
     KN_NAMES=""
     for ((i=0; i<${#selection_array[@]}; ++i)); do
         KN_NAMES=$KN_NAMES"✔ "${selection_array[$i]}"\n"
     done
-
     # Confirm kernel selection removal 
     zenity --question --window-icon="$ic" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?"
     if [ "$?" -eq "0" ]; then
@@ -678,7 +673,7 @@ FIXAPT() {
         do
             $line     # Execute functions one by one
             if [ $? = 1 ]; then
-                zenity --info --title=" Lite Tweak" --text="Error:\n${line}"
+                zenity --info --title=" Lite Tweaks" --text="Error:\n${line}"
             fi    
         let i++
          (( PERCENTAGE = 100 \* ${i} / ${TOTAL_LINES} ))
@@ -689,7 +684,7 @@ FIXAPT() {
             sleep 1
         fi
     
-    done| zenity --progress  --title="Lite Tweaks" --auto-kill --auto-close --width=300 --no-cancel
+    done| zenity --progress --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close --width=320
 
 unset ARAYC
 unset FRM
