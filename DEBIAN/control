@@ -1,0 +1,12 @@
+Package: lite-tweaks
+Version: 2.0-0150-linuxlite
+Essential: no
+Section: base
+Priority: optional
+Installed-Size: 53
+Depends: apt, zenity, gksu
+Homepage: http://www.linuxliteos.com
+Maintainer: Jerry Bezencon<valtam@linuxliteos.com>, Ralphy<postmaster@unlockforus.com>
+Architecture: all
+Description: Lite Tweaks
+ A collection of tools to tweak and clean your Linux Lite system.
