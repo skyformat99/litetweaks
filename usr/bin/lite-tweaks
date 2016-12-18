@@ -125,7 +125,7 @@ hash firefox 2>/dev/null
 
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
-            firefox=("TRUE" "Firefox" "default" "Firefox is currently your default web browser" )
+            firefox=("TRUE" "Firefox" "✔ default" "Firefox is set as the default web browser" )
     else
         firefox=("FALSE" "Firefox" "not default" "Set firefox as the default web browser" )
     fi
@@ -136,7 +136,7 @@ fi
 hash google-chrome 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=google-chrome.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
-        googlechrome=("TRUE" "Google Chrome" "default" "Google Chrome is currently your default web browser" )
+        googlechrome=("TRUE" "Google Chrome" "✔ default" "Google Chrome is set as the default web browser" )
     else
         googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default web browser" )
     fi
@@ -147,7 +147,7 @@ fi
 hash chromium-browser 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
-        chromium=("TRUE" "Chromium" "default" "Chromium is currently your default web browser" )
+        chromium=("TRUE" "Chromium" "✔ default" "Chromium is set as the default web browser" )
     else
         chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default web browser" )
     fi
@@ -158,7 +158,7 @@ fi
 hash vivaldi 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
-        vivaldi=("TRUE" "Vivaldi" "default" "Vivaldi is currently your default web browser" )
+        vivaldi=("TRUE" "Vivaldi" "✔ default" "Vivaldi is set as the default web browser" )
     else
         vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default web browser" )
     fi
@@ -169,7 +169,7 @@ fi
 hash midori 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=midori.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
-        midori=("TRUE" "Midori" "default" "Midori is currently your default web browser" )
+        midori=("TRUE" "Midori" "✔ default" "Midori is set as the default web browser" )
     else
         midori=("FALSE" "Midori" "not default" "Set Midori as the default web browser" )
     fi
@@ -177,7 +177,7 @@ else
     midori=()
 fi
 
-        selection=$(zenity --window-icon="$ic" --list --radiolist --width=540 --height=200 --column="Select" --column="Name" --column="Status" \
+        selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
         "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${vivaldi[@]}" "${midori[@]}"  )
         
@@ -386,23 +386,20 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             sleep 1
         fi
     
-    done| zenity --progress --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close --width=320
+    done| zenity --progress --width=320 --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close
 fi
 
 # Check if ARRAYB is empty. If empty, skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
-# Check administrative privileges
-   zenity --question --width=420 --height=60 --window-icon=$ic --icon-name=info --ok-label="Continue" --cancel-label="Cancel" \
-      --title=" Lite Tweaks - Are you Administrator?" \
-      --text="\n<b>Some tasks require administrative privileges for execution</b>   \nYou will be prompted for your password next. \n \nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." --no-wrap
    case $? in
-    0)
-  gksudo  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open lite-tweaks-super with superuser privileges and pass the array B
-  ;;
-    # Abort dialog
-  1) zenity --info --width=300 --height=60 --window-icon=$ic --timeout=5 --title=" Lite Tweaks - Aborted" \
-      --text="\nSelected tasks requiring administrative privileges have been aborted."
-    return
+    0) gksu -m '
+<b>   Lite Tweaks requires Administrative privileges</b>
+
+Some of the selected tasks require Administrative privileges for execution.
+
+ Please enter your password to continue.'  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open lite-tweaks-super with superuser privileges and pass the array B
+    ;;
+    1) return
   esac
 fi
 }
