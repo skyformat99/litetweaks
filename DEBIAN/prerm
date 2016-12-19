@@ -1,8 +1,0 @@
-#!/bin/sh
-if [ "$1" = "remove" ]; then
-	rm -f /usr/bin/lite-tweaks
-	rm -f /usr/bin/lite-tweaks-super
-	rm -f /usr/share/applications/lite-tweaks.desktop
-	rm -f /usr/share/pixmaps/litetweaks.png
-	[ -e /usr/share/applications/litecleaner.desktop ] && rm -f /usr/share/applications/litecleaner.desktop
-fi
