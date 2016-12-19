@@ -118,7 +118,7 @@ fi
 
 test_1=(` grep "application/xhtml+xml" $mimeapps`)
 test_2=(` grep "text/html" $mimeapps`)
-test_3=(`grep "x-scheme-handler/http" $mimeapps`)
+test_3=(` grep "x-scheme-handler/http" $mimeapps`)
 test_4=(` grep "x-scheme-handler/https" $mimeapps`)
 
 hash firefox 2>/dev/null
