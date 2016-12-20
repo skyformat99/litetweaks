@@ -2,6 +2,5 @@
 set -e
 chown root:root /usr/bin/lite-tweaks
 chown root:root /usr/bin/lite-tweaks-super
-chown root:root /usr/share/applications/lite-tweaks.desktop
+chown root:root /usr/share/applications/litecleaner.desktop
 chown root:root /usr/share/pixmaps/litetweaks.png
-[ -e /usr/share/applications/litecleaner.desktop ] && rm -f /usr/share/applications/litecleaner.desktop
