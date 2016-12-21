@@ -441,7 +441,7 @@ CHECK() {
 # Check if the google-chrome browser cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
     GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
-    chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome cache" )
+    chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome browser cache" )
     else
         chrome=() 
 fi
@@ -449,7 +449,7 @@ fi
 # Check if the chromium browser cache exists
 if [  -d  "$HOME/.cache/chromium/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/chromium/ | awk '{print $1}' | sed 's/$/B/')
-    chromium=("FALSE" "Chromium Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium cache" )
+    chromium=("FALSE" "Chromium Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium browser cache" )
 else
          chromium=() # Main zenity dialogue window
 fi
@@ -457,7 +457,7 @@ fi
 # Check if firefox browser cache exists
 if [  -d  "$HOME/.cache/mozilla/" ];then
     FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
-    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
+    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox browser cache" )
 else
         firefox=()
 fi
@@ -473,7 +473,7 @@ fi
 # Check if  midori browser cache exists
 if [  -d  "$HOME/.cache/midori/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/midori/ | awk '{print $1}' | sed 's/$/B/')
-    midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori cache" )
+    midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori browser cache" )
 else
          midori=()
 fi
@@ -481,7 +481,7 @@ fi
 # Check if  Pale Moon browser cache exists
 if [  -d  "$HOME/.cache/moonchild productions/pale moon/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/moonchild\ productions/pale\ moon/ | awk '{print $1}' | sed 's/$/B/')
-    palemoon=("FALSE" "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Pale Moon cache" )
+    palemoon=("FALSE" "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Pale Moon browser cache" )
 else
          palemoon=()
 fi
@@ -528,7 +528,7 @@ fi
 # Check if  vivaldi-stable browser cache exists
 if [  -d  "$HOME/.cache/vivaldi/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
-    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi cache" )
+    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi browser cache" )
 else
          vivaldi=()
 fi
