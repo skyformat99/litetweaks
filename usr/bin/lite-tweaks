@@ -9,59 +9,70 @@
 # Set functions for non-root execution
 # The ones that need administrative privileges go to the other file: lite-tweaks-super
 CHROME() {
-    echo "#Removing Google Chrome cache..." && sleep 1
-        rm -rf $HOME/.cache/google-chrome/ 
+    echo "#Removing Google Chrome browser cache..." && sleep 1
+        rm -rf $HOME/.cache/google-chrome/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome browser cache!"
           return
         fi
-        echo "#✔ Google Chrome cache cleared!" && sleep 1
+        echo "#✔ Google Chrome browser cache cleared!" && sleep 1
 }
 CHROMIUM() {
-    echo "#Removing Chromium cache..." && sleep 1
-        rm -rf $HOME/.cache/chromium/ 
+    echo "#Removing Chromium browser cache..." && sleep 1
+        rm -rf $HOME/.cache/chromium/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium browser cache!"
           return
         fi
-        echo "#✔ Chromium cache cleared!" && sleep 1
+        echo "#✔ Chromium browser cache cleared!" && sleep 1
 }
 FIREFOX() {
-    echo "#Removing Firefox cache..." && sleep 1
+    echo "#Removing Firefox browser cache..." && sleep 1
         rm -rf $HOME/.cache/mozilla/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox browser cache!"
           return
         fi
-        echo "#✔ Firefox cache cleared!" && sleep 1
+        echo "#✔ Firefox browser cache cleared!" && sleep 1
 }
 MIDORI() {
-    echo "#Removing Midori cache..." && sleep 1
-        rm -rf $HOME/.cache/midori/ 
+    echo "#Removing Midori browser cache..." && sleep 1
+        rm -rf $HOME/.cache/midori/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori browser cache!"
           return
         fi
-        echo "#✔ Midori cache cleared!" && sleep 1
+        echo "#✔ Midori browser cache cleared!" && sleep 1
+}
+PALEMOON() {
+    echo "#Removing Pale Moon browser cache..." && sleep 1
+        rm -rf $HOME/.cache/moonchild\ productions/pale\ moon/
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Pale Moon browser cache!"
+          return
+        fi
+        echo "#✔ Pale Moon browser cache cleared!" && sleep 1
 }
 VIVALDI() {
-    echo "#Removing Vivaldi cache..." && sleep 1
+    echo "#Removing Vivaldi browser cache..." && sleep 1
         rm -rf $HOME/.cache/vivaldi/ 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi cache!"
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi browser cache!"
           return
         fi
-        echo "#✔ Vivaldi cache cleared!" && sleep 1
+        echo "#✔ Vivaldi browser cache cleared!" && sleep 1
 }
 THUMBNAILS() {
     echo "#Deleting Thumbnail Cache..." && sleep 1
@@ -125,9 +136,9 @@ hash firefox 2>/dev/null
 
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
-            firefox=("TRUE" "Firefox" "✔ default" "Firefox is set as the default web browser" )
+            firefox=("TRUE" "Firefox" "✔ default" "Firefox is set as the default Web browser" )
     else
-        firefox=("FALSE" "Firefox" "not default" "Set firefox as the default web browser" )
+        firefox=("FALSE" "Firefox" "not default" "Set firefox as the default Web browser" )
     fi
 else 
     firefox=()
@@ -136,9 +147,9 @@ fi
 hash google-chrome 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=google-chrome.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
-        googlechrome=("TRUE" "Google Chrome" "✔ default" "Google Chrome is set as the default web browser" )
+        googlechrome=("TRUE" "Google Chrome" "✔ default" "Google Chrome is set as the default Web browser" )
     else
-        googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default web browser" )
+        googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default Web browser" )
     fi
 else
     googlechrome=()
@@ -147,39 +158,50 @@ fi
 hash chromium-browser 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
-        chromium=("TRUE" "Chromium" "✔ default" "Chromium is set as the default web browser" )
+        chromium=("TRUE" "Chromium" "✔ default" "Chromium is set as the default Web browser" )
     else
-        chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default web browser" )
+        chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default Web browser" )
     fi
 else
     chromium=()
 fi
 
-hash vivaldi 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
-        vivaldi=("TRUE" "Vivaldi" "✔ default" "Vivaldi is set as the default web browser" )
-    else
-        vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default web browser" )
-    fi
-else
-    vivaldi=()
-fi
-
 hash midori 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=midori.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
-        midori=("TRUE" "Midori" "✔ default" "Midori is set as the default web browser" )
+        midori=("TRUE" "Midori" "✔ default" "Midori is set as the default Web browser" )
     else
-        midori=("FALSE" "Midori" "not default" "Set Midori as the default web browser" )
+        midori=("FALSE" "Midori" "not default" "Set Midori as the default Web browser" )
     fi
 else
     midori=()
 fi
 
+hash palemoon 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=palemoon.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=palemoon.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=palemoon.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=palemoon.desktop;firefox.desktop;" ]; then
+        palemoon=("TRUE" "Pale Moon" "✔ default" "Pale Moon is set as the default Web browser" )
+    else
+        palemoon=("FALSE" "Pale Moon" "not default" "Set Pale Moon as the default Web browser" )
+    fi
+else
+    palemoon=()
+fi
+
+hash vivaldi 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
+        vivaldi=("TRUE" "Vivaldi" "✔ default" "Vivaldi is set as the default Web browser" )
+    else
+        vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default Web browser" )
+    fi
+else
+    vivaldi=()
+fi
+
         selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
-        "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${vivaldi[@]}" "${midori[@]}"  )
+        "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
         
         # "The kill switch"
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -199,14 +221,18 @@ fi
         `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
-    "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
     "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Pale Moon") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_2[0]}"!text/html=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=palemoon.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
     esac
 echo "#✔ $selection is now the default browser!" && sleep 1
 unset mimeapps
@@ -275,6 +301,11 @@ fi
 echo $selection | grep "Midori" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('MIDORI')
+fi
+
+echo $selection | grep "Pale Moon" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('PALEMOON')
 fi
 
 echo $selection | grep "Thumbnail Cache" > /dev/null
@@ -406,7 +437,7 @@ fi
 
 CHECK() { 
 # Execute checks - organized following Main zenity dialog window order
-# Check if the google-chrome cache exists
+# Check if the google-chrome browser cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
     GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
     chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome cache" )
@@ -414,7 +445,7 @@ if [ -d  "$HOME/.cache/google-chrome/" ]; then
         chrome=() 
 fi
 
-# Check if the chromium cache exists
+# Check if the chromium browser cache exists
 if [  -d  "$HOME/.cache/chromium/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/chromium/ | awk '{print $1}' | sed 's/$/B/')
     chromium=("FALSE" "Chromium Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium cache" )
@@ -422,7 +453,7 @@ else
          chromium=() # Main zenity dialogue window
 fi
 
-# Check if firefox cache exists
+# Check if firefox browser cache exists
 if [  -d  "$HOME/.cache/mozilla/" ];then
     FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
     firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox cache" )
@@ -438,12 +469,20 @@ else
     logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
 fi
 
-# Check if  midori cache exists
+# Check if  midori browser cache exists
 if [  -d  "$HOME/.cache/midori/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/midori/ | awk '{print $1}' | sed 's/$/B/')
     midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori cache" )
 else
          midori=()
+fi
+
+# Check if  Pale Moon browser cache exists
+if [  -d  "$HOME/.cache/moonchild productions/pale moon/" ]; then
+    CHRCACHESIZE=$(du -sh $HOME/.cache/moonchild\ productions/pale\ moon/ | awk '{print $1}' | sed 's/$/B/')
+    palemoon=("FALSE" "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Pale Moon cache" )
+else
+         palemoon=()
 fi
 
 # Check package cache exists
@@ -485,7 +524,7 @@ else
         trash=() 
 fi
 
-# Check if  vivaldi-stable cache exists
+# Check if  vivaldi-stable browser cache exists
 if [  -d  "$HOME/.cache/vivaldi/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
     vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi cache" )
@@ -526,6 +565,7 @@ FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your 
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
 "${aptcache[@]}" \
 FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package management system to default" \
+"${palemoon[@]}" \
 "${preload[@]}" \
 "${resconfig[@]}" \
 "${thumbn[@]}" \
