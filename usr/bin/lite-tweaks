@@ -200,7 +200,8 @@ else
 fi
 
         selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
-        --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
+        --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
+        --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
         "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
         
         # "The kill switch"
@@ -554,7 +555,7 @@ FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Li
 "${chrome[@]}" \
 "${chromium[@]}" \
 FALSE "Clear Memory" "Performance" "System" "Safe" "Free up memory from your system" \
-FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default web browser" \
+FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change your computer hostname (you MUST reboot after)" \
