@@ -240,8 +240,8 @@ unset mimeapps
 }
 DU() {
 while (true); do
-DU_TEXT="<b>•</b>  Double click on any <b>Partition</b> to open in the file manager.
-<b>•</b>  Click on any Column to sort the information.\n"
+DU_TEXT='<span font="Sans 10"><b>•</b>  Double click a Partition to open in file manager.
+<b>•</b>  Click columns header to sort the information.\n</span>'
 DU_TITLE="Disk Usage"
 TMP_DU=$(mktemp /tmp/diskusage.XXXXX)
 
