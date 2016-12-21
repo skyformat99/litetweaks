@@ -558,7 +558,7 @@ FALSE "Clear Memory" "Performance" "System" "Safe" "Free up memory from your sys
 FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
-FALSE "Hostname" "Edit" "System" "Caution" "Change your computer hostname (you MUST reboot after)" \
+FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you MUST reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
