@@ -201,7 +201,7 @@ fi
 
         selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text="Select the web browser you wish to set as default." --title="Choose default browser" --ok-label="Set" --cancel-label="Cancel" \
-        "${firefox[@]}" "${googlechrome[@]}" "${chromium[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
+        "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
         
         # "The kill switch"
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -213,14 +213,14 @@ fi
         `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;;
-    "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
     "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
+    "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
     "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
