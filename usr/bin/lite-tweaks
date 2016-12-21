@@ -549,7 +549,7 @@ CHECK        # first run the checks
 # Main zenity dialog window
 selection=$(zenity --list --checklist --width=880 --height=580 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
---text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' \
+--text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header.\n\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n  <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files.\n\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove programs' unneeded packages that are no longer installed" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
