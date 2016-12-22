@@ -240,8 +240,8 @@ unset mimeapps
 }
 DU() {
 while (true); do
-DU_TEXT="<b>•</b>  Double click on any <b>Partition</b> to open in the file manager.
-<b>•</b>  Click on any Column to sort the information.\n"
+DU_TEXT='<span font="Sans 10"><b>•</b>  Double click a Partition to open in file manager.
+<b>•</b>  Click columns header to sort the information.\n</span>'
 DU_TITLE="Disk Usage"
 TMP_DU=$(mktemp /tmp/diskusage.XXXXX)
 
@@ -549,16 +549,16 @@ CHECK        # first run the checks
 # Main zenity dialog window
 selection=$(zenity --list --checklist --width=880 --height=580 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
---text='Select the task you wish to perform, then click the Begin button. Sort Categories by clicking on the column headers.\n\nThere are 2 levels of <b>Status</b>:\n<span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n<span foreground="red">Caution</span> - Proceed with caution, involves altering system files.\n\nYou can select multiple tasks for execution (your password will be required for some tasks).' \
-FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages installed for programs that are no longer present" \
+--text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header.\n\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n  <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files.\n\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
+FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove programs' unneeded packages that are no longer installed" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
-FALSE "Clear Memory" "Performance" "System" "Safe" "Free up memory from your system" \
+FALSE "Clear Memory" "Performance" "System" "Safe" "Free up RAM memory on your system" \
 FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
-FALSE "Hostname" "Edit" "System" "Caution" "Change your computer hostname (you MUST reboot after)" \
+FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you MUST reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
