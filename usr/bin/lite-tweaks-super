@@ -93,12 +93,12 @@ CLEAN() {
                --text="\nAn error occurred while cleaning the package cache!"
         return
     fi
-    echo "#✔ Package cache cleared!" && sleep 1
+    echo "#✔ Package cache cleared" && sleep 1
 }
 CLEARMEM() {
     echo "#Freeing up system memory, please wait..." && sleep 1
     sh -c 'echo 3 >/proc/sys/vm/drop_caches'
-    echo "#✔ System memory freed!" && sleep 1
+    echo "#✔ System memory freed" && sleep 1
 }
 FILES() {
     echo "#Getting ready..." && sleep 1 # prevent dialog overlapping 
@@ -194,7 +194,7 @@ FIXAPT() {
                     echo "#Error"
                     sleep 1
                     zenity --error --width=320 --height=80 --title="     Lite Tweaks - Error" \
-               --text="\nThere was an error while fetching package lists! \n \nCheck your system log for more details."
+               --text="\nThere was an error while fetching package lists. \n \nCheck your system log for more details."
                     break
             fi
     # Stage 2
@@ -363,7 +363,7 @@ sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION
                --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"
         return
     fi
-echo "#✔ Bootup fix successfully completed!" && sleep 1
+echo "#✔ Bootup fix successfully completed" && sleep 1
 }
 HNAME() {
     current_hostname=$(cat /etc/hostname)
@@ -384,13 +384,13 @@ HNAME() {
     echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
     if [ $? = 0 ]; then
         zenity --warning --width="340" --height="60" --ok-label="Got it!" \
-        --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed!"
+        --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed"
         continue
 
     # If old hostname and new hostname are the same, warn and loop
     elif [ $newhost = $current_hostname ]; then
          zenity --info --width="340" --height="60" --ok-label="Got it!" \
-                --title=" Hostname not changed" --text="\nThe Hostname did not change... nothing to do here!"
+                --title=" Hostname not changed" --text="\nThe Hostname did not change... nothing to do here"
         continue
 
     else
@@ -510,7 +510,7 @@ LARCHIVES() {
                --text="\nAn error occurred while deleting archived logs!"
         return
     fi
-    echo "#✔ Archived logs cleared!" && sleep 1
+    echo "#✔ Archived logs cleared" && sleep 1
 }
 NUMLOCK() {
     echo "#Getting Numlock status..." && sleep 1 && echo "#Configuring Numlock..."
@@ -572,7 +572,7 @@ PRELOAD() {
                                --text="\nAn error occurred while installing Preload!"
                         return
                     else
-                        echo "#✔ Preload successfully installed!..." && sleep 1 
+                        echo "#✔ Preload successfully installed..." && sleep 1 
                         continue
                     fi
                 else # when user refuses installation, exit out Preload Apps Tweak
@@ -605,14 +605,14 @@ PRELOAD() {
             else
                 echo "#Starting Preload..." && sleep 1
                 service preload start
-                echo "#✔ Preload has been started!" && sleep 1
+                echo "#✔ Preload has been started" && sleep 1
                 continue
             fi
     elif [[ $PRLOAD =~ Stopped ]]; then # Stop
             if ps ax | grep -v grep | grep $SERVICE > /dev/null; then
                 echo "#Stopping Preload..." && sleep 1
                 service preload stop
-                echo "#✔ Preload has been stopped!" && sleep 1
+                echo "#✔ Preload has been stopped" && sleep 1
             else
                 echo "#Service is not running..." && sleep 1
                 continue
@@ -626,7 +626,7 @@ PRELOAD() {
                        --text="\nAn error occurred while removing Preload!"
                 return
             else
-                echo "#✔ Preload successfully removed!" && sleep 1
+                echo "#✔ Preload successfully removed" && sleep 1
                 return
             fi
     fi
@@ -642,7 +642,7 @@ RCONFIG() {
                --text="\nAn error occurred while removing residual configuration files!"
         return
     fi
-    echo "#✔ Residual configuration files cleared!" && sleep 1
+    echo "#✔ Residual configuration files cleared" && sleep 1
 }
 REMOVE() {
     echo "#Removing unneeded packages, please wait..."
@@ -654,7 +654,7 @@ REMOVE() {
                --text="\nAn error occurred while removing unneeded packages!"
         return
     fi
-    echo "#✔ Unneeded packages cleared!" && sleep 1
+    echo "#✔ Unneeded packages cleared" && sleep 1
 }
 ## Arrays execution
 x=0

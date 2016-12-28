@@ -17,7 +17,7 @@ CHROME() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome browser cache!"
           return
         fi
-        echo "#✔ Google Chrome browser cache cleared!" && sleep 1
+        echo "#✔ Google Chrome browser cache cleared" && sleep 1
 }
 CHROMIUM() {
     echo "#Removing Chromium browser cache..." && sleep 1
@@ -28,7 +28,7 @@ CHROMIUM() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium browser cache!"
           return
         fi
-        echo "#✔ Chromium browser cache cleared!" && sleep 1
+        echo "#✔ Chromium browser cache cleared" && sleep 1
 }
 FIREFOX() {
     echo "#Removing Firefox browser cache..." && sleep 1
@@ -39,7 +39,7 @@ FIREFOX() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox browser cache!"
           return
         fi
-        echo "#✔ Firefox browser cache cleared!" && sleep 1
+        echo "#✔ Firefox browser cache cleared" && sleep 1
 }
 MIDORI() {
     echo "#Removing Midori browser cache..." && sleep 1
@@ -50,7 +50,7 @@ MIDORI() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori browser cache!"
           return
         fi
-        echo "#✔ Midori browser cache cleared!" && sleep 1
+        echo "#✔ Midori browser cache cleared" && sleep 1
 }
 PALEMOON() {
     echo "#Removing Pale Moon browser cache..." && sleep 1
@@ -61,7 +61,7 @@ PALEMOON() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Pale Moon browser cache!"
           return
         fi
-        echo "#✔ Pale Moon browser cache cleared!" && sleep 1
+        echo "#✔ Pale Moon browser cache cleared" && sleep 1
 }
 VIVALDI() {
     echo "#Removing Vivaldi browser cache..." && sleep 1
@@ -72,7 +72,7 @@ VIVALDI() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi browser cache!"
           return
         fi
-        echo "#✔ Vivaldi browser cache cleared!" && sleep 1
+        echo "#✔ Vivaldi browser cache cleared" && sleep 1
 }
 THUMBNAILS() {
     echo "#Deleting Thumbnail Cache..." && sleep 1
@@ -83,7 +83,7 @@ THUMBNAILS() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!"
           return
         fi
-        echo "#✔ Thumbnail Cache cleared!" && sleep 1
+        echo "#✔ Thumbnail Cache cleared" && sleep 1
 }
 TRASH() {
     echo "#Emptying the Trash bin..." && sleep 1
@@ -94,7 +94,7 @@ TRASH() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
           return
         fi
-        echo "#✔ Trash bin emptied!" && sleep 1
+        echo "#✔ Trash bin emptied" && sleep 1
 }
 WHISKER() {
     echo "#Cleaning Whisker Menu Recent items..." && sleep 1
@@ -105,7 +105,7 @@ WHISKER() {
           zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!"
           return
         fi
-        echo "#✔ Whisker Menu Recent items cleared!" && sleep 1
+        echo "#✔ Whisker Menu Recent items cleared" && sleep 1
 
     echo "#Restarting the panel..."
     dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
@@ -550,7 +550,7 @@ CHECK        # first run the checks
 selection=$(zenity --list --checklist --width=880 --height=580 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
 --text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header.\n\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n  <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files.\n\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
-FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove programs' unneeded packages that are no longer installed" \
+FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages that are no longer installed" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
@@ -558,7 +558,7 @@ FALSE "Clear Memory" "Performance" "System" "Safe" "Free up RAM memory on your s
 FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
-FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you MUST reboot afterwards)" \
+FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
@@ -582,7 +582,7 @@ fi
 # Check if anything is selected
 echo $selection | grep '[a-zA-Z0-9]'
 if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --width="260" --height="80" --title=' Lite Tweaks' --text='\n<b>No tasks were selected</b>.\nNothing for me to do :) Try again! '
+    zenity --info --width="260" --height="80" --title=' Lite Tweaks' --text='\n<b>No tasks were selected</b>.\nNothing for me to do. Try again. '
     return
 fi
 
