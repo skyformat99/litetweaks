@@ -399,6 +399,7 @@ fi
 
 RUN() {
 # Check if ARRAYA is empty. If empty, skip the execution
+run_icon=/usr/share/icons/Faenza/actions/32/system-run.png
 if [ ${#ARRAYA[@]} -ne 0 ]; then
 
     x=0
@@ -423,7 +424,7 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             sleep 1
         fi
     
-    done| zenity --progress --width=320 --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close
+    done| zenity --progress --width=320 --window-icon="$run_icon" --pulsate --no-cancel --title="  Lite Tweaks" --auto-kill --auto-close
 fi
 
 # Check if ARRAYB is empty. If empty, skip the execution
