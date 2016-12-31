@@ -378,8 +378,8 @@ HNAME() {
 
     while (true); do
 
-    newhost=$(zenity --entry --width="280" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
-                     --text="Your computer's current hostname is:  ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) \nbelow and click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
+    newhost=$(zenity --entry --width="350" --window-icon=$ic --ok-label="Change" --title=" Change Hostname" \
+                     --text="Your computer's current hostname is: ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) below \nand click 'Change' to proceed. \n \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
         return
