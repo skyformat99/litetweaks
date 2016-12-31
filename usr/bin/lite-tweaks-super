@@ -518,7 +518,7 @@ LARCHIVES() {
     echo "#✔ Archived logs cleared" && sleep 1
 }
 NUMLOCK() {
-    echo "#Getting Numlock status..." && sleep 1 
+    echo "#Getting Numlock status..." && sleep 1
     APPNAME="   Lite Tweaks - Numlock"
     LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
     # The loop
@@ -539,9 +539,9 @@ NUMLOCK() {
         fi
 
     # Enable/Disable NumLock
-    EDNL=$(zenity --width="350" --height=180 --cancel-label="Quit" --ok-label="Apply" --window-icon=$ic --title="$APPNAME" \
-              --list --imagelist --print-column=2 --text='         <span font="Sans Bold 10">Enable or Disable Numlock at login</span>\n' \
-              --column "  " --column "Numlock" --column "Description" \
+    EDNL=$(zenity --list --imagelist --width="350" --height="180" --cancel-label="Quit" --ok-label="Apply" --window-icon=$ic \
+              --title="$APPNAME" --text='         <span font="Sans Bold 10">Enable or Disable Numlock at login</span>\n' \
+              --print-column=2 --column "  " --column "Numlock" --column "Description" \
               $appicon1 "Enable" "Enables Numlock at login" \
               $appicon2 "Disable" "Disables Numlock at login")
 
@@ -552,7 +552,7 @@ NUMLOCK() {
     if [[ "$EDNL" =~ "Enable" ]]; then
         if grep -q "numlockx on" /etc/lightdm/lightdm.conf; then
             zenity --info --width="300" --height="60" --timeout=3 --height="60" --ok-label="Got it!" \
-                --title=" Numlock" --text="\nNumlock at login is already enabled. No changes needed."
+                   --title=" Numlock" --text="\nNumlock at login is already enabled. No changes needed."
         else
             sed -i "s/numlockx off/numlockx on/g" /etc/lightdm/lightdm.conf && echo "#✔ Enabling Numlock at login..." && sleep .5
         fi
@@ -560,7 +560,7 @@ NUMLOCK() {
     elif [[ "$EDNL" =~ "Disable" ]]; then
         if grep -q "numlockx off" /etc/lightdm/lightdm.conf; then
             zenity --info --width="300" --height="60" --timeout=3 --height="60" --ok-label="Got it!" \
-                --title=" Numlock" --text="\nNumlock at login is already disabled. No changes needed."
+                   --title=" Numlock" --text="\nNumlock at login is already disabled. No changes needed."
         else
             sed -i "s/numlockx on/numlockx off/g" /etc/lightdm/lightdm.conf && echo "#✔ Disabling Numlock at login..." && sleep .5
         fi
