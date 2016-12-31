@@ -74,6 +74,11 @@ if [ $? = 0 ];then
 ARRAYC+=('RCONFIG')
 fi
 
+echo $FRM | grep "SAVESESSION" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('SAVESESSION')
+fi
+
 echo $FRM | grep "AUTOREMOVE" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('REMOVE')
@@ -656,6 +661,96 @@ REMOVE() {
     fi
     echo "#✔ Unneeded packages cleared" && sleep 1
 }
+SAVESESSION() {
+    echo "#Manage Save Session..." && sleep 1
+    kiosk_dir=/etc/xdg/xfce4/kiosk
+    kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
+    APPNAME="Manage Save Session"
+    LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
+    ic="/usr/share/pixmaps/litetweaks.png"
+
+    if [ -d $kiosk_dir ]; then
+    # check whether kioskrc and its settings exist
+        if [ -f $kioskrc ]; then
+            grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
+            grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
+            grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
+            grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=NONE' >> $kioskrc
+            grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=NONE' >> $kioskrc
+            grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
+            grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
+            grep -q -F 'Shutdown' $kioskrc || echo 'Shutdown=ALL' >> $kioskrc
+            grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
+            grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
+        else # if kioskrc and its settings don't exist, create defaults
+            (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+            printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=NONE
+CustomizeChooser=NONE\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+Shutdown=ALL\nCustomizeSecurity=NONE\nSaveSession=ALL\n" >> $kioskrc
+        fi
+    else
+        mkdir $kiosk_dir
+        (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=NONE
+CustomizeChooser=NONE\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+Shutdown=ALL\nCustomizeSecurity=NONE\nSaveSession=ALL\n" >> $kioskrc
+    fi
+# main loop
+while (true); do
+    echo "#Manage Save Session..."
+    grep -q "SaveSession=ALL" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+    appicon1=$LITEAPPSICONS/appicon1-on.png
+    else
+        appicon1=$LITEAPPSICONS/appicon1-off.png
+    fi
+grep -q "SaveSession=NONE" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+    appicon3=$LITEAPPSICONS/appicon3-on.png
+    else
+        appicon3=$LITEAPPSICONS/appicon3-off.png
+    fi
+grep -q "SaveSession=%sudo" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+            appicon2=$LITEAPPSICONS/appicon2-on.png
+        else
+            appicon2=$LITEAPPSICONS/appicon2-off.png
+    fi
+# main dialog
+answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="480" --height="215" \
+                --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
+                --text='                <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
+        --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
+        $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
+        $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
+        $appicon3 "10" "Disable for all users" "Disables Save Session for all users")
+# exit on Quit or X
+if [ "$?" -eq "1" ]; then
+    exit 0
+fi
+# prompt when no option is selected
+if [[ $answ -eq "0" ]]; then
+    zenity  --info --window-icon="$ic" --title=" $APPNAME" --text="\nYou did not select an option. Please try again."
+    continue
+fi 
+# disables Save Session for all users
+if [[ $answ -eq "10" ]]; then
+    sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
+    echo '#  Disabling Save Session for all users...' && sleep 1 && echo "#✔ Disabling Save Session for all users..." && sleep .5
+# enable Save Session for admins only
+elif [[ $answ -eq "20" ]]; then
+    sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
+    echo '#  Enabling Save Session for admins only...' && sleep 1 && echo "#✔ Enabling Save Session for admins only..." && sleep .5
+# enable Save Session for all users
+elif [[ $answ -eq "30" ]]; then
+    sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
+    echo '#  Enabling Save Session for all users...' && sleep 1 && echo "#✔ Enabling Save Session for all users..." && sleep .5
+ else
+    exit 0
+fi
+done
+}
+
 ## Arrays execution
 x=0
 for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
