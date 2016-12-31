@@ -795,6 +795,7 @@ done
 }
 
 ## Arrays execution
+run_icon=/usr/share/icons/Faenza/actions/32/system-run.png
 x=0
 for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in the array
 
@@ -816,7 +817,7 @@ for k in "${!ARRAYC[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of s
             sleep 1
         fi
 
-    done| zenity --progress --pulsate --no-cancel  --title="  Lite Tweaks" --auto-kill --auto-close --width=320
+    done| zenity --progress --width=320 --window-icon="$run_icon" --pulsate --no-cancel --title="  Lite Tweaks" --auto-kill --auto-close
 
 unset ARAYC
 unset FRM
