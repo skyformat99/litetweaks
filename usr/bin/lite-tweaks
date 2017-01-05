@@ -213,27 +213,33 @@ fi
     "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" $mimeapps `;
         `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser firefox.desktop;;
     "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser chromium.desktop;;
     "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser google-chrome.desktop;;
     "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser midori.desktop;;
     "Pale Moon") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=palemoon.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=palemoon.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser palemoon.desktop;;
     "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;;
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser vivaldi.desktop;;
     esac
 echo "#✔ $selection is now the default browser!" && sleep 1
 unset mimeapps
