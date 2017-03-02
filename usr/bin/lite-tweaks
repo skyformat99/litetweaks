@@ -65,7 +65,7 @@ PALEMOON() {
 }
 VIVALDI() {
     echo "#Removing Vivaldi browser cache..." && sleep 1
-        rm -rf $HOME/.cache/vivaldi/ 
+        rm -rf $HOME/.cache/vivaldi/
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "# Error"
           sleep 1
@@ -76,7 +76,7 @@ VIVALDI() {
 }
 THUMBNAILS() {
     echo "#Deleting Thumbnail Cache..." && sleep 1
-        rm -rf $HOME/.cache/thumbnails/* 
+        rm -rf $HOME/.cache/thumbnails/*
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "#Error"
           sleep 1
@@ -113,7 +113,7 @@ WHISKER() {
 }
 DBROWSER() {
 echo "#Looking for installed browsers..." && sleep 1
-mimeapps=~/.config/mimeapps.list 
+mimeapps=~/.config/mimeapps.list
 echo "#Setting up default browser..."
 # Create mimeapps.list if it doesn't exist
 if [ ! -f $mimeapps ]; then
@@ -140,7 +140,7 @@ if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     else
         firefox=("FALSE" "Firefox" "not default" "Set firefox as the default Web browser" )
     fi
-else 
+else
     firefox=()
 fi
 
@@ -203,7 +203,7 @@ fi
         --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
         --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
         "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
-        
+
         # "The kill switch"
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
             return
@@ -258,7 +258,7 @@ df -h -T| tail -n+2 | while read fs type size used rest target; do
         echo "$fs" "$type" "$size"B "$used"B "$rest"B "${target[@]}" |grep /dev/sd |
         awk '{print $1,"\n",$2,"\n",$3,"\n",$4,"\n",$5,"\n",$6}BEGIN{ s = 7; e = 35; }{for (i=s; i<=e; i++) printf("%s%s", $(i), i<e ? OFS : "\n"); }' # Workaround for disk labels that contain whitespaces(number of characters that can be divided by whitespace =e-s)
     fi
-done | sed -e 's/[ \t]*$//' $1|  tee $TMP_DU 
+done | sed -e 's/[ \t]*$//' $1|  tee $TMP_DU
 
 SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-label="Quit" --window-icon="$ic" --width=600 --height=350 --title="  ${DU_TITLE}" --text="${DU_TEXT}" \
                     --column="Device" --column="Filesystem" --column="Size" --column="Used" --column="Free" --column="%Used" --column="Partition" --print-column="7"| cut -d '|' -f2)
@@ -279,7 +279,7 @@ ARRAYS() {
 # Invoke arrays
 ARRAYA=()    # Array for automatic cleaning tool
 ARRAYB=()    # Array for cleaning tools that require root
- 
+
 # Populate arrays - ARRAY A
 
 echo $selection | grep "Chrome" > /dev/null
@@ -403,6 +403,11 @@ echo $selection | grep "Residual Config Files" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('RESIDCONFIG')
 fi
+
+echo $selection | grep "zRAM" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('ZRAM')
+fi
 }
 
 RUN() {
@@ -422,7 +427,7 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             if [ $? = 1 ]; then
                 zenity --error --title="  Lite Tweaks" --text="\nThere was an error while performing cleaning:\n ${line}"
                 exit 1
-            fi    
+            fi
         let i++
          (( PERCENTAGE = 100 \* ${i} / ${TOTAL_LINES} ))
          echo "$PERCENTAGE"
@@ -431,7 +436,7 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             echo "#Done"
             sleep 1
         fi
-    
+
     done| zenity --progress --width=320 --window-icon="$run_icon" --pulsate --no-cancel --title="  Lite Tweaks" --auto-kill --auto-close
 fi
 
@@ -450,14 +455,14 @@ Some of the selected tasks require Administrative privileges for execution.
 fi
 }
 
-CHECK() { 
+CHECK() {
 # Execute checks - organized following Main zenity dialog window order
 # Check if the google-chrome browser cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
     GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
     chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome browser cache" )
     else
-        chrome=() 
+        chrome=()
 fi
 
 # Check if the chromium browser cache exists
@@ -478,7 +483,7 @@ fi
 
 # Check if archived /var/log files exist
 if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ];  then
-    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/') 
+    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
     logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove $LOGARCHIVESIZE worth of archived logs" )
 else
     logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
@@ -520,7 +525,7 @@ if [ ! -z  "$(dpkg -l | grep '^rc')"  ]; then
     RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
     resconfig=(FALSE "Residual Config Files" "Clean" "Packages" "Safe" "You currently have $RESCONFIGQTY residual configuration files you can remove" )
 else
-        resconfig=() 
+        resconfig=()
 fi
 
 # Check if any thumbnails exist
@@ -528,7 +533,7 @@ if [ $(du -sk $HOME/.cache/thumbnails/ | awk '{print $1}')  -gt 100  ]; then
     THUMBCACHESIZE=$(du -sh $HOME/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
     thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove $THUMBCACHESIZE from your thumbnail cache" )
 else
-        thumbn=( "FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" ) 
+        thumbn=( "FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" )
 fi
 
 # Check if the Trash is empty
@@ -536,7 +541,7 @@ if [  "$(ls -A $HOME/.local/share/Trash/files/)" ]; then
         TRASHCACHESIZE=$(du -sh $HOME/.local/share/Trash/ | awk '{print $1}' | sed 's/$/B/')
     trash=("FALSE" "Trash Bin" "Clean" "Home" "Safe" "You can remove $TRASHCACHESIZE from your Trash bin" )
 else
-        trash=() 
+        trash=()
 fi
 
 # Check if  vivaldi-stable browser cache exists
@@ -554,11 +559,18 @@ else
     whisker_test=$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
     whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove $whisker_test Recently Used items from your Whisker Menu" )
 fi
+
+# Check if zram is installed
+if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
+        zram=(FALSE "zRAM" "Performance" "System" "Safe" "Compressed RAM based block device for faster I/O")
+else
+        zram=(FALSE "zRAM" "Performance" "System" "Safe" "zRAM is currently installed (select to modify)")
+fi
 }
 
 # Main loop
 while (true); do
-CHECK        # first run the checks 
+CHECK        # first run the checks
 
 # Main zenity dialog window
 selection=$(zenity --list --checklist --width=880 --height=620 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
@@ -587,10 +599,11 @@ FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package mana
 "${thumbn[@]}" \
 "${trash[@]}" \
 "${vivaldi[@]}" \
-"${whisker_recent[@]}" )
+"${whisker_recent[@]}" \
+"${zram[@]}" )
 
 # If Quit is clicked then exit
-if [ "${PIPESTATUS[0]}" -ne "0" ]; then 
+if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       exit 0
 fi
 
