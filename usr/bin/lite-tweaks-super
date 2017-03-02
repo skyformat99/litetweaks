@@ -803,7 +803,6 @@ done
 ZRAM() {
     echo "#Getting zRAM status. Please wait..." && sleep 1
     APPNAME="   Lite Tweaks - zRAM"
-    SERVICE="zram-config"
     LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
     appicon3=/usr/share/liteappsicons/litesoftware/ll-remove-software_32x32.png
     # the loop
