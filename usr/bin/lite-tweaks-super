@@ -821,9 +821,9 @@ ZRAM() {
             (zenity --question --icon-name=info --width="470" --height="90" --ok-label="Continue" --cancel-label="Cancel" --title="Lite Tweaks - No Internet connection detected" \
                     --text="\n<b>Your computer doesn't seem to be connected to the Internet</b> \n \nLite Tweaks will attempt to install zRAM package from the local cache if available. \
 If the package does not exist in your system cache, zRAM installation will fail. \n\nYou can always check your Internet connection and try again at a later time.")
-            cacheinst=$?
+            answer=$?
         fi
-                if [ "$cacheinst" -eq "0" ]; then
+                if [ "$answer" -eq "0" ]; then
                     echo "#Installing zRAM. Please wait..." && sleep 1
                     apt-get install zram-config -y # install zram
                     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
