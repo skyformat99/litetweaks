@@ -54,6 +54,11 @@ if [ $? = 0 ];then
 ARRAYC+=('KERNELS')
 fi
 
+echo $FRM | grep "KIOSKMODE" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('KIOSKMODE')
+fi
+
 echo $FRM | grep "LOGARCHIVES" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('LARCHIVES')
@@ -511,6 +516,129 @@ DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish 
     fi
 done
 }
+
+KIOSKMODE() {
+  # kiosk variables
+  kiosk_dir=/etc/xdg/xfce4/kiosk
+  kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
+  pwrlogin=/etc/lightdm/lightdm-gtk-greeter.conf
+  APPNAME="Kiosk Mode"
+  APPICONS="/usr/share/liteappsicons/litetweaks"
+  ic="/usr/share/pixmaps/litetweaks.png"
+
+  if [ -d $kiosk_dir ]; then
+    # check whether kioskrc and its settings exist
+    if [ -f $kioskrc ]; then
+        grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
+        grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
+        grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
+        grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=NONE' >> $kioskrc
+        grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=NONE' >> $kioskrc
+        grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
+        grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
+        grep -q -F 'Shutdown' $kioskrc || echo 'Shutdown=ALL' >> $kioskrc
+        grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
+        grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
+    else # if kioskrc and its settings don't exist, create defaults
+        (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+  printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=NONE
+  CustomizeChooser=NONE\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+  Shutdown=ALL\nCustomizeSecurity=NONE\nSaveSession=ALL\n" >> $kioskrc
+    fi
+
+  else
+    mkdir $kiosk_dir
+    (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+  printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=NONE
+  CustomizeChooser=NONE\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+  Shutdown=ALL\nCustomizeSecurity=NONE\nSaveSession=ALL\n" >> $kioskrc
+  fi
+
+  while (true); do
+  echo '# Configuring kiosk mode options...'
+  grep -q "SaveSession=ALL" $kioskrc && echo $?
+      if [ $? = 0 ]; then
+      appicon1=$APPICONS/appicon3-on.png
+    else
+        appicon1=$APPICONS/appicon3-off.png
+      fi
+  grep -q "SaveSession=NONE" $kioskrc && echo $?
+      if [ $? = 0 ]; then
+      appicon3=$APPICONS/appicon1-on.png
+    else
+        appicon3=$APPICONS/appicon1-off.png
+      fi
+  grep -q "SaveSession=%sudo" $kioskrc && echo $?
+      if [ $? = 0 ]; then
+            appicon2=$APPICONS/appicon2-on.png
+        else
+            appicon2=$APPICONS/appicon2-off.png
+      fi
+        appicon4=$APPICONS/power-opt.png
+
+  grep -q "power" $pwrlogin && echo $?
+      if [ $? = 0 ]; then
+            appicon5=$APPICONS/login-power-on.png
+            appicon6=$APPICONS/blank.png
+        else
+            appicon5=$APPICONS/blank.png
+            appicon6=$APPICONS/login-power-off.png
+      fi
+
+  answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="460" --height="312" --hide-header \
+              --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
+        --text='\n<span font="Sans Bold 11">                     Kiosk Mode Options:</span>\n' \
+          --column=" " --column="ANSW" --column=" Kiosk Mode" --column=" Description" \
+          $appicon3 "10" "Enable for all users" "Enables Kiosk Mode for all users" \
+          $appicon2 "20" "Disable for admins only" "Enables Kiosk Mode except for admins" \
+          $appicon1 "30" "Disable" "Disables Kiosk Mode" \
+          $appicon4 "40" "          Login Screen" "Power Options" \
+          $appicon5 "50" "Enable power options" "Shows power options on login screen" \
+          $appicon6 "60" "Disable power options" "Hides power options on login screen")
+
+  if [ "$?" -eq "1" ]; then
+    #echo 'Clicked Exit button'
+      exit 0
+  fi
+
+  if [[ $answ -eq "0" ]]; then
+      zenity  --info --window-icon="$ic" --title=" $APPNAME" --text="\nYou did not select an option. Please try again."
+      continue
+  fi
+
+  if [[ $answ -eq "10" ]]; then
+    echo '# Disabling Save Session for all users...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
+    echo '# ✔ Save Session disabled for all users' && sleep 1
+
+  elif [[ $answ -eq "20" ]]; then
+    echo '# Enabling Save Session for admins only...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
+    echo '# ✔ Save Session enabled for admins only' && sleep 1
+
+  elif [[ $answ -eq "30" ]]; then
+    echo '# Enabling Save Session for all users...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
+    echo '# ✔ Save Session enabled for all users' && sleep 1
+
+  elif [[ $answ -eq "40" ]]; then
+    echo '# No power option selected...' && sleep 1
+
+  elif [[ $answ -eq "50" ]]; then
+    echo '# Enabling power options on login screen...' && sleep 1
+    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
+    echo '# ✔ Power options enabled on login screen' && sleep 1
+
+  elif [[ $answ -eq "60" ]]; then
+    echo '# Disabling power options on login screen...' && sleep 1
+    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~Linux Lite/' $pwrlogin
+    echo '# ✔ Power options disabled on login screen' && sleep 1
+   else
+    exit 0
+  fi
+  done
+}
+
 LARCHIVES() {
     echo "#Deleting archived logs..."
     find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;

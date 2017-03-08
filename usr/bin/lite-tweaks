@@ -394,6 +394,11 @@ if [ $? = 0 ];then
 ARRAYB+=('FIXAPT')
 fi
 
+echo $selection | grep "Kiosk Mode" > /dev/null
+if [ $? = 0 ];then
+ARRAYB+=('KIOSKMODE')
+fi
+
 echo $selection | grep "Preload" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('PRELOAD')
@@ -586,6 +591,7 @@ FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk u
 "${firefox[@]}" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
+FALSE "Kiosk Mode" "Administration" "System" "Safe" "Enable or disable basic Kiosk mode options" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
 FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable user's ability of saving their session on logout" \
