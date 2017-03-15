@@ -241,7 +241,7 @@ fi
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;
         xdg-settings set default-web-browser vivaldi.desktop;;
     esac
-echo "#✔ $selection is now the default browser!" && sleep 1
+echo "#✔ $selection is now the default browser" && sleep 1
 unset mimeapps
 }
 DU() {
