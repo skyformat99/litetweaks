@@ -394,7 +394,7 @@ if [ $? = 0 ];then
 ARRAYB+=('FIXAPT')
 fi
 
-echo $selection | grep "Login Screen Options" > /dev/null
+echo $selection | grep "Login & Logout Options" > /dev/null
 if [ $? = 0 ];then
 ARRAYB+=('KIOSKMODE')
 fi
@@ -593,7 +593,7 @@ FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you mu
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
-FALSE "Login Screen Options" "Administration" "System" "Safe" "Enable or disable basic Login screen options" \
+FALSE "Login & Logout Options" "Administration" "System" "Safe" "Enable or disable basic Login & Logout options" \
 FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable user's ability of saving their session on logout" \
 "${midori[@]}" \
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
