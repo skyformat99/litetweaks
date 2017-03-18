@@ -522,7 +522,7 @@ KIOSKMODE() {
   kiosk_dir=/etc/xdg/xfce4/kiosk
   kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
   pwrlogin=/etc/lightdm/lightdm-gtk-greeter.conf
-  APPNAME="Login & Logout Tweaks"
+  APPNAME="Kiosk Mode"
   APPICONS="/usr/share/liteappsicons/litetweaks"
   ic="/usr/share/pixmaps/litetweaks.png"
 
@@ -555,47 +555,46 @@ KIOSKMODE() {
   fi
 
   while (true); do
-  echo '# Configuring Login & Logout options...'
-  grep -q "Shutdown=ALL" $kioskrc && echo $?
+  echo '# Configuring kiosk mode options...'
+  grep -q "SaveSession=ALL" $kioskrc && echo $?
       if [ $? = 0 ]; then
-      appicon1=$APPICONS/appicon1-on.png
+      appicon1=$APPICONS/appicon3-on.png
     else
-        appicon1=$APPICONS/appicon1-off.png
+        appicon1=$APPICONS/appicon3-off.png
       fi
-  grep -q "Shutdown=NONE" $kioskrc && echo $?
+  grep -q "SaveSession=NONE" $kioskrc && echo $?
       if [ $? = 0 ]; then
       appicon3=$APPICONS/appicon1-on.png
     else
         appicon3=$APPICONS/appicon1-off.png
       fi
-  grep -q "Shutdown=%sudo" $kioskrc && echo $?
+  grep -q "SaveSession=%sudo" $kioskrc && echo $?
       if [ $? = 0 ]; then
             appicon2=$APPICONS/appicon2-on.png
         else
             appicon2=$APPICONS/appicon2-off.png
       fi
+        appicon4=$APPICONS/power-opt.png
+
   grep -q "power" $pwrlogin && echo $?
       if [ $? = 0 ]; then
             appicon5=$APPICONS/login-power-on.png
-            appicon6=$APPICONS/login-power-off1.png
+            appicon6=$APPICONS/blank.png
         else
-            appicon5=$APPICONS/login-power-on1.png
+            appicon5=$APPICONS/blank.png
             appicon6=$APPICONS/login-power-off.png
       fi
-      appicon4=$APPICONS/power-opt.png
-      appicon7=$APPICONS/blank.png
-  answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="580" --height="380" --hide-header \
+
+  answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="460" --height="312" --hide-header \
               --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
-        --text='\n<span font="Sans Bold 11">                         Login and Logout Power Options:</span>\n' \
-          --column=" " --column="ANSW" --column=" Mode" --column=" Description" \
-          $appicon4 "40" "⚫ Login Screen" "Power Options" \
+        --text='\n<span font="Sans Bold 11">                     Kiosk Mode Options:</span>\n' \
+          --column=" " --column="ANSW" --column=" Kiosk Mode" --column=" Description" \
+          $appicon3 "10" "Enable for all users" "Enables Kiosk Mode for all users" \
+          $appicon2 "20" "Disable for admins only" "Enables Kiosk Mode except for admins" \
+          $appicon1 "30" "Disable" "Disables Kiosk Mode" \
+          $appicon4 "40" "          Login Screen" "Power Options" \
           $appicon5 "50" "Enable power options" "Shows power options on login screen" \
-          $appicon6 "60" "Disable power options" "Hides power options on login screen" \
-          $appicon7 "40" "" "" \
-          $appicon4 "40" "⚫ Log Out Screen" "" \
-          $appicon3 "10" "Show Logout only for all users" "Hides all other options for all accounts" \
-          $appicon2 "20" "Show Logout only, except for admins" "Hides all other options, except for admins" \
-          $appicon1 "30" "Show all options" "Shows all shutdown options for all users")
+          $appicon6 "60" "Disable power options" "Hides power options on login screen")
 
   if [ "$?" -eq "1" ]; then
     #echo 'Clicked Exit button'
@@ -608,19 +607,19 @@ KIOSKMODE() {
   fi
 
   if [[ $answ -eq "10" ]]; then
-    echo '# Show Logout only for all users...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
-    echo '# ✔ Show Logout only for all users' && sleep 1
+    echo '# Disabling Save Session for all users...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
+    echo '# ✔ Save Session disabled for all users' && sleep 1
 
   elif [[ $answ -eq "20" ]]; then
-    echo '# Show Logout only, except for admins...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
-    echo '# ✔ Show Logout only, except for admins...' && sleep 1
+    echo '# Enabling Save Session for admins only...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
+    echo '# ✔ Save Session enabled for admins only' && sleep 1
 
   elif [[ $answ -eq "30" ]]; then
-    echo '# Showing all options...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
-    echo '# ✔ Showing all options...' && sleep 1
+    echo '# Enabling Save Session for all users...' && sleep 1
+    sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
+    echo '# ✔ Save Session enabled for all users' && sleep 1
 
   elif [[ $answ -eq "40" ]]; then
     echo '# No power option selected...' && sleep 1
@@ -632,7 +631,7 @@ KIOSKMODE() {
 
   elif [[ $answ -eq "60" ]]; then
     echo '# Disabling power options on login screen...' && sleep 1
-    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
+    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~Linux Lite/' $pwrlogin
     echo '# ✔ Power options disabled on login screen' && sleep 1
    else
     exit 0
