@@ -64,6 +64,11 @@ if [ $? = 0 ];then
 ARRAYC+=('LARCHIVES')
 fi
 
+echo $FRM | grep "MGMTSAVESESSION" > /dev/null
+if [ $? = 0 ];then
+ARRAYC+=('MGMTSAVESESSION')
+fi
+
 echo $FRM | grep "EDNUMLOCK" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('NUMLOCK')
@@ -77,11 +82,6 @@ fi
 echo $FRM | grep "RESIDCONFIG" > /dev/null
 if [ $? = 0 ];then
 ARRAYC+=('RCONFIG')
-fi
-
-echo $FRM | grep "SAVESESSION" > /dev/null
-if [ $? = 0 ];then
-ARRAYC+=('SAVESESSION')
 fi
 
 echo $FRM | grep "AUTOREMOVE" > /dev/null
@@ -99,7 +99,7 @@ fi
 ic="/usr/share/icons/zenity-llcc.png"
 
 CLEAN() {
-    echo "#Cleaning the package cache..."
+    echo "#⚫ Cleaning the package cache..."
     sleep 1
     apt-get clean
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -109,16 +109,16 @@ CLEAN() {
                --text="\nAn error occurred while cleaning the package cache!"
         return
     fi
-    echo "#✔ Package cache cleared" && sleep 1
+    echo "#✔ Package cache cleared." && sleep 1
 }
 CLEARMEM() {
-    echo "#Freeing up system memory, please wait..." && sleep 1
+    echo "#⚫ Freeing up system memory, please wait..." && sleep 1
     sh -c 'echo 3 >/proc/sys/vm/drop_caches'
-    echo "#✔ System memory freed" && sleep 1
+    echo "#✔ System memory freed." && sleep 1
 }
 FILES() {
     echo "#Getting ready..." && sleep 1 # prevent dialog overlapping
-    echo "#Finding Large Files..."
+    echo "#⚫ Finding Large Files..."
 
 # Main dialog window
 INSTALLER_TITLE="Find and list all files in your system based on specified size ranges
@@ -177,8 +177,8 @@ Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
     else
         return
     fi
-    echo "#Displaying scan results..." && gksu -u ${SUDO_USER:-$USER} leafpad /var/log/findfilesrange.log
-    echo "#Waiting for user response..."
+    echo "#⚫ Displaying scan results..." && gksu -u ${SUDO_USER:-$USER} leafpad /var/log/findfilesrange.log
+    echo "#⚫ Waiting for user input..."
     # Scan loop question
     zenity --question --width="260" --title="$APPNAME" --window-icon="$ic" --text="\nWould you like to run another scan?"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -190,7 +190,7 @@ Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 }
 FIXAPT() {
     # Check Internet access
-    echo "#Stage 1: Checking for internet connection..."
+    echo "#⚫ Stage 1: Checking for internet connection..."
     if eval "sudo -u ${SUDO_USER:-$USER} curl -sk google.com/" >> /dev/null 2>&1; then
     : # pass
     else # Prompt ERROR internet connection
@@ -199,7 +199,7 @@ FIXAPT() {
             break
     fi
     # Stage 1
-    echo "#Stage 1: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
+    echo "#⚫ Stage 1: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
     apt-get clean
     cd /var/lib/apt
     mv lists lists.old
@@ -214,7 +214,7 @@ FIXAPT() {
                     break
             fi
     # Stage 2
-    echo "#Stage 2: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
+    echo "#⚫ Stage 2: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
 
     apt-get install -f
             if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -225,7 +225,7 @@ FIXAPT() {
                     return
             fi
     # Stage 3
-    echo "#Stage 3: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
+    echo "#⚫ Stage 3: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
 
     # Recreate  /etc/apt/sources.list ...
     rm -f /etc/apt/sources.list.save && rm -f /etc/apt/sources.list && touch /etc/apt/sources.list
@@ -293,11 +293,11 @@ FIXAPT() {
 
     apt-get update
     # Final Stage
-    echo "#Final Stage: Repairing the package system."$"\n ✔ Completing Repair..."
+    echo "#⚫ Final Stage: Repairing the package system."$"\n ✔ Completing Repair..."
     dpkg --configure -a && sleep 2
 }
 FIXBOOTUP() {
-echo "#Fixing the bootup. This might take a while..."
+echo "#⚫ Fixing the bootup. This might take a while..."
 # Check LL version
 LL_VERSION=$(awk '{print $3}' /etc/llver 2>/dev/null|| echo "Unknown")
 case $LL_VERSION in
@@ -418,7 +418,7 @@ HNAME() {
 
     while (true); do
     # Reboot dialogue
-    echo "#Changing hostname to ' $newhost ' " && sleep 1
+    echo "#⚫ Changing hostname to ' $newhost ' " && sleep 1
     title=" Hostname changed"
     exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" --text="Hostname has been changed to: <b>$newhost</b>\n\nYou must reboot your computer for changes to take effect." --title="$title" --list --radiolist --column="Select" \
                        --column="Exit Type" --column="Description" \
@@ -428,7 +428,7 @@ HNAME() {
 
     # User must select a target type (Check if they cancelled)
     if [ ! "$exit_type" ]; then
-        echo "#Reverting hostname changes to... ${current_hostname} " && sleep 1
+        echo "#⚫ Reverting hostname changes to... ${current_hostname} " && sleep 1
         sed -i "s/$newhost/$current_hostname/g" /etc/hosts
         sed -i "s/$newhost/$current_hostname/g" /etc/hostname
         zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit."
@@ -555,7 +555,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
   fi
 
   while (true); do
-  echo '# Configuring Login & Logout options...'
+  echo '#Configuring Login & Logout options...'
   grep -q "Shutdown=ALL" $kioskrc && echo $?
       if [ $? = 0 ]; then
       appicon1=$APPICONS/appicon1-on.png
@@ -598,8 +598,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
           $appicon1 "30" "Show all options" "Shows all shutdown options for all users")
 
   if [ "$?" -eq "1" ]; then
-    #echo 'Clicked Exit button'
-      exit 0
+      break
   fi
 
   if [[ $answ -eq "0" ]]; then
@@ -608,34 +607,51 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
   fi
 
   if [[ $answ -eq "10" ]]; then
-    echo '# Show Logout only for all users...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
-    echo '# ✔ Show Logout only for all users' && sleep 1
-
+        if grep -q "Shutdown=NONE" $kioskrc; then
+            echo "#⚫ Show Logout only for all users..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+        else
+            echo '#⚫ Show Logout only for all users...' && sleep 1
+            sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
+            echo '#✔ Show Logout only for all users.' && sleep 1
+        fi
   elif [[ $answ -eq "20" ]]; then
-    echo '# Show Logout only, except for admins...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
-    echo '# ✔ Show Logout only, except for admins...' && sleep 1
-
+        if grep -q "Shutdown=%sudo" $kioskrc; then
+            echo "#⚫ Show Logout only, except for admins..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+        else
+            echo '#⚫ Show Logout only, except for admins...' && sleep 1
+            sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
+            echo '#✔ Show Logout only, except for admins.' && sleep 1
+        fi
   elif [[ $answ -eq "30" ]]; then
-    echo '# Showing all options...' && sleep 1
-    sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
-    echo '# ✔ Showing all options...' && sleep 1
-
+        if grep -q "Shutdown=ALL" $kioskrc; then
+            echo "#⚫ Show all shutdown options..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+        else
+            echo '#⚫ Show all shutdown options...' && sleep 1
+            sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
+            echo '#✔ Show all shutdown options.' && sleep 1
+        fi
   elif [[ $answ -eq "40" ]]; then
-    echo '# No power option selected...' && sleep 1
-
+    echo '#No power option selected...' && sleep 1
+  
+  # Login screen power options
   elif [[ $answ -eq "50" ]]; then
-    echo '# Enabling power options on login screen...' && sleep 1
-    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
-    echo '# ✔ Power options enabled on login screen' && sleep 1
-
+        if grep -q "~power" $pwrlogin; then
+            echo "#⚫ Enabling power options on login screen..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+        else
+            echo '#⚫ Enabling power options on login screen...' && sleep .5
+            sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
+            echo '#✔ Power options enabled on login screen.' && sleep 1
+        fi
   elif [[ $answ -eq "60" ]]; then
-    echo '# Disabling power options on login screen...' && sleep 1
-    sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
-    echo '# ✔ Power options disabled on login screen' && sleep 1
+        if grep -q "~~Linux Lite" $pwrlogin; then
+            echo "#⚫ Disabling power options on login screen..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+        else
+            echo '#⚫ Disabling power options on login screen...' && sleep 1
+            sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
+            echo '#✔ Power options disabled on login screen.' && sleep 1
+        fi
    else
-    exit 0
+    continue
   fi
   done
 }
@@ -651,6 +667,107 @@ LARCHIVES() {
         return
     fi
     echo "#✔ Archived logs cleared" && sleep 1
+}
+MGMTSAVESESSION() {
+    echo "#Manage Save Session..." && sleep 1
+    kiosk_dir=/etc/xdg/xfce4/kiosk
+    kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
+    APPNAME="Manage Save Session"
+    LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
+    ic="/usr/share/pixmaps/litetweaks.png"
+
+    if [ -d $kiosk_dir ]; then
+    # check whether kioskrc and its settings exist
+        if [ -f $kioskrc ]; then
+            grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
+            grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
+            grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
+            grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=ALL' >> $kioskrc
+            grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=ALL' >> $kioskrc
+            grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
+            grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
+            grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
+            grep -q -F 'Shutdown' $kioskrc || echo 'Shutdown=ALL' >> $kioskrc
+            grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
+        else # if kioskrc and its settings don't exist, create defaults
+            (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+            printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
+        fi
+    else
+        mkdir $kiosk_dir
+        (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
+        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
+    fi
+# main loop
+while (true); do
+    echo "#Manage Save Session..."
+    grep -q "SaveSession=ALL" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+    appicon1=$LITEAPPSICONS/appicon1-on.png
+    else
+        appicon1=$LITEAPPSICONS/appicon1-off.png
+    fi
+grep -q "SaveSession=NONE" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+    appicon3=$LITEAPPSICONS/appicon3-on.png
+    else
+        appicon3=$LITEAPPSICONS/appicon3-off.png
+    fi
+grep -q "SaveSession=%sudo" $kioskrc && echo $?
+    if [ $? = 0 ]; then
+            appicon2=$LITEAPPSICONS/appicon2-on.png
+        else
+            appicon2=$LITEAPPSICONS/appicon2-off.png
+    fi
+# main dialog
+answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="470" --height="215" \
+                --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
+                --text='                            <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
+        --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
+        $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
+        $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
+        $appicon3 "10" "Disable for all users" "Disables Save Session for all users")
+# exit on Quit or X
+if [ "$?" -eq "1" ]; then
+    break
+fi
+# prompt when no option is selected
+if [[ $answ -eq "0" ]]; then
+    zenity  --info --title="$APPNAME" --text="\nYou did not select an option. Please try again."
+    continue
+fi
+# disables Save Session for all users
+if [[ $answ -eq "10" ]]; then
+    if grep -q "SaveSession=NONE" $kioskrc; then
+        echo "#⚫ Disabling Save Session for all users..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+    else
+        sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
+        echo '#⚫ Disabling Save Session for all users...' && sleep .5 && echo "#✔ Disabling Save Session for all users." && sleep 1
+    fi
+# enable Save Session for admins only
+elif [[ $answ -eq "20" ]]; then
+    if grep -q "SaveSession=%sudo" $kioskrc; then
+        echo "#⚫ Enabling Save Session for admins only..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+    else
+        sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
+        echo '#⚫ Enabling Save Session for admins only...' && sleep .5 && echo "#✔ Enabling Save Session for admins only." && sleep 1
+    fi
+# enable Save Session for all users
+elif [[ $answ -eq "30" ]]; then
+    if grep -q "SaveSession=ALL" $kioskrc; then
+        echo "#⚫ Enabling Save Session for all users..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
+    else
+        sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
+        echo '#⚫ Enabling Save Session for all users...' && sleep .5 && echo "#✔ Enabling Save Session for all users." && sleep 1
+    fi
+ else
+    continue
+fi
+done
 }
 NUMLOCK() {
     echo "#Getting Numlock status..." && sleep 1
@@ -686,16 +803,18 @@ NUMLOCK() {
     # enable numlock
     if [[ "$EDNL" =~ "Enable" ]]; then
         if grep -q "numlockx on" /etc/lightdm/lightdm.conf; then
-            echo "#• Numlock is already enabled. No changes needed..." && sleep 2
+            echo "#⚫ Numlock is already enabled. No changes needed." && sleep 2
         else
-            sed -i "s/numlockx off/numlockx on/g" /etc/lightdm/lightdm.conf && echo "#✔ Enabling Numlock at login..." && sleep 1
+            echo "#⚫ Enabling Numlock at login..." && sleep 1         
+            sed -i "s/numlockx off/numlockx on/g" /etc/lightdm/lightdm.conf && echo "#✔ Enabling Numlock at login." && sleep 1
         fi
     # disable numlock
     elif [[ "$EDNL" =~ "Disable" ]]; then
         if grep -q "numlockx off" /etc/lightdm/lightdm.conf; then
-            echo "#• Numlock is already disabled. No changes needed..." && sleep 2
+            echo "#⚫ Numlock is already disabled. No changes needed." && sleep 2
         else
-            sed -i "s/numlockx on/numlockx off/g" /etc/lightdm/lightdm.conf && echo "#✔ Disabling Numlock at login..." && sleep 1
+            echo "#⚫ Disabling Numlock at login..." && sleep 1
+            sed -i "s/numlockx on/numlockx off/g" /etc/lightdm/lightdm.conf && echo "#✔ Disabling Numlock at login." && sleep 1
         fi
     else
         zenity --info --width="280" --height="60" --timeout=5 --height="60" \
@@ -827,108 +946,6 @@ REMOVE() {
     fi
     echo "#✔ Unneeded packages cleared" && sleep 1
 }
-SAVESESSION() {
-    echo "#Manage Save Session..." && sleep 1
-    kiosk_dir=/etc/xdg/xfce4/kiosk
-    kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
-    APPNAME="Manage Save Session"
-    LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
-    ic="/usr/share/pixmaps/litetweaks.png"
-
-    if [ -d $kiosk_dir ]; then
-    # check whether kioskrc and its settings exist
-        if [ -f $kioskrc ]; then
-            grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
-            grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
-            grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
-            grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=ALL' >> $kioskrc
-            grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=ALL' >> $kioskrc
-            grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
-            grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
-            grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
-            grep -q -F 'Shutdown' $kioskrc || echo 'Shutdown=ALL' >> $kioskrc
-            grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
-        else # if kioskrc and its settings don't exist, create defaults
-            (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-            printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
-CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
-CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
-        fi
-    else
-        mkdir $kiosk_dir
-        (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
-CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
-CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
-    fi
-# main loop
-while (true); do
-    echo "#Manage Save Session..."
-    grep -q "SaveSession=ALL" $kioskrc && echo $?
-    if [ $? = 0 ]; then
-    appicon1=$LITEAPPSICONS/appicon1-on.png
-    else
-        appicon1=$LITEAPPSICONS/appicon1-off.png
-    fi
-grep -q "SaveSession=NONE" $kioskrc && echo $?
-    if [ $? = 0 ]; then
-    appicon3=$LITEAPPSICONS/appicon3-on.png
-    else
-        appicon3=$LITEAPPSICONS/appicon3-off.png
-    fi
-grep -q "SaveSession=%sudo" $kioskrc && echo $?
-    if [ $? = 0 ]; then
-            appicon2=$LITEAPPSICONS/appicon2-on.png
-        else
-            appicon2=$LITEAPPSICONS/appicon2-off.png
-    fi
-# main dialog
-answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="470" --height="215" \
-                --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
-                --text='                            <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
-        --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
-        $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
-        $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
-        $appicon3 "10" "Disable for all users" "Disables Save Session for all users")
-# exit on Quit or X
-if [ "$?" -eq "1" ]; then
-    exit 0
-fi
-# prompt when no option is selected
-if [[ $answ -eq "0" ]]; then
-    zenity  --info --title="$APPNAME" --text="\nYou did not select an option. Please try again."
-    continue
-fi
-# disables Save Session for all users
-if [[ $answ -eq "10" ]]; then
-    if grep -q "SaveSession=NONE" $kioskrc; then
-        echo "#• Checking..." && sleep .5 && echo "#• No changes needed..." && sleep 1
-    else
-        sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
-        echo '#  Disabling Save Session for all users...' && sleep 1 && echo "#✔ Disabling Save Session for all users..." && sleep 1
-    fi
-# enable Save Session for admins only
-elif [[ $answ -eq "20" ]]; then
-    if grep -q "SaveSession=%sudo" $kioskrc; then
-        echo "#• Checking..." && sleep .5 && echo "#• No changes needed..." && sleep 1
-    else
-        sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
-        echo '#  Enabling Save Session for admins only...' && sleep 1 && echo "#✔ Enabling Save Session for admins only..." && sleep 1
-    fi
-# enable Save Session for all users
-elif [[ $answ -eq "30" ]]; then
-    if grep -q "SaveSession=ALL" $kioskrc; then
-        echo "#• Checking..." && sleep .5 && echo "#• No changes needed..." && sleep 1
-    else
-        sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
-        echo '#  Enabling Save Session for all users...' && sleep 1 && echo "#✔ Enabling Save Session for all users..." && sleep 1
-    fi
- else
-    exit 0
-fi
-done
-}
-
 ZRAM() {
     echo "#Getting zRAM status. Please wait..." && sleep 1
     APPNAME="   Lite Tweaks - zRAM"
