@@ -532,8 +532,8 @@ KIOSKMODE() {
         grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
         grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
         grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
-        grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=%sudo' >> $kioskrc
-        grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=%sudo' >> $kioskrc
+        grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=ALL' >> $kioskrc
+        grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=ALL' >> $kioskrc
         grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
         grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
         grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
@@ -541,16 +541,16 @@ KIOSKMODE() {
         grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
     else # if kioskrc and its settings don't exist, create defaults
         (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=%%sudo
-CustomizeChooser=%%sudo\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
 CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
   fi
 
   else
     mkdir $kiosk_dir
     (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-  printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=%%sudo
-CustomizeChooser=%%sudo\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+  printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
 CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
   fi
 
@@ -841,8 +841,8 @@ SAVESESSION() {
             grep -q -F '[xfce4-panel]' $kioskrc || echo '[xfce4-panel]' >> $kioskrc
             grep -q -F 'CustomizePanel' $kioskrc || echo 'CustomizePanel=ALL' >> $kioskrc
             grep -q -F '[xfce4-session]' $kioskrc || echo '[xfce4-session]' >> $kioskrc
-            grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=%sudo' >> $kioskrc
-            grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=%sudo' >> $kioskrc
+            grep -q -F 'CustomizeSplash' $kioskrc || echo 'CustomizeSplash=ALL' >> $kioskrc
+            grep -q -F 'CustomizeChooser' $kioskrc || echo 'CustomizeChooser=ALL' >> $kioskrc
             grep -q -F 'CustomizeLogout' $kioskrc || echo 'CustomizeLogout=ALL' >> $kioskrc
             grep -q -F 'CustomizeCompatibility' $kioskrc || echo 'CustomizeCompatibility=%sudo' >> $kioskrc
             grep -q -F 'CustomizeSecurity' $kioskrc || echo 'CustomizeSecurity=NONE' >> $kioskrc
@@ -850,15 +850,15 @@ SAVESESSION() {
             grep -q -F 'SaveSession' $kioskrc || echo 'SaveSession=ALL' >> $kioskrc
         else # if kioskrc and its settings don't exist, create defaults
             (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-            printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=%%sudo
-CustomizeChooser=%%sudo\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+            printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
 CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         fi
     else
         mkdir $kiosk_dir
         (umask 133;touch $kioskrc && chown root:root $kiosk_dir -R)
-        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=%%sudo
-CustomizeChooser=%%sudo\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
+        printf "[xfce4-panel]\nCustomizePanel=ALL\n\n[xfce4-session]\nCustomizeSplash=ALL
+CustomizeChooser=ALL\nCustomizeLogout=ALL\nCustomizeCompatibility=%%sudo
 CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
     fi
 # main loop
