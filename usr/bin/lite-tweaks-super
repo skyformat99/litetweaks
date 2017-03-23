@@ -522,7 +522,7 @@ KIOSKMODE() {
   kiosk_dir=/etc/xdg/xfce4/kiosk
   kioskrc=/etc/xdg/xfce4/kiosk/kioskrc
   pwrlogin=/etc/lightdm/lightdm-gtk-greeter.conf
-  APPNAME="Login & Logout Tweaks"
+  APPNAME="Login & Logout Options"
   APPICONS="/usr/share/liteappsicons/litetweaks"
   ic="/usr/share/pixmaps/litetweaks.png"
 
@@ -576,14 +576,11 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
       fi
   grep -q "power" $pwrlogin && echo $?
       if [ $? = 0 ]; then
-            appicon5=$APPICONS/login-power-on.png
-            appicon6=$APPICONS/login-power-off1.png
+            appicon5=$APPICONS/login-power-on.png ; appicon6=$APPICONS/login-power-off1.png
         else
-            appicon5=$APPICONS/login-power-on1.png
-            appicon6=$APPICONS/login-power-off.png
+            appicon5=$APPICONS/login-power-on1.png ; appicon6=$APPICONS/login-power-off.png
       fi
-      appicon4=$APPICONS/power-opt.png
-      appicon7=$APPICONS/blank.png
+      appicon4=$APPICONS/power-opt.png ; appicon7=$APPICONS/blank.png
   answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="580" --height="380" --hide-header \
               --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
         --text='\n<span font="Sans Bold 11">                         Login and Logout Power Options:</span>\n' \
@@ -600,7 +597,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
   if [ "$?" -eq "1" ]; then
       break
   fi
-
+  # loop when no option is selected
   if [[ $answ -eq "0" ]]; then
       zenity  --info --window-icon="$ic" --title=" $APPNAME" --text="\nYou did not select an option. Please try again."
       continue
@@ -610,45 +607,66 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         if grep -q "Shutdown=NONE" $kioskrc; then
             echo "#⚫ Show Logout only for all users..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
         else
-            echo '#⚫ Show Logout only for all users...' && sleep 1
-            sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
+            echo '#⚫ Show Logout only for all users...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
             echo '#✔ Show Logout only for all users.' && sleep 1
+            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
+                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+                if [[ "$?" -eq "0" ]]; then
+                  xfce4-session-logout --logout ; killall lite-tweaks
+                fi
         fi
   elif [[ $answ -eq "20" ]]; then
         if grep -q "Shutdown=%sudo" $kioskrc; then
             echo "#⚫ Show Logout only, except for admins..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
         else
-            echo '#⚫ Show Logout only, except for admins...' && sleep 1
-            sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
+            echo '#⚫ Show Logout only, except for admins...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
             echo '#✔ Show Logout only, except for admins.' && sleep 1
+            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
+                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+                if [[ "$?" -eq "0" ]]; then
+                  xfce4-session-logout --logout ; killall lite-tweaks
+                fi
         fi
   elif [[ $answ -eq "30" ]]; then
         if grep -q "Shutdown=ALL" $kioskrc; then
             echo "#⚫ Show all shutdown options..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
         else
-            echo '#⚫ Show all shutdown options...' && sleep 1
-            sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
+            echo '#⚫ Show all shutdown options...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
             echo '#✔ Show all shutdown options.' && sleep 1
+            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
+                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+                if [[ "$?" -eq "0" ]]; then
+                  xfce4-session-logout --logout ; killall lite-tweaks
+                fi
         fi
+  # loop when no option is selected
   elif [[ $answ -eq "40" ]]; then
     echo '#No power option selected...' && sleep 1
-  
+
   # Login screen power options
   elif [[ $answ -eq "50" ]]; then
         if grep -q "~power" $pwrlogin; then
             echo "#⚫ Enabling power options on login screen..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
         else
-            echo '#⚫ Enabling power options on login screen...' && sleep .5
-            sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
+            echo '#⚫ Enabling power options on login screen...' && sleep .5 ; sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
             echo '#✔ Power options enabled on login screen.' && sleep 1
+            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
+                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+                if [[ "$?" -eq "0" ]]; then
+                  xfce4-session-logout --logout ; killall lite-tweaks
+                fi
         fi
   elif [[ $answ -eq "60" ]]; then
         if grep -q "~~Linux Lite" $pwrlogin; then
             echo "#⚫ Disabling power options on login screen..." && sleep .5 && echo "#⚫ No changes needed." && sleep 1
         else
-            echo '#⚫ Disabling power options on login screen...' && sleep 1
-            sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
+            echo '#⚫ Disabling power options on login screen...' && sleep 1 ; sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
             echo '#✔ Power options disabled on login screen.' && sleep 1
+            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
+                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+                if [[ "$?" -eq "0" ]]; then
+                  xfce4-session-logout --logout ; killall lite-tweaks
+                fi
         fi
    else
     continue
@@ -805,7 +823,7 @@ NUMLOCK() {
         if grep -q "numlockx on" /etc/lightdm/lightdm.conf; then
             echo "#⚫ Numlock is already enabled. No changes needed." && sleep 2
         else
-            echo "#⚫ Enabling Numlock at login..." && sleep 1         
+            echo "#⚫ Enabling Numlock at login..." && sleep 1
             sed -i "s/numlockx off/numlockx on/g" /etc/lightdm/lightdm.conf && echo "#✔ Enabling Numlock at login." && sleep 1
         fi
     # disable numlock
