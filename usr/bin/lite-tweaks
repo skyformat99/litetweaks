@@ -305,7 +305,7 @@ while (true); do
       statushidebtn=$LITEAPPSICONS/appicon3-off.png ; actionshidebtn="Hide both" ; deschidedbtn="Hide both buttons on the Logout screen"
       statusshowbtn=$LITEAPPSICONS/appicon1-off.png ; actionsshowbtn="Show both" ; descshowbtn="Show both buttons on the Logout Screen"
 
-  EDNL=$(zenity --list --imagelist --width="524" --height="258" --cancel-label="Quit" --ok-label="Apply Action" --window-icon=$ic --hide-column=5 \
+  HSBTN=$(zenity --list --imagelist --width="524" --height="258" --cancel-label="Quit" --ok-label="Apply Action" --window-icon=$ic --hide-column=5 \
                 --title="$APPNAME" --text='                           <span font="Sans Bold 11">Hibernate / Suspend buttons preferences</span>\n' \
                 --print-column=5 --column "Status  " --column "Button" --column "Action" --column "Description" --column "val" \
                 $statushibernatebtn "Hibernate" "$actionhibernatebtn" "$deschibernatebtn" "ab" \
@@ -317,22 +317,22 @@ while (true); do
           return
       fi
       # get it done
-      if [[ "$EDNL" =~ "ab" ]]; then
+      if [[ "$HSBTN" =~ "ab" ]]; then
           if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $xfce4session; then
               sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
           else
               sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
           fi
-      elif [[ "$EDNL" =~ "bc" ]]; then
+      elif [[ "$HSBTN" =~ "bc" ]]; then
           if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $xfce4session; then
               sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
           else
               sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
           fi
-      elif [[ "$EDNL" =~ "cd" ]]; then
+      elif [[ "$HSBTN" =~ "cd" ]]; then
           sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
           sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
-      elif [[ "$EDNL" =~ "de" ]]; then
+      elif [[ "$HSBTN" =~ "de" ]]; then
           sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
           sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
       else
