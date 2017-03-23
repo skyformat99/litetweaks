@@ -198,7 +198,6 @@ if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
 else
     vivaldi=()
 fi
-
         selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
         --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
@@ -271,6 +270,83 @@ SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-lab
 thunar "$(echo $SEL)"
 done
 }
+HSBTNS() {
+LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
+APPNAME="   Lite Tweaks - Hibernate / Suspend buttons"
+xfce4session=/home/$USER/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+
+#check defaults on first run
+grep -q -F '<property name="shutdown" type="empty">' $xfce4session && echo $?
+if [ $? = 0 ]; then
+    :
+else
+# if defaults do not exist then set defaults
+sed -i '/channel>/i \
+    <property name="shutdown" type="empty">\
+        <property name="ShowHibernate" type="bool" value="true"/>\
+        <property name="ShowSuspend" type="bool" value="true"/>\
+    </property>' $xfce4session
+fi
+
+# The loop
+while (true); do
+      echo "#Configuring Hibernate, Suspend buttons..."
+      if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $xfce4session; then
+          statushibernatebtn=$LITEAPPSICONS/shown32.png ; actionhibernatebtn="Hide button" ; deschibernatebtn="Hide Hibernate button on the Logout screen" ; valhibernatebtn="1"
+      else
+          statushibernatebtn=$LITEAPPSICONS/hidden32.png ; actionhibernatebtn="Show button  " ; deschibernatebtn="Show Hibernate button on the Logout screen" ; valhibernatebtn="0"
+      fi
+
+      if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $xfce4session; then
+          statussuspendbtn=$LITEAPPSICONS/shown32.png ; actionsuspendbtn="Hide button" ; descsuspendbtn="Hide Suspend button on the Logout screen" ; valsuspendbtn="1"
+      else
+          statussuspendbtn=$LITEAPPSICONS/hidden32.png ; actionsuspendbtn="Show button  " ; descsuspendbtn="Show Suspend button on the Logout screen" ; valsuspendbtn="0"
+      fi
+      statushidebtn=$LITEAPPSICONS/appicon3-off.png ; actionshidebtn="Hide both" ; deschidedbtn="Hide both buttons on the Logout screen"
+      statusshowbtn=$LITEAPPSICONS/appicon1-off.png ; actionsshowbtn="Show both" ; descshowbtn="Show both buttons on the Logout Screen"
+
+  EDNL=$(zenity --list --imagelist --width="524" --height="258" --cancel-label="Quit" --ok-label="Apply Action" --window-icon=$ic --hide-column=5 \
+                --title="$APPNAME" --text='                           <span font="Sans Bold 11">Hibernate / Suspend buttons preferences</span>\n' \
+                --print-column=5 --column "Status  " --column "Button" --column "Action" --column "Description" --column "val" \
+                $statushibernatebtn "Hibernate" "$actionhibernatebtn" "$deschibernatebtn" "ab" \
+                $statussuspendbtn "Suspend" "$actionsuspendbtn" "$descsuspendbtn" "bc" \
+                $statushidebtn " *both*" "$actionshidebtn" "$deschidedbtn" "cd" \
+                $statusshowbtn " *both*" "$actionsshowbtn" "$descshowbtn" "de" )
+
+      if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          return
+      fi
+      # get it done
+      if [[ "$EDNL" =~ "ab" ]]; then
+          if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $xfce4session; then
+              sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
+          else
+              sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
+          fi
+      elif [[ "$EDNL" =~ "bc" ]]; then
+          if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $xfce4session; then
+              sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
+          else
+              sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
+          fi
+      elif [[ "$EDNL" =~ "cd" ]]; then
+          sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
+          sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
+      elif [[ "$EDNL" =~ "de" ]]; then
+          sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
+          sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
+      else
+          zenity --info --width="280" --height="60" --timeout=5 --height="60" \
+                 --title="  Lite Tweaks - Info" --text="\nNo option was selected. No changes have been made."
+          return
+      fi
+      zenity --question --window-icon="info" --width="260" --height="80" --title="  Hibernate, Suspend buttons..." \
+             --text="\nYour preferences have been set. Changes will take effect after next login.\n\n Would you like to logout now?"
+          if [[ "$?" -eq "0" ]]; then
+            xfce4-session-logout --logout ; killall lite-tweaks
+          fi
+    done
+}
 
 # Set the dialogue window icon
 ic="/usr/share/pixmaps/litetweaks.png"
@@ -305,6 +381,11 @@ fi
 echo $selection | grep "Firefox" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('FIREFOX')
+fi
+
+echo $selection | grep "Hibernate, Suspend" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('HSBTNS')
 fi
 
 echo $selection | grep "Midori" > /dev/null
@@ -586,9 +667,10 @@ FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Li
 "${chrome[@]}" \
 "${chromium[@]}" \
 FALSE "Clear Memory" "Performance" "System" "Safe" "Free up RAM memory on your system" \
-FALSE "Default Web Browser" "Preferred" "Internet" "Safe" "Set your default Web browser" \
+FALSE "Default Web Browser" "Preferences" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
+FALSE "Hibernate, Suspend" "Preferences" "Session" "Safe" "Hide or show these buttons on the Logout screen" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
