@@ -612,7 +612,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
             zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
                    --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
                 if [[ "$?" -eq "0" ]]; then
-                  xfce4-session-logout --logout ; killall lite-tweaks
+                  killall lightdm
                 fi
         fi
   elif [[ $answ -eq "20" ]]; then
@@ -624,7 +624,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
             zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
                    --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
                 if [[ "$?" -eq "0" ]]; then
-                  xfce4-session-logout --logout ; killall lite-tweaks
+                  killall lightdm
                 fi
         fi
   elif [[ $answ -eq "30" ]]; then
@@ -636,7 +636,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
             zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
                    --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
                 if [[ "$?" -eq "0" ]]; then
-                  xfce4-session-logout --logout ; killall lite-tweaks
+                  killall lightdm
                 fi
         fi
   # loop when no option is selected
