@@ -94,6 +94,14 @@ if [ $? = 0 ];then
 ARRAYC+=('ZRAM')
 fi
 
+# common functions
+ask-logout-super() {
+  zenity --question --window-icon="info" --width="260" --height="80" --title="  $APPNAME" \
+         --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+      if [[ "$?" -eq "0" ]]; then
+        systemctl restart lightdm.service
+      fi
+}
 
 # Call the zenity window icon.
 ic="/usr/share/icons/zenity-llcc.png"
@@ -609,11 +617,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         else
             echo '#⚫ Show Logout only for all users...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=NONE/' $kioskrc
             echo '#✔ Show Logout only for all users.' && sleep 1
-            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
-                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
-                if [[ "$?" -eq "0" ]]; then
-                  killall lightdm
-                fi
+            ask-logout-super
         fi
   elif [[ $answ -eq "20" ]]; then
         if grep -q "Shutdown=%sudo" $kioskrc; then
@@ -621,11 +625,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         else
             echo '#⚫ Show Logout only, except for admins...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=%sudo/' $kioskrc
             echo '#✔ Show Logout only, except for admins.' && sleep 1
-            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
-                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
-                if [[ "$?" -eq "0" ]]; then
-                  killall lightdm
-                fi
+            ask-logout-super
         fi
   elif [[ $answ -eq "30" ]]; then
         if grep -q "Shutdown=ALL" $kioskrc; then
@@ -633,11 +633,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         else
             echo '#⚫ Show all shutdown options...' && sleep 1 ; sed -i 's/Shutdown=.*/Shutdown=ALL/' $kioskrc
             echo '#✔ Show all shutdown options.' && sleep 1
-            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
-                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
-                if [[ "$?" -eq "0" ]]; then
-                  killall lightdm
-                fi
+            ask-logout-super
         fi
   # loop when no option is selected
   elif [[ $answ -eq "40" ]]; then
@@ -650,11 +646,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         else
             echo '#⚫ Enabling power options on login screen...' && sleep .5 ; sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~power/' $pwrlogin
             echo '#✔ Power options enabled on login screen.' && sleep 1
-            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
-                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
-                if [[ "$?" -eq "0" ]]; then
-                  xfce4-session-logout --logout ; killall lite-tweaks
-                fi
+            ask-logout-super
         fi
   elif [[ $answ -eq "60" ]]; then
         if grep -q "~~Linux Lite" $pwrlogin; then
@@ -662,11 +654,7 @@ CustomizeSecurity=NONE\nShutdown=ALL\nSaveSession=ALL\n" >> $kioskrc
         else
             echo '#⚫ Disabling power options on login screen...' && sleep 1 ; sed -i 's/indicators =.*/indicators = ~host;~spacer;~clock;~spacer;~~Linux Lite/' $pwrlogin
             echo '#✔ Power options disabled on login screen.' && sleep 1
-            zenity --question --window-icon="info" --width="260" --height="80" --title="  Login & Logout Options" \
-                   --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
-                if [[ "$?" -eq "0" ]]; then
-                  xfce4-session-logout --logout ; killall lite-tweaks
-                fi
+            ask-logout-super
         fi
    else
     continue
@@ -765,6 +753,7 @@ if [[ $answ -eq "10" ]]; then
     else
         sed -i 's/SaveSession=.*/SaveSession=NONE/' $kioskrc
         echo '#⚫ Disabling Save Session for all users...' && sleep .5 && echo "#✔ Disabling Save Session for all users." && sleep 1
+        ask-logout-super
     fi
 # enable Save Session for admins only
 elif [[ $answ -eq "20" ]]; then
@@ -773,6 +762,7 @@ elif [[ $answ -eq "20" ]]; then
     else
         sed -i 's/SaveSession=.*/SaveSession=%sudo/' $kioskrc
         echo '#⚫ Enabling Save Session for admins only...' && sleep .5 && echo "#✔ Enabling Save Session for admins only." && sleep 1
+        ask-logout-super
     fi
 # enable Save Session for all users
 elif [[ $answ -eq "30" ]]; then
@@ -781,6 +771,7 @@ elif [[ $answ -eq "30" ]]; then
     else
         sed -i 's/SaveSession=.*/SaveSession=ALL/' $kioskrc
         echo '#⚫ Enabling Save Session for all users...' && sleep .5 && echo "#✔ Enabling Save Session for all users." && sleep 1
+        ask-logout-super
     fi
  else
     continue
