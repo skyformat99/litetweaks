@@ -742,7 +742,7 @@ grep -q "SaveSession=%sudo" $kioskrc && echo $?
             appicon2=$LITEAPPSICONS/appicon2-off.png
     fi
 # main dialog
-answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="470" --height="215" \
+answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$ic" --width="470" --height="220" \
                 --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
                 --text='                            <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
         --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
