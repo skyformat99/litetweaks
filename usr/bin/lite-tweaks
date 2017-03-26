@@ -247,8 +247,7 @@ DU() {
 # the loop
 while (true); do
 echo "#Disk Usage..."
-DU_TEXT='<span font="Sans 9">•  Double click a Partition to open in file manager.
-•  Click columns header to sort the information.\n</span>'
+DU_TEXT='<span font="Sans 10">* Double click a Partition to open in file manager.\n* Click columns header to sort the information.\n</span>'
 DU_TITLE="Disk Usage"
 TMP_DU=$(mktemp /tmp/diskusage.XXXXX)
 
