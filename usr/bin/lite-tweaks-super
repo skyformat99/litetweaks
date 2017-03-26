@@ -123,8 +123,8 @@ FILES() {
 # Main dialog window
 INSTALLER_TITLE="Find and list all files in your system based on specified size ranges
 \nPlease note:\n
-<b>•</b>  This is not a file removal tool. It is provided for informational purposes only.
-<b>•</b>  Do not remove files from your system unless you are absolutely convinced that it is safe to do so.\n
+<b>*</b>  This is not a file removal tool. It is provided for informational purposes only.\n
+<b>*</b>  Do not remove files from your system unless you are absolutely convinced that it is safe to do so.\n
 Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 
     # Application Name Variable
@@ -479,8 +479,8 @@ KERNELS() {
 
 # Main dialog window
 DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
-\n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
-<b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
+\n<b>*</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
+<b>*</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
 <i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
 
     # Call the dialog. Don't change the separator here!
