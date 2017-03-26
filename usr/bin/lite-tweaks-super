@@ -455,6 +455,8 @@ done
 }
 KERNELS() {
     while (true); do
+    echo "#Kernel cleaner..."
+    APPNAME="Kernel Cleaner"
     # Check current Kernel
     CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 
@@ -468,7 +470,7 @@ KERNELS() {
     # Check if there are old Kernels
     echo $OLDKERNELS | grep linux*
     if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-        zenity --info --width="200" --height="60" --title=" Results" --text="\nNo additional kernels found."
+        zenity --info --width="225" --height="60" --title=" $APPNAME - Information" --text="\nNo additional kernels were found in your system for removal."
         return
     fi
 
@@ -480,8 +482,6 @@ DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish 
 \n<b>•</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
 <b>•</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
 <i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
-
-    APPNAME="Kernel Cleaner"
 
     # Call the dialog. Don't change the separator here!
     okernel=$(zenity --window-icon="$ic" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
