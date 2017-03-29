@@ -1,9 +1,9 @@
 Package: lite-tweaks
-Version: 2.0-0210-linuxlite
+Version: 2.0-0220-linuxlite
 Essential: yes
 Section: base
 Priority: required
-Installed-Size: 85
+Installed-Size: 93.7
 Depends: apt, zenity, gksu
 Homepage: http://www.linuxliteos.com
 Maintainer: Jerry Bezencon<valtam@linuxliteos.com>, Ralphy<postmaster@unlockforus.com>
