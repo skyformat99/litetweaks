@@ -600,7 +600,7 @@ fi
 
 # Check if preload is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into memory for faster startup times")
+        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into Memory for faster startup times")
 else
         preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
 fi
@@ -647,7 +647,7 @@ fi
 
 # Check if zram is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
-        zram=(FALSE "zRAM" "Performance" "System" "Safe" "Compressed RAM based block device for faster I/O")
+        zram=(FALSE "zRAM" "Performance" "System" "Safe" "More efficient use of Memory especially on older computers")
 else
         zram=(FALSE "zRAM" "Performance" "System" "Safe" "zRAM is currently installed (select to modify)")
 fi
@@ -665,7 +665,7 @@ FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages that are 
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
-FALSE "Clear Memory" "Performance" "System" "Safe" "Free up RAM memory on your system" \
+FALSE "Clear Memory" "Performance" "System" "Safe" "Free up Memory on your system" \
 FALSE "Default Web Browser" "Preferences" "Internet" "Safe" "Set your default Web browser" \
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
@@ -675,7 +675,7 @@ FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer 
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
 "${logarchive[@]}" \
 FALSE "Login & Logout Options" "Administration" "System" "Safe" "Enable or disable basic Login & Logout options" \
-FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable user's ability of saving their session on logout" \
+FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable users ability of saving their session on logout" \
 "${midori[@]}" \
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
 "${aptcache[@]}" \
