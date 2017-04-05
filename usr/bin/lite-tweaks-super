@@ -121,7 +121,7 @@ CLEAN() {
 }
 CLEARMEM() {
     echo "#⚫ Freeing up system memory, please wait..." && sleep 1
-    sh -c 'echo 3 >/proc/sys/vm/drop_caches'
+    sync; sh -c 'echo 3 >/proc/sys/vm/drop_caches'
     echo "#✔ System memory freed." && sleep 1
 }
 FILES() {
