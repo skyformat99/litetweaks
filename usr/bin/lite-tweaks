@@ -52,6 +52,17 @@ MIDORI() {
         fi
         echo "#✔ Midori browser cache cleared." && sleep 1
 }
+OPERA() {
+    echo "#⚫ Removing Opera browser cache..." && sleep 1
+        rm -rf $HOME/.cache/opera/Cache/
+        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+          echo "# Error"
+          sleep 1
+          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Opera browser cache!"
+          return
+        fi
+        echo "#✔ Opera browser cache cleared." && sleep 1
+}
 PALEMOON() {
     echo "#⚫ Removing Pale Moon browser cache..." && sleep 1
         rm -rf $HOME/.cache/moonchild\ productions/pale\ moon/
@@ -177,6 +188,17 @@ else
     midori=()
 fi
 
+hash opera 2>/dev/null
+if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
+    if [ "${test_1[0]}" = "application/xhtml+xml=opera.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=opera.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=opera.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=opera.desktop;firefox.desktop;" ]; then
+        opera=("TRUE" "Opera" "  ✔ default" "Opera is set as the default Web browser" )
+    else
+        opera=("FALSE" "Opera" "not default" "Set Opera as the default Web browser" )
+    fi
+else
+    opera=()
+fi
+
 hash palemoon 2>/dev/null
 if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
     if [ "${test_1[0]}" = "application/xhtml+xml=palemoon.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=palemoon.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=palemoon.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=palemoon.desktop;firefox.desktop;" ]; then
@@ -198,10 +220,10 @@ if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
 else
     vivaldi=()
 fi
-        selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=200 --column="Select" --column="Name" --column="Status" \
+        selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=220 --column="Select" --column="Name" --column="Status" \
         --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
         --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
-        "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
+        "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${opera[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
 
         # "The kill switch"
          if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -229,6 +251,11 @@ fi
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;
         xdg-settings set default-web-browser midori.desktop;;
+    "Opera") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=opera.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_2[0]}"!text/html=opera.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=opera.desktop;firefox.desktop;!g" $mimeapps `; \
+        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=opera.desktop;firefox.desktop;!g" $mimeapps `;
+        xdg-settings set default-web-browser opera.desktop;;
     "Pale Moon") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_2[0]}"!text/html=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
         `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
@@ -390,6 +417,11 @@ fi
 echo $selection | grep "Midori" > /dev/null
 if [ $? = 0 ];then
 ARRAYA+=('MIDORI')
+fi
+
+echo $selection | grep "Opera" > /dev/null
+if [ $? = 0 ];then
+ARRAYA+=('OPERA')
 fi
 
 echo $selection | grep "Pale Moon" > /dev/null
@@ -582,6 +614,14 @@ else
          midori=()
 fi
 
+# Check if  opera browser cache exists
+if [  -d  "$HOME/.cache/opera/Cache/" ]; then
+    CHRCACHESIZE=$(du -sh $HOME/.cache/opera/Cache/ | awk '{print $1}' | sed 's/$/B/')
+    opera=("FALSE" "Opera Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Opera browser cache" )
+else
+         opera=()
+fi
+
 # Check if  Pale Moon browser cache exists
 if [  -d  "$HOME/.cache/moonchild productions/pale moon/" ]; then
     CHRCACHESIZE=$(du -sh $HOME/.cache/moonchild\ productions/pale\ moon/ | awk '{print $1}' | sed 's/$/B/')
@@ -678,6 +718,7 @@ FALSE "Login & Logout Options" "Administration" "System" "Safe" "Enable or disab
 FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable users ability of saving their session on logout" \
 "${midori[@]}" \
 FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
+"${opera[@]}" \
 "${aptcache[@]}" \
 FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package management system to default" \
 "${palemoon[@]}" \
