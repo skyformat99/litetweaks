@@ -9,118 +9,87 @@
 # Set functions for non-root execution
 # The ones that need administrative privileges go to the other file: lite-tweaks-super
 CHROME() {
-    echo "#⚫ Removing Google Chrome browser cache..." && sleep 1
-        rm -rf $HOME/.cache/google-chrome/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome browser cache!"
-          return
-        fi
-        echo "#✔ Google Chrome browser cache cleared." && sleep 1
+  echo "#⚫ Removing Google Chrome browser cache..." && sleep 1
+  rm -rf $HOME/.cache/google-chrome/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Google Chrome browser cache cleared." && sleep 1
 }
 CHROMIUM() {
-    echo "#⚫ Removing Chromium browser cache..." && sleep 1
-        rm -rf $HOME/.cache/chromium/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium browser cache!"
-          return
-        fi
-        echo "#✔ Chromium browser cache cleared." && sleep 1
+  echo "#⚫ Removing Chromium browser cache..." && sleep 1
+  rm -rf $HOME/.cache/chromium/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Chromium browser cache cleared." && sleep 1
 }
 FIREFOX() {
-    echo "#⚫ Removing Firefox browser cache..." && sleep 1
-        rm -rf $HOME/.cache/mozilla/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox browser cache!"
-          return
-        fi
-        echo "#✔ Firefox browser cache cleared." && sleep 1
+  echo "#⚫ Removing Firefox browser cache..." && sleep 1
+  rm -rf $HOME/.cache/mozilla/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error" && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Firefox browser cache cleared." && sleep 1
 }
 MIDORI() {
-    echo "#⚫ Removing Midori browser cache..." && sleep 1
-        rm -rf $HOME/.cache/midori/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori browser cache!"
-          return
-        fi
-        echo "#✔ Midori browser cache cleared." && sleep 1
+  echo "#⚫ Removing Midori browser cache..." && sleep 1
+  rm -rf $HOME/.cache/midori/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Midori browser cache cleared." && sleep 1
 }
 OPERA() {
-    echo "#⚫ Removing Opera browser cache..." && sleep 1
-        rm -rf $HOME/.cache/opera/Cache/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Opera browser cache!"
-          return
-        fi
-        echo "#✔ Opera browser cache cleared." && sleep 1
+  echo "#⚫ Removing Opera browser cache..." && sleep 1
+  rm -rf $HOME/.cache/opera/Cache/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Opera browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Opera browser cache cleared." && sleep 1
 }
 PALEMOON() {
-    echo "#⚫ Removing Pale Moon browser cache..." && sleep 1
-        rm -rf $HOME/.cache/moonchild\ productions/pale\ moon/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Pale Moon browser cache!"
-          return
-        fi
-        echo "#✔ Pale Moon browser cache cleared." && sleep 1
+  echo "#⚫ Removing Pale Moon browser cache..." && sleep 1
+  rm -rf $HOME/.cache/moonchild\ productions/pale\ moon/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Pale Moon browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Pale Moon browser cache cleared." && sleep 1
 }
 VIVALDI() {
-    echo "#⚫ Removing Vivaldi browser cache..." && sleep 1
-        rm -rf $HOME/.cache/vivaldi/
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "# Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi browser cache!"
-          return
-        fi
-        echo "#✔ Vivaldi browser cache cleared." && sleep 1
+  echo "#⚫ Removing Vivaldi browser cache..." && sleep 1
+  rm -rf $HOME/.cache/vivaldi/
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi browser cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Vivaldi browser cache cleared." && sleep 1
 }
 THUMBNAILS() {
-    echo "#⚫ Deleting Thumbnail Cache..." && sleep 1
-        rm -rf $HOME/.cache/thumbnails/*
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "#Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!"
-          return
-        fi
-        echo "#✔ Thumbnail Cache cleared." && sleep 1
+  echo "#⚫ Deleting Thumbnail Cache..." && sleep 1
+  rm -rf $HOME/.cache/thumbnails/*
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!" 2>/dev/null; return
+    fi
+  echo "#✔ Thumbnail Cache cleared." && sleep 1
 }
 TRASH() {
-    echo "#⚫ Emptying the Trash bin..." && sleep 1
-        rm -rf $HOME/.local/share/Trash/files/*
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "#Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!"
-          return
-        fi
-        echo "#✔ Trash bin emptied." && sleep 1
+  echo "#⚫ Emptying the Trash bin..." && sleep 1
+  rm -rf $HOME/.local/share/Trash/files/*
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!" 2>/dev/null; return
+    fi
+  echo "#✔ Trash bin emptied." && sleep 1
 }
 WHISKER() {
-    echo "#⚫ Cleaning Whisker Menu Recent items..." && sleep 1
-        sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
-        if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          echo "#Error"
-          sleep 1
-          zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!"
-          return
-        fi
-        echo "#✔ Whisker Menu Recent items cleared." && sleep 1
-
-    echo "#⚫ Restarting the panel..."
-    dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
-    sleep 2
+  echo "#⚫ Cleaning Whisker Menu Recent items..." && sleep 1
+  sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!" 2>/dev/null; return
+    fi
+  echo "#✔ Whisker Menu Recent items cleared." && sleep 1
+  echo "#⚫ Restarting the panel..."
+  dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
+  sleep 2
 }
 DBROWSER() {
 echo "#⚫ Looking for installed web browsers..." && sleep 1
@@ -560,12 +529,7 @@ fi
 # Check if ARRAYB is empty. If empty, skip the execution
 if [ ${#ARRAYB[@]} -ne 0 ]; then
    case $? in
-    0) gksu -m '
-<b>   Lite Tweaks requires Administrative privileges</b>
-
-Some of the selected tasks require Administrative privileges for execution.
-
- Please enter your password to continue.'  /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open lite-tweaks-super with superuser privileges and pass the array B
+    0) pkexec /usr/bin/lite-tweaks-super "${ARRAYB[@]}"  # Open lite-tweaks-super with superuser privileges and pass the array B
     ;;
     1) return
   esac
@@ -712,7 +676,7 @@ FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk u
 FALSE "Hibernate, Suspend" "Preferences" "Session" "Safe" "Hide or show these buttons on the Logout screen" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
-FALSE "Locate Large Files" "Information" "System" "Caution" "Find files on your system within a size range" \
+FALSE "Locate Large Files" "Information" "System" "Caution" "Find files in your system based on specified size ranges" \
 "${logarchive[@]}" \
 FALSE "Login & Logout Options" "Administration" "System" "Safe" "Enable or disable basic Login & Logout options" \
 FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable users ability of saving their session on logout" \
