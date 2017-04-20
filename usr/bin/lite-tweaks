@@ -8,237 +8,234 @@
 
 # Set functions for non-root execution
 # The ones that need administrative privileges go to the other file: lite-tweaks-super
+# Chrome Cache tweak
 CHROME() {
-  echo "#⚫ Removing Google Chrome browser cache..." && sleep 1
-  rm -rf $HOME/.cache/google-chrome/
+  echo "#⚫ Removing Google Chrome browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/google-chrome/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Google Chrome browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Google Chrome browser cache cleared." && sleep 1
 }
+# Chromium Cache tweak
 CHROMIUM() {
-  echo "#⚫ Removing Chromium browser cache..." && sleep 1
-  rm -rf $HOME/.cache/chromium/
+  echo "#⚫ Removing Chromium browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/chromium/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Chromium browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Chromium browser cache cleared." && sleep 1
 }
+# Firefox Cache tweak
 FIREFOX() {
-  echo "#⚫ Removing Firefox browser cache..." && sleep 1
-  rm -rf $HOME/.cache/mozilla/
+  echo "#⚫ Removing Firefox browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/mozilla/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error" && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Firefox browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Firefox browser cache cleared." && sleep 1
 }
+# Midori Cache tweak
 MIDORI() {
-  echo "#⚫ Removing Midori browser cache..." && sleep 1
-  rm -rf $HOME/.cache/midori/
+  echo "#⚫ Removing Midori browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/midori/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Midori browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Midori browser cache cleared." && sleep 1
 }
+# Opera Cache tweak
 OPERA() {
-  echo "#⚫ Removing Opera browser cache..." && sleep 1
-  rm -rf $HOME/.cache/opera/Cache/
+  echo "#⚫ Removing Opera browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/opera/Cache/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Opera browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Opera browser cache cleared." && sleep 1
 }
+# Pale Moon Cache tweak
 PALEMOON() {
-  echo "#⚫ Removing Pale Moon browser cache..." && sleep 1
-  rm -rf $HOME/.cache/moonchild\ productions/pale\ moon/
+  echo "#⚫ Removing Pale Moon browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/moonchild productions/pale moon/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Pale Moon browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Pale Moon browser cache cleared." && sleep 1
 }
+# Vivaldi Cache tweak
 VIVALDI() {
-  echo "#⚫ Removing Vivaldi browser cache..." && sleep 1
-  rm -rf $HOME/.cache/vivaldi/
+  echo "#⚫ Removing Vivaldi browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/vivaldi/"
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing Vivaldi browser cache!" 2>/dev/null; return
     fi
   echo "#✔ Vivaldi browser cache cleared." && sleep 1
 }
+# Thumbnails Cache tweak
 THUMBNAILS() {
-  echo "#⚫ Deleting Thumbnail Cache..." && sleep 1
-  rm -rf $HOME/.cache/thumbnails/*
+  echo "#⚫ Deleting Thumbnail Cache..." && sleep 1 ; rm -rf "$HOME"/.cache/thumbnails/*
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while deleting Thumbnail Cache!" 2>/dev/null; return
     fi
   echo "#✔ Thumbnail Cache cleared." && sleep 1
 }
+# Trash Bin tweak
 TRASH() {
-  echo "#⚫ Emptying the Trash bin..." && sleep 1
-  rm -rf $HOME/.local/share/Trash/files/*
+  echo "#⚫ Emptying the Trash bin..." && sleep 1 ; rm -rf "$HOME"/.local/share/Trash/files/*
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while emptying the Trash bin!" 2>/dev/null; return
     fi
   echo "#✔ Trash bin emptied." && sleep 1
 }
+# Whisker Menu tweak
 WHISKER() {
-  echo "#⚫ Cleaning Whisker Menu Recent items..." && sleep 1
-  sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
+  echo "#⚫ Cleaning Whisker Menu Recent items..." && sleep 1 ; sed -i 's/^recent=.*$/recent=/g' ~/.config/xfce4/panel/whiskermenu-*.rc
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
       zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while cleaning Whisker Menu Recently Used items!" 2>/dev/null; return
     fi
-  echo "#✔ Whisker Menu Recent items cleared." && sleep 1
-  echo "#⚫ Restarting the panel..."
+  echo "#✔ Whisker Menu Recent items cleared." && sleep 1 ; echo "#⚫ Restarting the panel..."
   dbus-send --print-reply --dest=org.xfce.Panel /org/xfce/Panel org.xfce.Panel.Terminate boolean:true
   sleep 2
 }
+# Default Web Browser tweak
 DBROWSER() {
 echo "#⚫ Looking for installed web browsers..." && sleep 1
-mimeapps=~/.config/mimeapps.list
+_MIMEAPPS="$HOME/.config/mimeapps.list"
 echo "#Configuring default web browser..."
 # Create mimeapps.list if it doesn't exist
-if [ ! -f $mimeapps ]; then
-      touch $mimeapps
-  echo "[Added Associations]" >> $mimeapps  && echo "[Default Applications]" >> $mimeapps
-  sed -i -e '1a\application/xhtml+xml=firefox.desktop \nx-scheme-handler/http=firefox.desktop \nx-scheme-handler/https=firefox.desktop' -e '/[Default Applications] /a\text/html=firefox.desktop' $mimeapps
+if [ ! -f "$_MIMEAPPS" ]; then
+      touch "$_MIMEAPPS"
+  echo "[Added Associations]" >> "$_MIMEAPPS"  && echo "[Default Applications]" >> "$_MIMEAPPS"
+  sed -i -e '1a\application/xhtml+xml=firefox.desktop \nx-scheme-handler/http=firefox.desktop \nx-scheme-handler/https=firefox.desktop' -e '/[Default Applications] /a\text/html=firefox.desktop' "$_MIMEAPPS"
 else # If file exists make sure mime options are set before proceeding
-  grep "application/xhtml+xml" $mimeapps || sed -i '/Added Associations/a application/xhtml+xml=firefox.desktop' $mimeapps
-  grep "x-scheme-handler/http" $mimeapps || sed -i '/Added Associations/a x-scheme-handler/http=firefox.desktop' $mimeapps
-  grep "x-scheme-handler/https" $mimeapps || sed -i '/Added Associations/a x-scheme-handler/https=firefox.desktop' $mimeapps
-  grep "text/html" $mimeapps || sed -i '/Default Applications/a text/html=firefox.desktop' $mimeapps
+  grep "application/xhtml+xml" "$_MIMEAPPS" || sed -i '/Added Associations/a application/xhtml+xml=firefox.desktop' "$_MIMEAPPS"
+  grep "x-scheme-handler/http" "$_MIMEAPPS" || sed -i '/Added Associations/a x-scheme-handler/http=firefox.desktop' "$_MIMEAPPS"
+  grep "x-scheme-handler/https" "$_MIMEAPPS" || sed -i '/Added Associations/a x-scheme-handler/https=firefox.desktop' "$_MIMEAPPS"
+  grep "text/html" "$_MIMEAPPS" || sed -i '/Default Applications/a text/html=firefox.desktop' "$_MIMEAPPS"
 fi
 
-test_1=(` grep "application/xhtml+xml" $mimeapps`)
-test_2=(` grep "text/html" $mimeapps`)
-test_3=(` grep "x-scheme-handler/http" $mimeapps`)
-test_4=(` grep "x-scheme-handler/https" $mimeapps`)
+test_1=(` grep "application/xhtml+xml" "$_MIMEAPPS"`)
+test_3=(` grep "x-scheme-handler/http" "$_MIMEAPPS"`)
+test_4=(` grep "x-scheme-handler/https" "$_MIMEAPPS"`)
 
 hash firefox 2>/dev/null
 
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
-            firefox=("TRUE" "Firefox" "  ✔ default" "Firefox is set as the default Web browser" )
-    else
-        firefox=("FALSE" "Firefox" "not default" "Set Firefox as the default Web browser" )
-    fi
-else
-    firefox=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=firefox.desktop;" ]; then
+    firefox=("TRUE" "Firefox" "  ✔ default" "Firefox is set as the default Web browser" )
+  else firefox=("FALSE" "Firefox" "not default" "Set Firefox as the default Web browser" )
+  fi
+else firefox=()
 fi
 
 hash google-chrome 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=google-chrome.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
-        googlechrome=("TRUE" "Google Chrome" "  ✔ default" "Google Chrome is set as the default Web browser" )
-    else
-        googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default Web browser" )
-    fi
-else
-    googlechrome=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=google-chrome.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=google-chrome.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=google-chrome.desktop;firefox.desktop;" ]; then
+    googlechrome=("TRUE" "Google Chrome" "  ✔ default" "Google Chrome is set as the default Web browser" )
+  else googlechrome=("FALSE" "Google Chrome" "not default" "Set Google Chrome as the default Web browser" )
+  fi
+else googlechrome=()
 fi
 
 hash chromium-browser 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
-        chromium=("TRUE" "Chromium" "  ✔ default" "Chromium is set as the default Web browser" )
-    else
-        chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default Web browser" )
-    fi
-else
-    chromium=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=chromium-browser.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;" ]; then
+    chromium=("TRUE" "Chromium" "  ✔ default" "Chromium is set as the default Web browser" )
+  else chromium=("FALSE" "Chromium" "not default" "Set Chromium as the default Web browser" )
+  fi
+else chromium=()
 fi
 
 hash midori 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=midori.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
-        midori=("TRUE" "Midori" "  ✔ default" "Midori is set as the default Web browser" )
-    else
-        midori=("FALSE" "Midori" "not default" "Set Midori as the default Web browser" )
-    fi
-else
-    midori=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=midori.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=midori.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=midori.desktop;firefox.desktop;" ]; then
+    midori=("TRUE" "Midori" "  ✔ default" "Midori is set as the default Web browser" )
+  else midori=("FALSE" "Midori" "not default" "Set Midori as the default Web browser" )
+  fi
+else midori=()
 fi
 
 hash opera 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=opera.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=opera.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=opera.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=opera.desktop;firefox.desktop;" ]; then
-        opera=("TRUE" "Opera" "  ✔ default" "Opera is set as the default Web browser" )
-    else
-        opera=("FALSE" "Opera" "not default" "Set Opera as the default Web browser" )
-    fi
-else
-    opera=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=opera.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=opera.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=opera.desktop;firefox.desktop;" ]; then
+    opera=("TRUE" "Opera" "  ✔ default" "Opera is set as the default Web browser" )
+  else opera=("FALSE" "Opera" "not default" "Set Opera as the default Web browser" )
+  fi
+else opera=()
 fi
 
 hash palemoon 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=palemoon.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=palemoon.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=palemoon.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=palemoon.desktop;firefox.desktop;" ]; then
-        palemoon=("TRUE" "Pale Moon" "  ✔ default" "Pale Moon is set as the default Web browser" )
-    else
-        palemoon=("FALSE" "Pale Moon" "not default" "Set Pale Moon as the default Web browser" )
-    fi
-else
-    palemoon=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=palemoon.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=palemoon.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=palemoon.desktop;firefox.desktop;" ]; then
+    palemoon=("TRUE" "Pale Moon" "  ✔ default" "Pale Moon is set as the default Web browser" )
+  else palemoon=("FALSE" "Pale Moon" "not default" "Set Pale Moon as the default Web browser" )
+  fi
+else palemoon=()
 fi
 
 hash vivaldi 2>/dev/null
-if [ "${PIPESTATUS[0]}" -eq "0"  ]; then
-    if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_2[0]}" = "text/html=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
-        vivaldi=("TRUE" "Vivaldi" "  ✔ default" "Vivaldi is set as the default Web browser" )
-    else
-        vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default Web browser" )
-    fi
-else
-    vivaldi=()
+if [ "${PIPESTATUS[0]}" -eq "0" ]; then
+  if [ "${test_1[0]}" = "application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;" ] \
+  && [ "${test_3[0]}" = "x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;" ] \
+  && [ "${test_4[0]}" = "x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;" ]; then
+    vivaldi=("TRUE" "Vivaldi" "  ✔ default" "Vivaldi is set as the default Web browser" )
+  else vivaldi=("FALSE" "Vivaldi" "not default" "Set Vivaldi as the default Web browser" )
+  fi
+else vivaldi=()
 fi
-        selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=220 --column="Select" --column="Name" --column="Status" \
-        --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
-        --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
-        "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${opera[@]}" "${palemoon[@]}" "${vivaldi[@]}"  )
+selection=$(zenity --window-icon="$ic" --list --radiolist --width=550 --height=220 --column="Select" --column="Name" --column="Status" \
+                   --column="Description" --text='                 <span font="Sans Bold 10">Choose the Web browser you want to set as the default</span>\n' \
+                   --title="Default Web Browser" --ok-label="Set" --cancel-label="Cancel" \
+                   "${firefox[@]}" "${chromium[@]}" "${googlechrome[@]}" "${midori[@]}" "${opera[@]}" "${palemoon[@]}" "${vivaldi[@]}" 2>/dev/null )
 
-        # "The kill switch"
-         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-            return
-        fi
-    sleep 1
-    case "$selection" in
-    "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" $mimeapps `;
-        `sed -i "s!^"${test_2[0]}"!text/html=firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser firefox.desktop;;
-    "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser chromium.desktop;;
-    "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser google-chrome.desktop;;
-    "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser midori.desktop;;
-    "Opera") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=opera.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=opera.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=opera.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=opera.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser opera.desktop;;
-    "Pale Moon") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=palemoon.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=palemoon.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser palemoon.desktop;;
-    "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_2[0]}"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `; \
-        `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" $mimeapps `;
-        xdg-settings set default-web-browser vivaldi.desktop;;
-    esac
+# "The kill switch"
+if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
+sleep 1
+  case "$selection" in
+  "Firefox") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=firefox.desktop;!g" "$_MIMEAPPS" `;
+    `sed -i "s!^"text/html=.*"!text/html=firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser firefox.desktop;;
+  "Chromium") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=chromium-browser.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=chromium-browser.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=chromium-browser.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=chromium-browser.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser chromium.desktop;;
+  "Google Chrome") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=google-chrome.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=google-chrome.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=google-chrome.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=google-chrome.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser google-chrome.desktop;;
+  "Midori") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=midori.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=midori.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=midori.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=midori.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser midori.desktop;;
+  "Opera") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=opera.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=opera.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=opera.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=opera.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser opera.desktop;;
+  "Pale Moon") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=palemoon.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=palemoon.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=palemoon.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=palemoon.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser palemoon.desktop;;
+  "Vivaldi") `sed -i "s!^"${test_1[0]}"!application/xhtml+xml=vivaldi-stable.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"text/html=.*"!text/html=vivaldi-stable.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_3[0]}"!x-scheme-handler/http=vivaldi-stable.desktop;firefox.desktop;!g" "$_MIMEAPPS" `; \
+    `sed -i "s!^"${test_4[0]}"!x-scheme-handler/https=vivaldi-stable.desktop;firefox.desktop;!g" "$_MIMEAPPS" `;
+    xdg-settings set default-web-browser vivaldi.desktop;;
+  esac
 echo "#✔ $selection is now the default browser." && sleep 1
-unset mimeapps
 }
+# Display Disk Usage tweak
 DU() {
 # the loop
 while (true); do
@@ -250,97 +247,87 @@ TMP_DU=$(mktemp /tmp/diskusage.XXXXX)
 df -h -T| tail -n+2 | while read fs type size used rest target; do
     if [[ $rest ]] ; then
         echo "$fs" "$type" "$size"B "$used"B "$rest"B "${target[@]}" |grep /dev/sd |
-        awk '{print $1,"\n",$2,"\n",$3,"\n",$4,"\n",$5,"\n",$6}BEGIN{ s = 7; e = 35; }{for (i=s; i<=e; i++) printf("%s%s", $(i), i<e ? OFS : "\n"); }' # Workaround for disk labels that contain whitespaces(number of characters that can be divided by whitespace =e-s)
+        # Workaround for disk labels that contain whitespaces(number of characters that can be divided by whitespace =e-s)
+        awk '{print $1,"\n",$2,"\n",$3,"\n",$4,"\n",$5,"\n",$6}BEGIN{ s = 7; e = 35; }{for (i=s; i<=e; i++) printf("%s%s", $(i), i<e ? OFS : "\n"); }'
     fi
 done | sed -e 's/[ \t]*$//' $1|  tee $TMP_DU
 
-SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-label="Quit" --window-icon="$ic" --width=600 --height=350 --title="  ${DU_TITLE}" --text="${DU_TEXT}" \
-                    --column="Device" --column="Filesystem" --column="Size" --column="Used" --column="Free" --column="%Used" --column="Partition" --print-column="7"| cut -d '|' -f2)
+SEL=$(cat $TMP_DU | zenity --list --ok-label="Open in File Manager" --cancel-label="Quit" --window-icon="$ic" --width="600" --height="350" --title="  ${DU_TITLE}" --text="${DU_TEXT}" \
+                    --column="Device" --column="Filesystem" --column="Size" --column="Used" --column="Free" --column="%Used" --column="Partition" --print-column="7"| cut -d '|' -f2 2>/dev/null)
 
-    if [ -z "$SEL" ]; then
-      rm -f $TMP_DU
-      return
-    fi
-
-thunar "$(echo $SEL)"
+  if [ -z "$SEL" ]; then rm -f $TMP_DU; return; fi
+thunar "$( echo $SEL)"
 done
 }
+# Hibernate / Suspend tweak
 HSBTNS() {
-LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
-APPNAME="   Lite Tweaks - Hibernate / Suspend buttons"
-xfce4session=/home/$USER/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
-
+_LITEAPPSICONS="/usr/share/liteappsicons/litetweaks/"
+APPNAME="  Lite Tweaks - Hibernate / Suspend buttons"
+_XFCE4SESSION="$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
 #check defaults on first run
-grep -q -F '<property name="shutdown" type="empty">' $xfce4session && echo $?
-if [ $? = 0 ]; then
-    :
-else
-# if defaults do not exist then set defaults
-sed -i '/channel>/i \
+grep -q -F '<property name="shutdown" type="empty">' "$_XFCE4SESSION" && echo $?
+  if [ $? = 0 ]; then :; else
+  # if defaults do not exist then set defaults
+  sed -i '/channel>/i \
     <property name="shutdown" type="empty">\
         <property name="ShowHibernate" type="bool" value="true"/>\
         <property name="ShowSuspend" type="bool" value="true"/>\
-    </property>' $xfce4session
-fi
+    </property>' "$_XFCE4SESSION"
+  fi
 
 # The loop
 while (true); do
-      echo "#Configuring Hibernate, Suspend buttons..."
-      if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $xfce4session; then
-          statushibernatebtn=$LITEAPPSICONS/shown32.png ; actionhibernatebtn="Hide button" ; deschibernatebtn="Hide Hibernate button on the Logout screen" ; valhibernatebtn="1"
-      else
-          statushibernatebtn=$LITEAPPSICONS/hidden32.png ; actionhibernatebtn="Show button  " ; deschibernatebtn="Show Hibernate button on the Logout screen" ; valhibernatebtn="0"
-      fi
+  echo "#Configuring Hibernate, Suspend buttons..."
+  if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' "$_XFCE4SESSION"; then
+    statushibernatebtn="$_LITEAPPSICONS/shown32.png" ; actionhibernatebtn="Hide button" ; deschibernatebtn="Hide Hibernate button on the Logout screen" ; valhibernatebtn="1"
+  else
+    statushibernatebtn="$_LITEAPPSICONS/hidden32.png" ; actionhibernatebtn="Show button  " ; deschibernatebtn="Show Hibernate button on the Logout screen" ; valhibernatebtn="0"
+  fi
 
-      if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $xfce4session; then
-          statussuspendbtn=$LITEAPPSICONS/shown32.png ; actionsuspendbtn="Hide button" ; descsuspendbtn="Hide Suspend button on the Logout screen" ; valsuspendbtn="1"
-      else
-          statussuspendbtn=$LITEAPPSICONS/hidden32.png ; actionsuspendbtn="Show button  " ; descsuspendbtn="Show Suspend button on the Logout screen" ; valsuspendbtn="0"
-      fi
-      statushidebtn=$LITEAPPSICONS/appicon3-off.png ; actionshidebtn="Hide both" ; deschidedbtn="Hide both buttons on the Logout screen"
-      statusshowbtn=$LITEAPPSICONS/appicon1-off.png ; actionsshowbtn="Show both" ; descshowbtn="Show both buttons on the Logout Screen"
+  if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' "$_XFCE4SESSION"; then
+    statussuspendbtn="$_LITEAPPSICONS/shown32.png" ; actionsuspendbtn="Hide button" ; descsuspendbtn="Hide Suspend button on the Logout screen" ; valsuspendbtn="1"
+  else
+    statussuspendbtn="$_LITEAPPSICONS/hidden32.png" ; actionsuspendbtn="Show button  " ; descsuspendbtn="Show Suspend button on the Logout screen" ; valsuspendbtn="0"
+  fi
+    statushidebtn="$_LITEAPPSICONS/appicon3-off.png" ; actionshidebtn="Hide both" ; deschidedbtn="Hide both buttons on the Logout screen"
+    statusshowbtn="$_LITEAPPSICONS/appicon1-off.png" ; actionsshowbtn="Show both" ; descshowbtn="Show both buttons on the Logout Screen"
 
-  HSBTN=$(zenity --list --imagelist --width="524" --height="258" --cancel-label="Quit" --ok-label="Apply Action" --window-icon=$ic --hide-column=5 \
-                --title="$APPNAME" --text='                           <span font="Sans Bold 11">Hibernate / Suspend buttons preferences</span>\n' \
-                --print-column=5 --column "Status  " --column "Button" --column "Action" --column "Description" --column "val" \
-                $statushibernatebtn "Hibernate" "$actionhibernatebtn" "$deschibernatebtn" "ab" \
-                $statussuspendbtn "Suspend" "$actionsuspendbtn" "$descsuspendbtn" "bc" \
-                $statushidebtn " *both*" "$actionshidebtn" "$deschidedbtn" "cd" \
-                $statusshowbtn " *both*" "$actionsshowbtn" "$descshowbtn" "de" )
+    HSBTN=$(zenity --list --imagelist --width="524" --height="258" --cancel-label="Quit" --ok-label="Apply Action" --window-icon=$ic --hide-column=5 \
+                   --title="$APPNAME" --text='                           <span font="Sans Bold 11">Hibernate / Suspend buttons preferences</span>\n' \
+                   --print-column=5 --column "Status  " --column "Button" --column "Action" --column "Description" --column "val" \
+                   "$statushibernatebtn" "Hibernate" "$actionhibernatebtn" "$deschibernatebtn" "ab" \
+                   "$statussuspendbtn" "Suspend" "$actionsuspendbtn" "$descsuspendbtn" "bc" \
+                   "$statushidebtn" " *both*" "$actionshidebtn" "$deschidedbtn" "cd" \
+                   "$statusshowbtn" " *both*" "$actionsshowbtn" "$descshowbtn" "de" 2>/dev/null )
 
-      if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-          return
-      fi
-      # get it done
-      if [[ "$HSBTN" =~ "ab" ]]; then
-          if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $xfce4session; then
-              sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
-          else
-              sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
-          fi
-      elif [[ "$HSBTN" =~ "bc" ]]; then
-          if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $xfce4session; then
-              sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
-          else
-              sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
-          fi
-      elif [[ "$HSBTN" =~ "cd" ]]; then
-          sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $xfce4session
-          sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $xfce4session
-      elif [[ "$HSBTN" =~ "de" ]]; then
-          sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $xfce4session
-          sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $xfce4session
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
+    # get it done
+    if [[ "$HSBTN" =~ "ab" ]]; then
+      if grep -q -F '<property name="ShowHibernate" type="bool" value="true"/>' $_XFCE4SESSION; then
+        sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $_XFCE4SESSION
       else
-          zenity --info --width="280" --height="60" --timeout=5 --height="60" \
-                 --title="  Lite Tweaks - Info" --text="\nNo option was selected. No changes have been made."
-          return
+        sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $_XFCE4SESSION
       fi
-      zenity --question --window-icon="info" --width="260" --height="80" --title="  Hibernate, Suspend buttons..." \
-             --text="\nYour preferences have been set. Changes will take effect after next login.\n\n Would you like to logout now?"
-          if [[ "$?" -eq "0" ]]; then
-            xfce4-session-logout --logout ; killall lite-tweaks
-          fi
-    done
+    elif [[ "$HSBTN" =~ "bc" ]]; then
+      if grep -q -F '<property name="ShowSuspend" type="bool" value="true"/>' $_XFCE4SESSION; then
+        sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $_XFCE4SESSION
+      else
+        sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $_XFCE4SESSION
+      fi
+    elif [[ "$HSBTN" =~ "cd" ]]; then
+      sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="false"\/>/' $_XFCE4SESSION
+      sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="false"\/>/' $_XFCE4SESSION
+    elif [[ "$HSBTN" =~ "de" ]]; then
+      sed -i 's/.*ShowHibernate.*/      <property name="ShowHibernate" type="bool" value="true"\/>/' $_XFCE4SESSION
+      sed -i 's/.*ShowSuspend.*/      <property name="ShowSuspend" type="bool" value="true"\/>/' $_XFCE4SESSION
+    else
+      zenity --info --width="280" --height="60" --timeout=5 --height="60" \
+             --title="  Lite Tweaks - Info" --text="\nNo option was selected. No changes have been made." 2>/dev/null; return
+    fi
+    zenity --question --window-icon="info" --width="280" --height="80" --title="  Hibernate, Suspend buttons..." \
+           --text="\nYour preferences have been set. Changes will take effect after next login.\n\n Would you like to logout now?" 2>/dev/null
+    if [[ "$?" -eq "0" ]]; then xfce4-session-logout --logout ; killall lite-tweaks ; fi
+  done
 }
 
 # Set the dialogue window icon
@@ -352,166 +339,105 @@ ARRAYA=()    # Array for automatic cleaning tool
 ARRAYB=()    # Array for cleaning tools that require root
 
 # Populate arrays - ARRAY A
+echo "$selection" | grep "Chrome" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('CHROME'); fi
 
-echo $selection | grep "Chrome" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('CHROME')
-fi
+echo "$selection" | grep "Chromium" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('CHROMIUM'); fi
 
-echo $selection | grep "Chromium" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('CHROMIUM')
-fi
+echo "$selection" | grep "Default Web Browser" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('DBROWSER'); fi
 
-echo $selection | grep "Default Web Browser" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('DBROWSER')
-fi
+echo "$selection" | grep "Display Disk Usage" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('DU'); fi
 
-echo $selection | grep "Display Disk Usage" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('DU')
-fi
+echo "$selection" | grep "Firefox" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('FIREFOX'); fi
 
-echo $selection | grep "Firefox" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('FIREFOX')
-fi
+echo "$selection" | grep "Hibernate, Suspend" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('HSBTNS'); fi
 
-echo $selection | grep "Hibernate, Suspend" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('HSBTNS')
-fi
+echo "$selection" | grep "Midori" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('MIDORI'); fi
 
-echo $selection | grep "Midori" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('MIDORI')
-fi
+echo "$selection" | grep "Opera" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('OPERA'); fi
 
-echo $selection | grep "Opera" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('OPERA')
-fi
+echo "$selection" | grep "Pale Moon" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('PALEMOON'); fi
 
-echo $selection | grep "Pale Moon" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('PALEMOON')
-fi
+echo "$selection" | grep "Thumbnail Cache" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('THUMBNAILS'); fi
 
-echo $selection | grep "Thumbnail Cache" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('THUMBNAILS')
-fi
+echo "$selection" | grep "Trash Bin" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('TRASH'); fi
 
-echo $selection | grep "Trash Bin" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('TRASH')
-fi
+echo "$selection" | grep "Vivaldi" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('VIVALDI'); fi
 
-echo $selection | grep "Vivaldi" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('VIVALDI')
-fi
-
-echo $selection | grep "Whisker Menu" > /dev/null
-if [ $? = 0 ];then
-ARRAYA+=('WHISKER')
-fi
+echo "$selection" | grep "Whisker Menu" > /dev/null
+if [ $? = 0 ]; then ARRAYA+=('WHISKER'); fi
 
 # Populate arrays - ARRAY B
+echo "$selection" | grep "Autoremove Packages" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('AUTOREMOVE'); fi
 
-echo $selection | grep "Autoremove Packages" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('AUTOREMOVE')
-fi
+echo "$selection" | grep "Bootup Fix" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('FIXBOOTUP'); fi
 
-echo $selection | grep "Bootup Fix" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('FIXBOOTUP')
-fi
+echo "$selection" | grep "Clear Memory" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('CLEARMEM'); fi
 
-echo $selection | grep "Clear Memory" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('CLEARMEM')
-fi
+echo "$selection" | grep "Hostname" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('HOSTNAME'); fi
 
-echo $selection | grep "Hostname" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('HOSTNAME')
-fi
+echo "$selection" | grep "Kernel Removal" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('REMKERNELS'); fi
 
-echo $selection | grep "Kernel Removal" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('REMKERNELS')
-fi
+echo "$selection" | grep "Locate Large Files" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('FILESIZES'); fi
 
-echo $selection | grep "Locate Large Files" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('FILESIZES')
-fi
+echo "$selection" | grep "Log Archives" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('LOGARCHIVES'); fi
 
-echo $selection | grep "Log Archives" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('LOGARCHIVES')
-fi
+echo "$selection" | grep "Manage Save Session" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('MGMTSAVESESSION'); fi
 
-echo $selection | grep "Manage Save Session" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('MGMTSAVESESSION')
-fi
+echo "$selection" | grep "Numlock" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('EDNUMLOCK'); fi
 
-echo $selection | grep "Numlock" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('EDNUMLOCK')
-fi
+echo "$selection" | grep "Package Cache" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('APTGETCLEAN'); fi
 
-echo $selection | grep "Package Cache" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('APTGETCLEAN')
-fi
+echo "$selection" | grep "Package System Repair" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('FIXAPT'); fi
 
-echo $selection | grep "Package System Repair" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('FIXAPT')
-fi
+echo "$selection" | grep "Login & Logout Options" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('KIOSKMODE'); fi
 
-echo $selection | grep "Login & Logout Options" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('KIOSKMODE')
-fi
+echo "$selection" | grep "Preload" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('PRELOAD'); fi
 
-echo $selection | grep "Preload" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('PRELOAD')
-fi
+echo "$selection" | grep "Residual Config Files" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('RESIDCONFIG'); fi
 
-echo $selection | grep "Residual Config Files" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('RESIDCONFIG')
-fi
-
-echo $selection | grep "zRAM" > /dev/null
-if [ $? = 0 ];then
-ARRAYB+=('ZRAM')
-fi
+echo "$selection" | grep "zRAM" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('ZRAM'); fi
 }
 
 RUN() {
 # Check if ARRAYA is empty. If empty, skip the execution
 run_icon=/usr/share/icons/Faenza/actions/32/system-run.png
 if [ ${#ARRAYA[@]} -ne 0 ]; then
-
     x=0
     for k in "${!ARRAYA[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in array A
-
     TOTAL_LINES=$x
-
     printf '%s \n' "${ARRAYA[@]}"|
     while read  line
         do
             $line     # Execute functions one by one
             if [ $? = 1 ]; then
-                zenity --error --title="  Lite Tweaks" --text="\nThere was an error while performing cleaning:\n ${line}"
+                zenity --error --title="  Lite Tweaks" --text="\nThere was an error while performing cleaning:\n ${line}" 2>/dev/null
                 exit 1
             fi
         let i++
@@ -522,8 +448,7 @@ if [ ${#ARRAYA[@]} -ne 0 ]; then
             echo "#Done"
             sleep 1
         fi
-
-    done| zenity --progress --width=320 --window-icon="$run_icon" --pulsate --no-cancel --title="  Lite Tweaks" --auto-kill --auto-close
+    done| zenity --progress --width="320" --window-icon="$run_icon" --pulsate --no-cancel --title="  Lite Tweaks" --auto-kill --auto-close 2>/dev/null
 fi
 
 # Check if ARRAYB is empty. If empty, skip the execution
@@ -536,135 +461,124 @@ if [ ${#ARRAYB[@]} -ne 0 ]; then
 fi
 }
 
-CHECK() {
-# Execute checks - organized following Main zenity dialog window order
+CHECK() { # Execute checks - organized following Main zenity dialog window order
+
 # Check if the google-chrome browser cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
-    GCCACHESIZE=$(du -sh $HOME/.cache/google-chrome/ | awk '{print $1}' | sed 's/$/B/')
-    chrome=("FALSE" "Chrome Cache" "Clean" "Internet" "Safe" "You can remove $GCCACHESIZE from your Chrome browser cache" )
-    else
-        chrome=()
+  GCCACHESIZE=$(du -sh "$HOME/.cache/google-chrome/" | awk '{print $1}' | sed 's/$/B/')
+  chrome=(FALSE "Chrome Cache" "Clean" "Internet" "Safe" "You can remove "$GCCACHESIZE" from your Chrome browser cache" )
+else chrome=()
 fi
 
 # Check if the chromium browser cache exists
 if [  -d  "$HOME/.cache/chromium/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/chromium/ | awk '{print $1}' | sed 's/$/B/')
-    chromium=("FALSE" "Chromium Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Chromium browser cache" )
-else
-         chromium=() # Main zenity dialogue window
+  CHRCACHESIZE=$(du -sh "$HOME/.cache/chromium/" | awk '{print $1}' | sed 's/$/B/')
+  chromium=(FALSE "Chromium Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Chromium browser cache" )
+else chromium=()
 fi
 
 # Check if firefox browser cache exists
-if [  -d  "$HOME/.cache/mozilla/" ];then
-    FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
-    firefox=("FALSE"  "Firefox Cache" "Clean" "Internet" "Safe" "You can remove $FFCACHESIZE from your Firefox browser cache" )
-else
-        firefox=()
+if [  -d  "$HOME/.cache/mozilla/" ]; then
+  FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
+  firefox=(FALSE "Firefox Cache" "Clean" "Internet" "Safe" "You can remove "$FFCACHESIZE" from your Firefox browser cache" )
+else firefox=()
 fi
 
 # Check if archived /var/log files exist
-if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ];  then
-    LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
-    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove $LOGARCHIVESIZE worth of archived logs" )
-else
-    logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
+if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ]; then
+  LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
+  logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove "$LOGARCHIVESIZE" worth of archived logs" )
+else logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
 fi
 
 # Check if  midori browser cache exists
 if [  -d  "$HOME/.cache/midori/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/midori/ | awk '{print $1}' | sed 's/$/B/')
-    midori=("FALSE" "Midori Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Midori browser cache" )
-else
-         midori=()
+  CHRCACHESIZE=$(du -sh "$HOME/.cache/midori/" | awk '{print $1}' | sed 's/$/B/')
+  midori=(FALSE "Midori Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Midori browser cache" )
+else midori=()
 fi
 
 # Check if  opera browser cache exists
 if [  -d  "$HOME/.cache/opera/Cache/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/opera/Cache/ | awk '{print $1}' | sed 's/$/B/')
-    opera=("FALSE" "Opera Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Opera browser cache" )
-else
-         opera=()
+  CHRCACHESIZE=$(du -sh "$HOME/.cache/opera/Cache/" | awk '{print $1}' | sed 's/$/B/')
+  opera=(FALSE "Opera Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Opera browser cache" )
+else opera=()
 fi
 
 # Check if  Pale Moon browser cache exists
 if [  -d  "$HOME/.cache/moonchild productions/pale moon/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/moonchild\ productions/pale\ moon/ | awk '{print $1}' | sed 's/$/B/')
-    palemoon=("FALSE" "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Pale Moon browser cache" )
-else
-         palemoon=()
+  CHRCACHESIZE=$(du -sh "$HOME/.cache/moonchild productions/pale moon/" | awk '{print $1}' | sed 's/$/B/')
+  palemoon=(FALSE "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Pale Moon browser cache" )
+else palemoon=()
 fi
 
 # Check package cache exists
-if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ];  then
-    APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/')
-    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove $APTCACHESIZE worth of files from your package cache" )
-else
-    aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
+if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ]; then
+  APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/')
+  aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove "$APTCACHESIZE" worth of files from your package cache" )
+else aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
 fi
 
 # Check if preload is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into Memory for faster startup times")
-else
-        preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
+  preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into Memory for faster startup times")
+else preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
 fi
 
 # Check if there are any residual configuration files
 if [ ! -z  "$(dpkg -l | grep '^rc')"  ]; then
-    RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
-    resconfig=(FALSE "Residual Config Files" "Clean" "Packages" "Safe" "You currently have $RESCONFIGQTY residual configuration files you can remove" )
-else
-        resconfig=()
+  RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
+  resconfig=(FALSE "Residual Config Files" "Clean" "Packages" "Safe" "You currently have "$RESCONFIGQTY" residual configuration files you can remove" )
+else resconfig=()
 fi
 
 # Check if any thumbnails exist
-if [ $(du -sk $HOME/.cache/thumbnails/ | awk '{print $1}')  -gt 100  ]; then
-    THUMBCACHESIZE=$(du -sh $HOME/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
-    thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove $THUMBCACHESIZE from your thumbnail cache" )
-else
-        thumbn=( "FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" )
+if [ $(du -sk "$HOME/.cache/thumbnails/" | awk '{print $1}')  -gt 100  ]; then
+  THUMBCACHESIZE=$(du -sh "$HOME"/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
+  thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove "$THUMBCACHESIZE" from your thumbnail cache" )
+else thumbn=(FALSE "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" )
 fi
 
 # Check if the Trash is empty
-if [  "$(ls -A $HOME/.local/share/Trash/files/)" ]; then
-        TRASHCACHESIZE=$(du -sh $HOME/.local/share/Trash/ | awk '{print $1}' | sed 's/$/B/')
-    trash=("FALSE" "Trash Bin" "Clean" "Home" "Safe" "You can remove $TRASHCACHESIZE from your Trash bin" )
-else
-        trash=()
+if [  "$(ls -A "$HOME/.local/share/Trash/files/")" ]; then
+  TRASHCACHESIZE=$(du -sh "$HOME/.local/share/Trash/" | awk '{print $1}' | sed 's/$/B/')
+  trash=(FALSE "Trash Bin" "Clean" "Home" "Safe" "You can remove "$TRASHCACHESIZE" from your Trash bin" )
+else trash=()
 fi
 
 # Check if  vivaldi-stable browser cache exists
 if [  -d  "$HOME/.cache/vivaldi/" ]; then
-    CHRCACHESIZE=$(du -sh $HOME/.cache/vivaldi/ | awk '{print $1}' | sed 's/$/B/')
-    vivaldi=("FALSE" "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove $CHRCACHESIZE from your Vivaldi browser cache" )
-else
-         vivaldi=()
+  CHRCACHESIZE=$(du -sh "$HOME/.cache/vivaldi/" | awk '{print $1}' | sed 's/$/B/')
+  vivaldi=(FALSE "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Vivaldi browser cache" )
+else vivaldi=()
 fi
 
 # Check if Whisker Menu has Recently Used items
-if [ -z "$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2)" ]; then
-    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "Whisker Menu has no Recently Used items to clean" )
+if [ -z "$(cat "$HOME"/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2)" ]; then
+  whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "Whisker Menu has no Recently Used items to clean" )
 else
-    whisker_test=$(cat $HOME/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
-    whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove $whisker_test Recently Used items from your Whisker Menu" )
+  whisker_test=$(cat "$HOME"/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
+  whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove "$whisker_test" Recently Used items from your Whisker Menu" )
 fi
 
 # Check if zram is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
-        zram=(FALSE "zRAM" "Performance" "System" "Safe" "More efficient use of Memory especially on older computers")
-else
-        zram=(FALSE "zRAM" "Performance" "System" "Safe" "zRAM is currently installed (select to modify)")
+  zram=(FALSE "zRAM" "Performance" "System" "Safe" "More efficient use of Memory especially on older computers")
+else zram=(FALSE "zRAM" "Performance" "System" "Safe" "zRAM is currently installed (select to modify)")
 fi
 }
 
 # Main loop
 while (true); do
-CHECK        # first run the checks
-
+# first run the checks
+CHECK
 # Main zenity dialog window
 selection=$(zenity --list --checklist --width=880 --height=620 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
 --column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
---text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header.\n\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done.\n  <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files.\n\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
+--text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header. \
+\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done. \
+  <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files. \
+\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages that are no longer installed" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
@@ -692,22 +606,17 @@ FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package mana
 "${trash[@]}" \
 "${vivaldi[@]}" \
 "${whisker_recent[@]}" \
-"${zram[@]}" )
+"${zram[@]}" 2>/dev/null )
 
-# If Quit is clicked then exit
-if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-      exit 0
-fi
+if [ "${PIPESTATUS[0]}" -ne "0" ]; then exit 0 ; fi # If Quit is clicked then exit
 
-# Check if anything is selected
-echo $selection | grep '[a-zA-Z0-9]'
+echo "$selection" | grep '[a-zA-Z0-9]' # Check if anything is selected
 if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --width="260" --height="80" --title=' Lite Tweaks' --text='\n<b>No tasks were selected</b>.\nNothing for me to do. Try again. '
-    return
+  zenity --info --ok-label="Go Back" --width="260" --height="80" --title=" Lite Tweaks" \
+         --text="\n<b>No tasks were selected for execution</b> \n\nPlease try again selecting a at least one task." 2>/dev/null; return
 fi
 
-ARRAYS   #Separate selected items into arrays A and array B
+ARRAYS #Separate selected items into arrays A and array B
 RUN
 done
-
 exit 0
