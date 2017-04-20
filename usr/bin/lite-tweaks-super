@@ -153,6 +153,7 @@ FIXAPT() {
     fi
     # Stage 1
     echo "#⚫ Stage 1: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
+    test -e ["/var/lib/apt/lists.old"] || rm -Rf /var/lib/apt/lists.old
     apt-get clean && cd /var/lib/apt && mv lists lists.old && mkdir -p lists/partial && apt-get clean && apt-get update
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
         zenity --error --width="280" --height="80" --title="  $_LT - Error" \
