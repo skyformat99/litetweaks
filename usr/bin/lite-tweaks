@@ -466,105 +466,105 @@ CHECK() { # Execute checks - organized following Main zenity dialog window order
 # Check if the google-chrome browser cache exists
 if [ -d  "$HOME/.cache/google-chrome/" ]; then
   GCCACHESIZE=$(du -sh "$HOME/.cache/google-chrome/" | awk '{print $1}' | sed 's/$/B/')
-  chrome=(FALSE "Chrome Cache" "Clean" "Safe" "You can remove "$GCCACHESIZE" from your Chrome browser cache" )
+  chrome=(FALSE "Chrome Cache" "Clean" "Internet" "Safe" "You can remove "$GCCACHESIZE" from your Chrome browser cache" )
 else chrome=()
 fi
 
 # Check if the chromium browser cache exists
 if [  -d  "$HOME/.cache/chromium/" ]; then
   CHRCACHESIZE=$(du -sh "$HOME/.cache/chromium/" | awk '{print $1}' | sed 's/$/B/')
-  chromium=(FALSE "Chromium Cache" "Clean" "Safe" "You can remove "$CHRCACHESIZE" from your Chromium browser cache" )
+  chromium=(FALSE "Chromium Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Chromium browser cache" )
 else chromium=()
 fi
 
 # Check if firefox browser cache exists
 if [  -d  "$HOME/.cache/mozilla/" ]; then
   FFCACHESIZE=$(du -sh "$HOME/.cache/mozilla/"| awk '{print $1}'| sed 's/$/B/')
-  firefox=(FALSE "Firefox Cache" "Clean" "Safe" "You can remove "$FFCACHESIZE" from your Firefox browser cache" )
+  firefox=(FALSE "Firefox Cache" "Clean" "Internet" "Safe" "You can remove "$FFCACHESIZE" from your Firefox browser cache" )
 else firefox=()
 fi
 
 # Check if archived /var/log files exist
 if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ]; then
   LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
-  logarchive=(FALSE "Log Archives" "Clean" "Safe" "You can remove "$LOGARCHIVESIZE" worth of archived logs" )
-else logarchive=(FALSE "Log Archives" "Clean" "Safe" "You can remove 0kB worth of archived logs")
+  logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove "$LOGARCHIVESIZE" worth of archived logs" )
+else logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
 fi
 
 # Check if  midori browser cache exists
 if [  -d  "$HOME/.cache/midori/" ]; then
   CHRCACHESIZE=$(du -sh "$HOME/.cache/midori/" | awk '{print $1}' | sed 's/$/B/')
-  midori=(FALSE "Midori Cache" "Clean" "Safe" "You can remove "$CHRCACHESIZE" from your Midori browser cache" )
+  midori=(FALSE "Midori Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Midori browser cache" )
 else midori=()
 fi
 
 # Check if  opera browser cache exists
 if [  -d  "$HOME/.cache/opera/Cache/" ]; then
   CHRCACHESIZE=$(du -sh "$HOME/.cache/opera/Cache/" | awk '{print $1}' | sed 's/$/B/')
-  opera=(FALSE "Opera Cache" "Clean" "Safe" "You can remove "$CHRCACHESIZE" from your Opera browser cache" )
+  opera=(FALSE "Opera Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Opera browser cache" )
 else opera=()
 fi
 
 # Check if  Pale Moon browser cache exists
 if [  -d  "$HOME/.cache/moonchild productions/pale moon/" ]; then
   CHRCACHESIZE=$(du -sh "$HOME/.cache/moonchild productions/pale moon/" | awk '{print $1}' | sed 's/$/B/')
-  palemoon=(FALSE "Pale Moon Cache" "Clean" "Safe" "You can remove "$CHRCACHESIZE" from your Pale Moon browser cache" )
+  palemoon=(FALSE "Pale Moon Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Pale Moon browser cache" )
 else palemoon=()
 fi
 
 # Check package cache exists
 if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ]; then
   APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/')
-  aptcache=(FALSE "Package Cache" "Clean" "Safe" "You can remove "$APTCACHESIZE" worth of files from your package cache" )
-else aptcache=(FALSE "Package Cache" "Clean" "Safe" "You can remove 0kB worth of files from your package cache")
+  aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove "$APTCACHESIZE" worth of files from your package cache" )
+else aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
 fi
 
 # Check if preload is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
-  preload=(FALSE "Preload Apps" "Performance" "Safe" "Fetch commonly used apps into Memory for faster startup times")
-else preload=(FALSE "Preload Apps" "Performance" "Safe" "Preload is currently installed (select to modify)")
+  preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Fetch commonly used apps into Memory for faster startup times")
+else preload=(FALSE "Preload Apps" "Performance" "System" "Safe" "Preload is currently installed (select to modify)")
 fi
 
 # Check if there are any residual configuration files
 if [ ! -z  "$(dpkg -l | grep '^rc')"  ]; then
   RESCONFIGQTY=$(dpkg -l | grep '^rc' | awk '{print $2}'| wc -w)
-  resconfig=(FALSE "Residual Config Files" "Clean" "Safe" "You currently have "$RESCONFIGQTY" residual configuration files you can remove" )
+  resconfig=(FALSE "Residual Config Files" "Clean" "Packages" "Safe" "You currently have "$RESCONFIGQTY" residual configuration files you can remove" )
 else resconfig=()
 fi
 
 # Check if any thumbnails exist
 if [ $(du -sk "$HOME/.cache/thumbnails/" | awk '{print $1}')  -gt 100  ]; then
   THUMBCACHESIZE=$(du -sh "$HOME"/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
-  thumbn=(FALSE "Thumbnail Cache" "Clean" "Safe" "You can remove "$THUMBCACHESIZE" from your thumbnail cache" )
-else thumbn=(FALSE "Thumbnail Cache" "Clean" "Safe" "You can remove 0kB from your thumbnail cache" )
+  thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove "$THUMBCACHESIZE" from your thumbnail cache" )
+else thumbn=(FALSE "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" )
 fi
 
 # Check if the Trash is empty
 if [  "$(ls -A "$HOME/.local/share/Trash/files/")" ]; then
   TRASHCACHESIZE=$(du -sh "$HOME/.local/share/Trash/" | awk '{print $1}' | sed 's/$/B/')
-  trash=(FALSE "Trash Bin" "Clean" "Safe" "You can remove "$TRASHCACHESIZE" from your Trash bin" )
+  trash=(FALSE "Trash Bin" "Clean" "Home" "Safe" "You can remove "$TRASHCACHESIZE" from your Trash bin" )
 else trash=()
 fi
 
 # Check if  vivaldi-stable browser cache exists
 if [  -d  "$HOME/.cache/vivaldi/" ]; then
   CHRCACHESIZE=$(du -sh "$HOME/.cache/vivaldi/" | awk '{print $1}' | sed 's/$/B/')
-  vivaldi=(FALSE "Vivaldi Cache" "Clean" "Safe" "You can remove "$CHRCACHESIZE" from your Vivaldi browser cache" )
+  vivaldi=(FALSE "Vivaldi Cache" "Clean" "Internet" "Safe" "You can remove "$CHRCACHESIZE" from your Vivaldi browser cache" )
 else vivaldi=()
 fi
 
 # Check if Whisker Menu has Recently Used items
 if [ -z "$(cat "$HOME"/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2)" ]; then
-  whisker_recent=(FALSE "Whisker Menu" "Clean" "Safe" "Whisker Menu has no Recently Used items to clean" )
+  whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "Whisker Menu has no Recently Used items to clean" )
 else
   whisker_test=$(cat "$HOME"/.config/xfce4/panel/whiskermenu-*.rc | grep "^recent=" | cut -d '=' -f2 | sed 's/,/ /g'| wc -w)
-  whisker_recent=(FALSE "Whisker Menu" "Clean" "Safe" "You can remove "$whisker_test" Recently Used items from your Whisker Menu" )
+  whisker_recent=(FALSE "Whisker Menu" "Clean" "Menu" "Safe" "You can remove "$whisker_test" Recently Used items from your Whisker Menu" )
 fi
 
 # Check if zram is installed
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
-  zram=(FALSE "zRAM" "Performance" "Safe" "More efficient use of Memory especially on older computers")
-else zram=(FALSE "zRAM" "Performance" "Safe" "zRAM is currently installed (select to modify)")
+  zram=(FALSE "zRAM" "Performance" "System" "Safe" "More efficient use of Memory especially on older computers")
+else zram=(FALSE "zRAM" "Performance" "System" "Safe" "zRAM is currently installed (select to modify)")
 fi
 }
 
@@ -573,32 +573,32 @@ while (true); do
 # first run the checks
 CHECK
 # Main zenity dialog window
-selection=$(zenity --list --checklist --width=805 --height=580 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
---column="Select" --column="Name" --column="Task" --column="Grade" --column="Description" \
+selection=$(zenity --list --checklist --width=880 --height=620 --window-icon="$ic" --ok-label="Begin" --cancel-label="Quit" --title="  Lite Tweaks" \
+--column="Select" --column="Name" --column="Task" --column="Category" --column="Status" --column="Description" \
 --text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header. \
-\n  <b>Grade</b> :\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done. \
+\n  There are two <b>Status</b> levels:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done. \
   <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files. \
-\n  You can select multiple tasks for execution (administrative privileges is required for some tasks).\n</span>' \
-FALSE "Autoremove Packages" "Clean" "Safe" "Remove packages that are no longer installed" \
-FALSE "Bootup Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
+\n  You can select multiple tasks for execution (administrative privileges are required for some tasks).\n</span>' \
+FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages that are no longer installed" \
+FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
 "${chromium[@]}" \
-FALSE "Clear Memory" "Performance" "Safe" "Free up Memory on your system" \
-FALSE "Default Web Browser" "Preferences" "Safe" "Set your default Web browser" \
-FALSE "Display Disk Usage" "Information" "Safe" "Display overall disk usage information for all partitions" \
+FALSE "Clear Memory" "Performance" "System" "Safe" "Free up Memory on your system" \
+FALSE "Default Web Browser" "Preferences" "Internet" "Safe" "Set your default Web browser" \
+FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
-FALSE "Hibernate, Suspend" "Preferences" "Safe" "Hide or show these buttons on the Logout screen" \
-FALSE "Hostname" "Edit" "Caution" "Change the computer hostname (you must reboot afterwards)" \
-FALSE "Kernel Removal" "Clean" "Caution" "Remove kernels you no longer wish to boot from" \
-FALSE "Locate Large Files" "Information" "Safe" "Find files in your system based on specified size ranges" \
+FALSE "Hibernate, Suspend" "Preferences" "Session" "Safe" "Hide or show these buttons on the Logout screen" \
+FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
+FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
+FALSE "Locate Large Files" "Information" "System" "Caution" "Find files in your system based on specified size ranges" \
 "${logarchive[@]}" \
-FALSE "Login & Logout Options  " "Administration  " "Safe" "Enable or disable basic Login & Logout options" \
-FALSE "Manage Save Session" "Administration" "Safe" "Enable or disable users ability of saving their session on logout" \
+FALSE "Login & Logout Options" "Administration" "System" "Safe" "Enable or disable basic Login & Logout options" \
+FALSE "Manage Save Session" "Administration" "System" "Safe" "Enable or disable users ability of saving their session on logout" \
 "${midori[@]}" \
-FALSE "Numlock" "Edit" "Safe" "Enable/Disable Numlock at Login" \
+FALSE "Numlock" "Edit" "System" "Safe" "Enable/Disable Numlock at Login" \
 "${opera[@]}" \
 "${aptcache[@]}" \
-FALSE "Package System Repair" "Repair" "Caution" "Restore the package management system to default" \
+FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package management system to default" \
 "${palemoon[@]}" \
 "${preload[@]}" \
 "${resconfig[@]}" \
