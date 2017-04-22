@@ -488,7 +488,7 @@ fi
 if [ "$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -maxdepth 100 -size +1k)" ]; then
   LOGARCHIVESIZE=$(find /var/log -type f \( -iname \*.gz -o -iname \*.0 -o -iname \*.1 \) 2>/dev/null -exec du -csh '{}' + | tail -1 | awk '{print $1}' | sed 's/$/B/')
   logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove "$LOGARCHIVESIZE" worth of archived logs" )
-else logarchive=(FALSE "Log Archives" "Clean" "System" "Safe" "You can remove 0kB worth of archived logs")
+else logarchive=()
 fi
 
 # Check if  midori browser cache exists
@@ -514,9 +514,9 @@ fi
 
 # Check package cache exists
 if [ "$(find /var/cache/apt/archives/ -maxdepth 1 -size +100k)" ]; then
-  APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/')
+  APTCACHESIZE=$(du -sh /var/cache/apt/archives/ 2>/dev/null | awk '{print $1}' | sed 's/$/B/' )
   aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove "$APTCACHESIZE" worth of files from your package cache" )
-else aptcache=(FALSE "Package Cache" "Clean" "Packages" "Safe" "You can remove 0kB worth of files from your package cache")
+else aptcache=()
 fi
 
 # Check if preload is installed
@@ -535,8 +535,8 @@ fi
 # Check if any thumbnails exist
 if [ $(du -sk "$HOME/.cache/thumbnails/" | awk '{print $1}')  -gt 100  ]; then
   THUMBCACHESIZE=$(du -sh "$HOME"/.cache/thumbnails/ | awk '{print $1}' | sed 's/$/B/')
-  thumbn=("FALSE" "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove "$THUMBCACHESIZE" from your thumbnail cache" )
-else thumbn=(FALSE "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove 0kB from your thumbnail cache" )
+  thumbn=(FALSE "Thumbnail Cache" "Clean" "Images" "Safe" "You can remove "$THUMBCACHESIZE" from your thumbnail cache" )
+else thumbn=()
 fi
 
 # Check if the Trash is empty
