@@ -578,7 +578,7 @@ selection=$(zenity --list --checklist --width=880 --height=620 --window-icon="$i
 --text='  <span font="Sans 9">Select the task you wish to perform, then click the Begin button. Sort by clicking on the columns header. \
 \n  <b>Grade</b>:\n  <span foreground="green">Safe</span> - Safe to perform, no harm can be done. \
   <span foreground="red">Caution</span> - Proceed with caution, involves altering the system files. \
-\n  You can select multiple tasks for execution (administrative privileges is required for some tasks).\n</span>' \
+\n  You can select multiple tasks for execution (Administrative privileges are required for some tasks).\n</span>' \
 FALSE "Autoremove Packages" "Clean" "Packages" "Safe" "Remove packages that are no longer installed" \
 FALSE "Bootup Fix" "Fix" "Repair" "Caution" "Restore the boot splash to Linux Lite" \
 "${chrome[@]}" \
