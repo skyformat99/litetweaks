@@ -10,11 +10,13 @@
 # The ones that need administrative privileges go to the other file: lite-tweaks-super
 # Autoclean module check
 _DRYAPT="$HOME/.local/share/.dryapt"
-_CHKMD=$(stat "$_DRYAPT" | grep 'Change' | awk '{print $2,$3}' | cut -c 1-13)
-_CHKMDAPT=$(cat "$_DRYAPT" | tail -n+2)
+_NOWDT=$(date "+%Y-%m-%d %H")
+_CHKMD=$(stat "$_DRYAPT" 2>/dev/null | grep 'Change' | awk '{print $2,$3}' | cut -c 1-13)
+_CHKMDAPT=$(cat "$_DRYAPT" 2>/dev/null | tail -n+2)
 if [ -f "$_DRYAPT" ] && [ "$(cat "$_DRYAPT" | head -n+1)" -gt 0 ]; then :
 elif [ -f "$_DRYAPT" ] && [ "$(cat "$_DRYAPT" | head -n+1)" -eq 0 ]; then
   if [ "$_CHKMD" == "$_CHKMDAPT" ]; then :; fi
+  if [ "$_CHKMDAPT" != "$_NOWDT" ]; then bash -c "/usr/local/sbin/dryapt" & fi
 else bash -c "/usr/local/sbin/dryapt" &
 fi
 
