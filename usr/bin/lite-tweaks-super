@@ -11,7 +11,8 @@ if [ "$(pidof synaptic)" ];then killall -9 synaptic; fi
 if [ ! -z "$(pgrep gdebi-gtk)" ];then killall -9 gdebi-gtk; fi
 
 # variables
-_MYLTUSER=$(sudo -u ${SUDO_USER:-$USER} whoami)
+_MYLTUSER=$(cat "/tmp/myltuser")
+
 _LT="Lite Tweaks"
 
 # Get input from a previous file
@@ -66,7 +67,7 @@ if [ $? = 0 ]; then ARRAYC+=('ZRAM'); fi
 # common functions
 ask-logout-super() {
   zenity --question --window-icon="info" --width="260" --height="80" --title="  $APPNAME" \
-         --text="\nChanges will take effect after next login.\n\n Would you like to logout now?"
+         --text="\nChanges will take effect after next login.\n\n Would you like to logout now?" 2>/dev/null
       if [[ "$?" -eq "0" ]]; then systemctl restart lightdm.service; fi
 }
 
@@ -78,7 +79,7 @@ CLEAN() {
     apt-get clean
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
         zenity --error --width="260" --height="80" --title="    Error" \
-               --text="\nAn error occurred while cleaning the package cache!"
+               --text="\nAn error occurred while cleaning the package cache!" 2>/dev/null
         return
     fi
     echo "#✔ Package cache cleared." && sleep 1
@@ -104,24 +105,24 @@ Click <b>Quit</b> to exit now or <b>Continue</b> to proceed to the system scan."
 # Application Name Variable
 APPNAME="Find Large Files"
 
-zenity --question --icon-name="info" --width="420" --height="200" --title="$APPNAME" --ok-label="Continue" --cancel-label="Quit" --window-icon="$_ICON" --text="${INSTALLER_TITLE}"
+zenity --question --icon-name="info" --width="420" --height="200" --title="$APPNAME" --ok-label="Continue" --cancel-label="Quit" --window-icon="$_ICON" --text="${INSTALLER_TITLE}" 2>/dev/null
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
 while (true); do echo "#Finding Large Files..." # Start scan loop
   if [ "$?" -eq "0" ]; then
       # Set the file size range
-      scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25)
+      scale_min=$(zenity --title="Minimum file size" --scale --text="Select the minimum file size (in MB)" --min-value=25 --max-value=5000 --value=25 --step=25 2>/dev/null)
 
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
       size_min=$(echo $scale_min | sed "s/.*/+&M/")
-      scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\n• Minimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25)
+      scale_max=$(zenity --title="Maximum file size" --scale --text="Select the maximum file size (in MB)\n• Minimum file size is $size_min\B" --min-value=25 --max-value=5000 --value=51 --step=25 2>/dev/null)
 
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
       while [ $scale_max -le $scale_min ]; do
-        zenity --info --width="280" --icon-name="error" --title="$APPNAME" --window-icon="$_ICON" --text="\nMaximum value must not be less or equal to minimum value."
-        scale_max=$(zenity --title="$APPNAME" --scale --text="Select the maximum file size.\nMinimum file size is $size_min\B" --min-value="25" --max-value="5000" --value="51" --step="25")
+        zenity --info --width="280" --icon-name="error" --title="$APPNAME" --window-icon="$_ICON" --text="\nMaximum value must not be less or equal to minimum value." 2>/dev/null
+        scale_max=$(zenity --title="$APPNAME" --scale --text="Select the maximum file size.\nMinimum file size is $size_min\B" --min-value="25" --max-value="5000" --value="51" --step="25" 2>/dev/null)
 
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
       done
@@ -129,15 +130,15 @@ while (true); do echo "#Finding Large Files..." # Start scan loop
       size_max=$(echo $scale_max | sed "s/.*/-&M/")
       find_large=$(gksu "stdbuf -oL /bin/bash \-c '(find / -size $size_min -size $size_max -exec du -mh {} + 2>&1 | grep [0-9][MG] | sort -h -r ) 2>&1 | tee /var/log/findfilesrange.log'" |
       stdbuf -oL sed -e '/\*$/ s/^/# /p'|
-      zenity --progress --pulsate --width="400" --window-icon="$_RUN_ICON" --no-cancel --auto-close --title="Scanning for files" --text="Please wait while your system is scanned...")
-      if [ "${PIPESTATUS[0]}" -ne "0" ]; then zenity --error --title="Error" --text="\n$APPNAME has failed."; return; fi
+      zenity --progress --pulsate --width="400" --window-icon="$_RUN_ICON" --no-cancel --auto-close --title="Scanning for files" --text="Please wait while your system is scanned..." 2>/dev/null)
+      if [ "${PIPESTATUS[0]}" -ne "0" ]; then zenity --error --title="Error" --text="\n$APPNAME has failed." 2>/dev/null; return; fi
   else
     return
   fi
 echo "#⚫ Displaying scan results..." && gksu -u ${SUDO_USER:-$_MYLTUSER} leafpad /var/log/findfilesrange.log
 echo "#⚫ Waiting for user input..."
 # Scan loop question
-zenity --question --width="260" --title="$APPNAME" --window-icon="$_ICON" --text="\nWould you like to run another scan?"
+zenity --question --width="260" --title="$APPNAME" --window-icon="$_ICON" --text="\nWould you like to run another scan?" 2>/dev/null
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; else continue; fi
 done
 }
@@ -149,7 +150,7 @@ FIXAPT() {
       zenity --info --width="340" --ok-label="Close" --title="$_LT - Aborted" \
              --text="\n<b>Your computer is not connected to the internet</b>
                      \nPackage System Repair requires internet access in order to fetch packages lists. The task has been aborted.
-                     \nPlease check your Internet connection and try again."; break
+                     \nPlease check your Internet connection and try again." 2>/dev/null; break
     fi
     # Stage 1
     echo "#⚫ Stage 1: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
@@ -157,14 +158,14 @@ FIXAPT() {
     apt-get clean && cd /var/lib/apt && mv lists lists.old && mkdir -p lists/partial && apt-get clean && apt-get update
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
         zenity --error --width="280" --height="80" --title="  $_LT - Error" \
-              --text="\nAn error occurred while fetching packages lists.\nCheck your system log for more details."; break
+              --text="\nAn error occurred while fetching packages lists.\nCheck your system log for more details." 2>/dev/null; break
       fi
     # Stage 2
     echo "#⚫ Stage 2: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
     apt-get install -f
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
       zenity --error --width="280" --height="80" --title="  $_LT - Error" \
-             --text="\nAn error occurred while while installing partialy installed packages!"; return
+             --text="\nAn error occurred while while installing partialy installed packages!" 2>/dev/null; return
       fi
     # Stage 3
     echo "#⚫ Stage 3: Repairing the package system."$"\n ✍ This might take some time. Please wait..."
@@ -221,7 +222,7 @@ FIXAPT() {
     # DON'T UPDATE UNSUPPORTED RELEASE - Sample
     elif [ "$_LLVER" == "4" ]; then
         zenity --warning --width=320 --height=80 --title="     $_LT - Warning" \
-               --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. "
+               --text="\n<b>Unsupported Linux Lite release version found</b> \n \n/etc/apt/sources.list.d/linuxlite.list and /etc/apt/sources.list.d/linuxlite.list.save files will not be reset. " 2>/dev/null
     fi
     # Unset variables used during FIXAPT
     unset _REL_VERSION_NAME
@@ -274,11 +275,11 @@ brown="0xffff00"
 blue="0x000000"
 ;;
 Unknown)
-zenity --info --title="Bootup fix" --text="Unknown OS"
+zenity --info --title="Bootup fix" --text="Unknown OS" 2>/dev/null
 return
 ;;
 *)
-zenity --info --title="$_LT" --text="\nBootup fix\nRelease not supported!"
+zenity --info --title="$_LT" --text="\nBootup fix\nRelease not supported!" 2>/dev/null
 return
 ;;
 esac
@@ -288,25 +289,25 @@ APPNAME_ERROR=" Bootup Fix - Error"
 sed -i "s/^title=.*$/title=$title/;s/^black=.*$/black=$black/;s/white=.*$/white=$white/;s/^brown=.*$/brown=$brown/;s/^blue=.*$/blue=$blue/" /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"; return
+           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release" 2>/dev/null; return
   fi
 
 update-initramfs -u
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-           --text="An error occurred while fixing the bootup! \n \nStatus: update-initramfs failed"; return
+           --text="An error occurred while fixing the bootup! \n \nStatus: update-initramfs failed" 2>/dev/null; return
   fi
 
 echo "Linux Lite $LL_VERSION LTS \n \l" | tee /etc/issue
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/issue"; return
+           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/issue" 2>/dev/null; return
   fi
 
 sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION"'"/g' /etc/lsb-release
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="$APPNAME_ERROR" \
-           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release"; return
+           --text="An error occurred while fixing the bootup! \n \nUnable to write to /etc/lsb-release" 2>/dev/null; return
   fi
 echo "#✔ Bootup fix successfully completed" && sleep 1
 }
@@ -318,7 +319,7 @@ echo "#Changing hostname. Please wait..." && sleep 1 ; echo "#Changing hostname.
 while (true); do
 newhost=$(zenity --entry --width="350" --window-icon="$_ICON" --ok-label="Change" --title=" Change Hostname" \
                  --text="Your computer's current hostname is: ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) below \nand click 'Change' to proceed.
-                 \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}")
+                 \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}" 2>/dev/null)
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
@@ -326,10 +327,10 @@ if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
   if [ $? = 0 ]; then
     zenity --warning --width="340" --height="60" --ok-label="Close!" \
-           --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed"; continue
+           --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed" 2>/dev/null; continue
   # If old hostname and new hostname are the same, warn and loop
   elif [ "$newhost" = "$current_hostname" ]; then zenity --info --width="270" --height="60" --timeout="4" --ok-label="Back" \
-    --title=" Hostname not changed" --text="\nThe Hostname has not changed... try again."; continue
+    --title=" Hostname not changed" --text="\nThe Hostname has not changed... try again." 2>/dev/null; continue
   else
     sed -i "s/$current_hostname/$newhost/g" /etc/hosts
     sed -i "s/$current_hostname/$newhost/g" /etc/hostname
@@ -349,7 +350,7 @@ exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" 
   if [ ! "$exit_type" ]; then echo "#⚫ Reverting hostname changes to... ${current_hostname} " && sleep 1
     sed -i "s/$newhost/$current_hostname/g" /etc/hosts
     sed -i "s/$newhost/$current_hostname/g" /etc/hostname
-    zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit."; return
+    zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit." 2>/dev/null; return
   fi
   # Action to perform by user
   if [ "$exit_type" = "Reboot" ]; then shutdown -r now # Do reboot here
@@ -357,7 +358,7 @@ exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" 
   else
     # Do cancel here
     zenity --info --width="340" --height="60" \
-           --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect."; return
+           --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect." 2>/dev/null; return
   fi
  done
 done
@@ -377,7 +378,7 @@ OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|
 # Check if there are old Kernels
 echo $OLDKERNELS | grep linux*
   if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-        zenity --info --width="225" --height="60" --title=" $APPNAME - Information" --text="\nNo additional kernels were found in your system for removal."; return
+        zenity --info --width="225" --height="60" --title=" $APPNAME - Information" --text="\nNo additional kernels were found in your system for removal." 2>/dev/null; return
   fi
 # sed command adds all FALSE entries in the column 'Select'
 zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
@@ -390,14 +391,14 @@ DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish 
 
 # Call the dialog. Don't change the separator here!
 okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
-                 --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" )
+                 --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" 2>/dev/null)
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi # If cancel is clicked then exit
 
   # Check if anything is selected
   echo $okernel | grep linux*
   if [ "${PIPESTATUS[1]}" -ne "0" ]; then
     zenity --info --width="260" --height="60" --window-icon="$_ICON" --title=" $APPNAME" \
-           --text="\nNo kernel header and image were selected for removal. Try again."; continue
+           --text="\nNo kernel header and image were selected for removal. Try again." 2>/dev/null; continue
   fi
   # Split kernel selection
   selection_array=($okernel)
@@ -406,13 +407,13 @@ okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --wid
     KN_NAMES=$KN_NAMES"✔ "${selection_array[$i]}"\n"
   done
   # Confirm kernel selection removal
-  zenity --question --window-icon="$_ICON" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?"
+  zenity --question --window-icon="$_ICON" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?" 2>/dev/null
   if [ "$?" -eq "0" ]; then
-    apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill
-    zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed."; return
+    apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
+    zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; return
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-      zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed."; return
+      zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed." 2>/dev/null; return
     fi
   fi
 done
@@ -479,12 +480,12 @@ answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$_ICON" --wid
               $appicon4 "40" "⚫ Log Out Screen" "" \
               $appicon3 "10" "Show Logout only for all users" "Hides all other options for all accounts" \
               $appicon2 "20" "Show Logout only, except for admins" "Hides all other options, except for admins" \
-              $appicon1 "30" "Show all options" "Shows all shutdown options for all users")
+              $appicon1 "30" "Show all options" "Shows all shutdown options for all users" 2>/dev/null)
 
   if [ "$?" -eq "1" ]; then break; fi
   # loop when no option is selected
   if [[ $answ -eq "0" ]]; then
-      zenity  --info --window-icon="$_ICON" --title=" $APPNAME" --text="\nYou did not select an option. Please try again."; continue
+      zenity  --info --window-icon="$_ICON" --title=" $APPNAME" --text="\nYou did not select an option. Please try again." 2>/dev/null; continue
   fi
 
   if [[ $answ -eq "10" ]]; then
@@ -541,7 +542,7 @@ LARCHIVES() {
 echo "#Deleting archived logs..."
 find /var/log \( -name '*.gz' -o -name '*.0' -o -name '*.1' \) -exec rm -rf {} \;
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
-    zenity --error --width="260" --height="80" --title="    Error" --text="\nAn error occurred while deleting archived logs!"; return
+    zenity --error --width="260" --height="80" --title="    Error" --text="\nAn error occurred while deleting archived logs!" 2>/dev/null; return
   fi
 echo "#✔ Archived logs cleared" && sleep 1
 }
@@ -595,12 +596,12 @@ answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$_ICON" --wid
                 --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
                 $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
                 $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
-                $appicon3 "10" "Disable for all users" "Disables Save Session for all users")
+                $appicon3 "10" "Disable for all users" "Disables Save Session for all users" 2>/dev/null)
 # exit on Quit or X
 if [ "$?" -eq "1" ]; then break; fi
 # prompt when no option is selected
 if [[ $answ -eq "0" ]]; then
-    zenity  --info --title="$APPNAME" --text="\nYou did not select an option. Please try again."; continue
+    zenity  --info --title="$APPNAME" --text="\nYou did not select an option. Please try again." 2>/dev/null; continue
 fi
 # disables Save Session for all users
 if [[ $answ -eq "10" ]]; then
@@ -652,7 +653,7 @@ EDNL=$(zenity --list --imagelist --width="350" --height="188" --cancel-label="Qu
               --title="$APPNAME" --text='         <span font="Sans Bold 10">Enable or Disable Numlock at login</span>\n' \
               --print-column=2 --column "  " --column "Numlock" --column "Description" \
               $appicon1 "Enable" "Enables Numlock at login" \
-              $appicon2 "Disable" "Disables Numlock at login")
+              $appicon2 "Disable" "Disables Numlock at login" 2>/dev/null)
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 # enable numlock
@@ -673,7 +674,7 @@ if [[ "$EDNL" =~ "Enable" ]]; then
     fi
 else
   zenity --info --width="280" --height="60" --timeout=5 --height="60" \
-         --title=" Numlock" --text="\nYou did not select an option. Please try again."
+         --title=" Numlock" --text="\nYou did not select an option. Please try again." 2>/dev/null
 fi
 done
 }
@@ -691,19 +692,19 @@ echo "#Configuring Preload..."
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep preload)" ]; then
   # if not installed, then prompt user for installation
   zenity --question --width="290" --height="80" --title="    $APPNAME" \
-         --text="\nPreload is currently not installed in your system.\n Would you like to install Preload now?"
+         --text="\nPreload is currently not installed in your system.\n Would you like to install Preload now?" 2>/dev/null
    answer=$?
   # Check Internet access
   if eval "sudo -u ${SUDO_USER:-$_MYLTUSER} curl -sk google.com" >> /dev/null 2>&1; then :; else # Prompt ERROR internet connection
     (zenity --info --width="460" --height="80" --ok-label="Close" --title="$_LT - No Internet connection detected" \
                    --text="\n<b>Your computer doesn't seem to be connected to the Internet</b> \n \n$_LT will install Preload from your local cache if it's available. \
-    \nIf the package does not exist in your system cache, Preload installation will fail. \nYou can always check your Internet connection and try again at a later time.")
+    \nIf the package does not exist in your system cache, Preload installation will fail. \nYou can always check your Internet connection and try again at a later time." 2>/dev/null)
   fi
     if [ "$answer" -eq "0" ]; then
       echo "#⚫ Installing Preload. Please wait..." & apt-get install preload -y # install preload
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
         zenity --error --width="260" --height="80" --title="    Error" \
-               --text="\nAn error occurred while installing Preload!"; return
+               --text="\nAn error occurred while installing Preload!" 2>/dev/null; return
       else
         echo "#✔ Preload successfully installed." && sleep 1 ; continue
       fi
@@ -725,7 +726,7 @@ PRLOAD=$(zenity --list --imagelist --width="368" --height=238 --cancel-label="Qu
         --print-column=2 --column="  " --column="Preload" --column="Description" \
         $appicon1 "Running" "Preload service is currently running" \
         $appicon2 "Stopped" "Preload service is currently stopped" \
-        $appicon3 "Remove" "Stop service and Uninstall Preload")
+        $appicon3 "Remove" "Stop service and Uninstall Preload" 2>/dev/null)
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
@@ -744,19 +745,19 @@ if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
         echo "#⚫ Service is not running. No changes needed." && sleep 2 ; continue
       fi
     elif [[ $PRLOAD =~ Remove ]]; then # Remove Preload
-      zenity --question --width="265" --title="$APPNAME" --text="\nAre you sure you want to remove Preload?"
+      zenity --question --width="265" --title="$APPNAME" --text="\nAre you sure you want to remove Preload?" 2>/dev/null
       if [ "$?" -eq "0" ]; then
         echo "#⚫ Removing Preload. Please wait..." & service preload stop & apt-get remove preload -y
         if [ "${PIPESTATUS[0]}" -ne "0" ]; then
           echo "#Error..." && sleep 1
           zenity --error --width="260" --height="80" --title="    Error" \
-                 --text="\nAn error occurred while removing Preload!"; return
+                 --text="\nAn error occurred while removing Preload!" 2>/dev/null; return
         else
           echo "#✔ Preload successfully removed." && sleep 1 ; return
         fi
       fi
     else
-      zenity  --info --title=" $APPNAME" --text="\nYou did not select an option. Please try again."
+      zenity  --info --title=" $APPNAME" --text="\nYou did not select an option. Please try again." 2>/dev/null
   fi
 done
 }
@@ -766,7 +767,7 @@ echo "#Removing residual configuration files..."
 dpkg --purge `dpkg -l | grep '^rc' | awk '{print $2}'`
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="    Error" \
-           --text="\nAn error occurred while removing residual configuration files!"; return
+           --text="\nAn error occurred while removing residual configuration files!" 2>/dev/null; return
   fi
 echo "#✔ Residual configuration files cleared" && sleep 1
 }
@@ -776,8 +777,13 @@ echo "#Removing unneeded packages, please wait..."
 apt-get autoclean -y && apt-get autoremove -y
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "# Error..." && sleep 1
     zenity --error --width="260" --height="80" --title="    Error"
-           --text="\nAn error occurred while removing unneeded packages!"; return
+           --text="\nAn error occurred while removing unneeded packages!" 2>/dev/null; return
   fi
+_DATE=$(date "+%Y-%m-%d %H")
+echo "Echoing ZERO..."
+echo "0" > "/home/$_MYLTUSER/.local/share/.dryapt"
+echo "$_DATE" >> "/home/$_MYLTUSER/.local/share/.dryapt"
+echo "PASSED"
 echo "#✔ Unneeded packages cleared" && sleep 1
 }
 
@@ -793,19 +799,19 @@ echo "#Configuring zRAM..."
 if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
   # if not installed, then prompt user for installation
   zenity --question --width="300" --height="80" --title="    $APPNAME" \
-         --text="\nzRAM is currently not enabled in your system.\n Would you like to enable zRAM support now?"
+         --text="\nzRAM is currently not enabled in your system.\n Would you like to enable zRAM support now?" 2>/dev/null
          answer=$?
   # Check Internet access
   if eval "curl -sk google.com" >> /dev/null 2>&1; then :; else # Prompt ERROR internet connection
     (zenity --question --icon-name=info --width="360" --height="90" --ok-label="Continue" --cancel-label="Cancel" --title="$_LT - No Internet connection" \
             --text="\n<b>Your computer is not connected to the internet</b> \n\n* $_LT will attempt to install zRAM package from the local cache if available.
-\n* If the package does not exist in your system cache, zRAM installation will fail.\n\nYou can always check your internet connection and try again at a later time.")
+\n* If the package does not exist in your system cache, zRAM installation will fail.\n\nYou can always check your internet connection and try again at a later time." 2>/dev/null)
     answer=$?
   fi
   if [ "$answer" -eq "0" ]; then echo "#⚫ Installing zRAM. Please wait..." && sleep 1
     apt-get install zram-config -y # install zram
       if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
-        zenity --error --width="260" --height="80" --title="    Error" --text="\nAn error occurred while installing zRAM!"; return
+        zenity --error --width="260" --height="80" --title="    Error" --text="\nAn error occurred while installing zRAM!" 2>/dev/null; return
       else
         echo "#✔ zRAM successfully installed." && sleep 1 & systemctl start zram-config ; continue
       fi
@@ -824,7 +830,7 @@ sZRAM=$(zenity --list --imagelist --width="365" --height=238 --cancel-label="Qui
                --print-column=2 --column="  " --column="zRAM" --column="Description" \
                $appicon1 "Running" "zRAM service is currently running" \
                $appicon2 "Stopped" "zRAM service is currently stopped" \
-               $appicon3 "Remove" "Stop service and Uninstall zRAM")
+               $appicon3 "Remove" "Stop service and Uninstall zRAM" 2>/dev/null)
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 if [[ $sZRAM =~ Running ]]; then # Start
@@ -841,11 +847,11 @@ elif [[ $sZRAM =~ Stopped ]]; then # Stop
     echo "#⚫ zRAM is not running. No changes needed." && sleep 2 ; continue
   fi
 elif [[ $sZRAM =~ Remove ]]; then # Remove zram
-  zenity --question --width="265" --title="$APPNAME" --text="\nAre you sure you want to remove zRAM?"
+  zenity --question --width="265" --title="$APPNAME" --text="\nAre you sure you want to remove zRAM?" 2>/dev/null
   if [ "$?" -eq "0" ]; then
     echo "#⚫ Removing zRAM. Please wait..." && service zram-config stop && apt-get remove zram-config -y
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
-      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing zRAM!"; return
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing zRAM!" 2>/dev/null; return
     else
       echo "#✔ zRAM successfully removed." && sleep 2 ; return
     fi
@@ -866,7 +872,7 @@ while read  line
   do
     $line     # Execute functions one by one
     if [ $? = 1 ]; then
-      zenity --info --title=" $_LT" --text="Error:\n${line}"
+      zenity --info --title=" $_LT" --text="Error:\n${line}" 2>/dev/null
     fi
   let i++
   (( PERCENTAGE = 100 \* ${i} / ${TOTAL_LINES} ))
@@ -875,7 +881,7 @@ while read  line
       echo "#Done"
       sleep 1
     fi
-done| zenity --progress --width="320" --window-icon="$_RUN_ICON" --pulsate --no-cancel --title="  $_LT" --auto-kill --auto-close
+done| zenity --progress --width="320" --window-icon="$_RUN_ICON" --pulsate --no-cancel --title="  $_LT" --auto-kill --auto-close 2>/dev/null
 
 unset ARAYC
 unset FRM
