@@ -5,6 +5,9 @@ chown root:root /usr/bin/lite-tweaks-super
 chown root:root /usr/share/applications/litecleaner.desktop
 chown root:root /usr/share/pixmaps/litetweaks.png
 chown root:root /usr/share/liteappsicons/litetweaks -R
+chown root:root /usr/share/litemodules -R
+chmod 755 /usr/share/litemodules/dryapt
+
 # Folders and files permissions
 find /usr/share/liteappsicons/ -type d -exec chmod 755 {} \;
 find /usr/share/liteappsicons/ -type f -exec chmod 644 {} \;
