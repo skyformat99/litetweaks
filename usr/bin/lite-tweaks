@@ -15,7 +15,7 @@ _CHKMDAPT=$(cat "$_DRYAPT" | tail -n+2)
 if [ -f "$_DRYAPT" ] && [ "$(cat "$_DRYAPT" | head -n+1)" -gt 0 ]; then :
 elif [ -f "$_DRYAPT" ] && [ "$(cat "$_DRYAPT" | head -n+1)" -eq 0 ]; then
   if [ "$_CHKMD" == "$_CHKMDAPT" ]; then :; fi
-else bash -c "/usr/share/litemodules/dryapt" &
+else bash -c "/usr/local/sbin/dryapt" &
 fi
 
 # Chrome Cache tweak

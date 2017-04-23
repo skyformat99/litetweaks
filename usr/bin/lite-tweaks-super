@@ -780,10 +780,8 @@ apt-get autoclean -y && apt-get autoremove -y
            --text="\nAn error occurred while removing unneeded packages!" 2>/dev/null; return
   fi
 _DATE=$(date "+%Y-%m-%d %H")
-echo "Echoing ZERO..."
 echo "0" > "/home/$_MYLTUSER/.local/share/.dryapt"
 echo "$_DATE" >> "/home/$_MYLTUSER/.local/share/.dryapt"
-echo "PASSED"
 echo "#✔ Unneeded packages cleared" && sleep 1
 }
 
