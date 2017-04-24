@@ -1,3 +1,9 @@
+lite-tweaks (2.0-0250-linuxlite) citrine; urgency=medium
+
+  * placeholder
+
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Mon, 24 Apr 2017 18:31:34 +1200
+
 lite-tweaks (2.0-0240-linuxlite) citrine; urgency=medium
 
   * Rename column Status to Grade
