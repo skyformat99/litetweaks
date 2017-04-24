@@ -8,7 +8,7 @@ lite-tweaks (2.0-0240-linuxlite) citrine; urgency=medium
   * Don't show Autoremove Packages task if there are no packages for removal
   * Bug fix - $_MYLTUSER variable returns root instead of sudoer $USER (lite-tweak-super)
 
- -- Jerry Bezencon <valtam@linuxliteos.com>  Fri, 21 Apr 2017 13:37:16 +1200
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Mon, 24 Apr 2017 18:31:34 +1200
 
 lite-tweaks (2.0-0230-linuxlite) citrine; urgency=medium
 
