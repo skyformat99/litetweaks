@@ -610,7 +610,7 @@ FALSE "Default Web Browser" "Preferences" "Internet" "Safe" "Set your default We
 FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk usage information for all partitions" \
 "${firefox[@]}" \
 FALSE "Hibernate, Suspend" "Preferences" "Session" "Safe" "Hide or show these buttons on the Logout screen" \
-FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname (you must reboot afterwards)" \
+FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files in your system based on specified size ranges" \
 "${logarchive[@]}" \

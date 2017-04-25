@@ -1,0 +1,7 @@
+#!/bin/bash
+_HOSTNAME=$(hostname)
+for namehost in $( xauth list | awk '{print $1}' | cut -d/ -f1 | sed '/'"$_HOSTNAME"'/d'  ); do
+    xauth remove $(xauth list | grep -F "$namehost/unix" | awk 'NR==1 {print $1}')
+done
+
+rm -f "$HOME/.config/autostart/xauth-cleanup.desktop"
