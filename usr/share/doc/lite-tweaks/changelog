@@ -1,6 +1,8 @@
 lite-tweaks (2.0-0250-linuxlite) citrine; urgency=medium
 
-  * placeholder
+  * Update Hostname tweak to not longer require rebooting or logging out the session
+  * Added feature to cleanup old xauth in .Xauthority after logon
+  * Update 'netbios name' in Samba smb.conf to match new hostname set by Hostname tweak
 
  -- Jerry Bezencon <valtam@linuxliteos.com>  Mon, 24 Apr 2017 18:31:34 +1200
 

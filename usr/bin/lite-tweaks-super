@@ -311,56 +311,48 @@ sed -i 's/^DISTRIB_DESCRIPTION=.*$/DISTRIB_DESCRIPTION="Linux Lite '"$LL_VERSION
   fi
 echo "#✔ Bootup fix successfully completed" && sleep 1
 }
-# hostname tweak
+# Hostname tweak
 HNAME() {
-current_hostname=$(cat /etc/hostname)
-echo "#Changing hostname. Please wait..." && sleep 1 ; echo "#Changing hostname... ${current_hostname}"
+_HOSTNAME=$(hostname)
+echo "#Changing hostname. Please wait..." && sleep 1 ; echo "#Changing hostname... ${_HOSTNAME}"
 
 while (true); do
-newhost=$(zenity --entry --width="350" --window-icon="$_ICON" --ok-label="Change" --title=" Change Hostname" \
-                 --text="Your computer's current hostname is: ' ${current_hostname} '\n\nEnter the desired new hostname (e.g.: MyLitePC-01) below \nand click 'Change' to proceed.
-                 \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${current_hostname}" 2>/dev/null)
+_NEW_HOSTNAME=$(zenity --entry --width="350" --window-icon="$_ICON" --ok-label="Change" --cancel-label="Quit" --title=" Change Hostname" \
+                 --text="Your computer's current hostname is: ' ${_HOSTNAME} '\n\nEnter the desired new hostname (e.g.: LinuxLite) below \nand click 'Change' to proceed.
+                 \nNote: The hostname must not be empty, or start with \nhashtags, or contain whitespaces.\n" --entry-text="${_HOSTNAME}" 2>/dev/null)
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
 
 # If hostname is only blank spaces or starts with a hashtag, warn and loop
-echo "$newhost" | egrep "^[[:space:]]*$|^#|[[:space:]]" >/dev/null
+echo "$_NEW_HOSTNAME" | egrep "^[[:space:]]*$|^#|[[:space:]]|*_.*" >/dev/null
   if [ $? = 0 ]; then
-    zenity --warning --width="340" --height="60" --ok-label="Close!" \
-           --title=" Hostname not changed" --text="\nThe new Hostname must not be empty, or start with hashtags, or contain whitespaces.\n \nHostname cannot be changed" 2>/dev/null; continue
+    zenity --warning --width="330" --height="60" --ok-label="Go Back" --title=" Hostname not changed" \
+           --text="\nThe new hostname must not be empty, or start with hashtags, or contain white spaces or underscores.\n\nThe hostname cannot be changed." 2>/dev/null; continue
   # If old hostname and new hostname are the same, warn and loop
-  elif [ "$newhost" = "$current_hostname" ]; then zenity --info --width="270" --height="60" --timeout="4" --ok-label="Back" \
-    --title=" Hostname not changed" --text="\nThe Hostname has not changed... try again." 2>/dev/null; continue
+  elif [ "$_NEW_HOSTNAME" = "$_HOSTNAME" ]; then zenity --info --width="300" --height="60" --timeout="5" --ok-label="Back" \
+    --title=" Hostname not changed" --text="\nNo new hostname was entered changed. Please try again." 2>/dev/null; continue
   else
-    sed -i "s/$current_hostname/$newhost/g" /etc/hosts
-    sed -i "s/$current_hostname/$newhost/g" /etc/hostname
-  fi
+    echo "#⚫ Changing hostname to ' $_NEW_HOSTNAME ' " && sleep 1
+    echo "$_NEW_HOSTNAME" > /proc/sys/kernel/hostname
+    sed -i 's/127.0.1.1.*/127.0.1.1\t'"$_NEW_HOSTNAME"'/g' /etc/hosts
+    echo "$_NEW_HOSTNAME" > /etc/hostname
+    systemctl restart networking
+    cd /home/$_MYLTUSER; su $_MYLTUSER -c "xauth add $(xauth list | grep "$_HOSTNAME" | sed 's/'"$_HOSTNAME"'\//'"$_NEW_HOSTNAME"'\//g' | awk 'NR==1 {print}')"
+    cp /usr/local/sbin/xauth-cleanup.desktop /home/"$_MYLTUSER"/.config/autostart/
+    chown "$_MYLTUSER":"$_MYLTUSER" /home/"$_MYLTUSER"/.config/autostart/xauth-cleanup.desktop
+    # update netbios name = hostname in Samba smb.conf
+    _SMBCONF="/etc/samba/smb.conf"
+    sed -i "s/netbios name =.*/netbios name = '"$_NEW_HOSTNAME"'/" "$_SMBCONF"
+    systemctl restart smbd nmbd # restart samba services
 
-while (true); do
-# Reboot dialogue
-echo "#⚫ Changing hostname to ' $newhost ' " && sleep 1
-title=" Hostname changed"
-exit_type=`zenity  --width="380" --height="200" --cancel-label="Revert Changes" --title="$title" --list --radiolist --column="Select" \
-                   --text="Hostname has been changed to: <b>$newhost</b>\n\nYou must reboot your computer for changes to take effect." \
-                   --column="Exit Type" --column="Description" \
-                   TRUE "Reboot" "Reboot your computer"\
-                   FALSE "Shutdown" "Shutdown your computer"\
-                   FALSE "Continue" "Continue using your computer" `
-# Users must select a target type (Check if they cancel)
-  if [ ! "$exit_type" ]; then echo "#⚫ Reverting hostname changes to... ${current_hostname} " && sleep 1
-    sed -i "s/$newhost/$current_hostname/g" /etc/hosts
-    sed -i "s/$newhost/$current_hostname/g" /etc/hostname
-    zenity --info --width="260" --height="60" --title=" Changes reverted" --text="\nHostname has been reverted to <b>$current_hostname</b>. \nThis task will now exit." 2>/dev/null; return
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+      zenity --error --width="290" --height="60" --ok-label="Close" \
+             --title=" Error" --text="\nAn error occurred while changing the hostname." 2>/dev/null; return
+    else
+      zenity --info --width="320" --height="60" --timeout="8" --ok-label="Close" \
+             --title=" Hostname changed" --text="\nThe hostname has been successfully updated.\n\nClose and reopen any Terminal window you may have open to reflect changes." 2>/dev/null; return
+    fi
   fi
-  # Action to perform by user
-  if [ "$exit_type" = "Reboot" ]; then shutdown -r now # Do reboot here
-  elif [ "$exit_type" = "Shutdown" ]; then shutdown -h now # Do shutdown here
-  else
-    # Do cancel here
-    zenity --info --width="340" --height="60" \
-           --title="Hostname changed" --text="\nHostname has been changed to: <b>$newhost</b>\n\nDon't forget to reboot your computer for these changes to take effect." 2>/dev/null; return
-  fi
- done
 done
 }
 # kernel removal tweak
@@ -591,12 +583,12 @@ grep -q "SaveSession=%sudo" $kioskrc && echo $?
   if [ $? = 0 ]; then appicon2=$LITEAPPSICONS/appicon2-on.png; else appicon2=$LITEAPPSICONS/appicon2-off.png; fi
 # main dialog
 answ=$(zenity --list --imagelist --title="$APPNAME" --window-icon="$_ICON" --width="470" --height="220" \
-                --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
-                --text='                            <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
-                --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
-                $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
-                $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
-                $appicon3 "10" "Disable for all users" "Disables Save Session for all users" 2>/dev/null)
+              --cancel-label=" Quit" --ok-label=" Apply" --hide-column=2 --print-column=2 \
+              --text='                            <span font="Sans Bold 10">Enable or Disable Save Session:</span>\n' \
+              --column=" " --column="ANSW" --column=" Save Session" --column=" Description" \
+              $appicon1 "30" "Enable for all users" "Enables Save Session for all users" \
+              $appicon2 "20" "Enable for admins" "Enables Save Session for administrators only" \
+              $appicon3 "10" "Disable for all users" "Disables Save Session for all users" 2>/dev/null)
 # exit on Quit or X
 if [ "$?" -eq "1" ]; then break; fi
 # prompt when no option is selected
