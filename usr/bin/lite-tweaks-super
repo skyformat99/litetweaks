@@ -15,6 +15,12 @@ _MYLTUSER=$(cat "/tmp/myltuser")
 
 _LT="Lite Tweaks"
 
+# common functions
+TWEAK_LOGS() {
+_LTLOGS="/tmp/ltlogs.log"
+touch "$_LTLOGS"; chown "$_MYLTUSER":"$_MYLTUSER" "$_LTLOGS"; chmod 600 "$_LTLOGS"
+}
+
 # Get input from a previous file
 FRM="$@"
 
@@ -37,8 +43,11 @@ if [ $? = 0 ]; then ARRAYC+=('FIXBOOTUP'); fi
 echo $FRM | grep "HOSTNAME" > /dev/null
 if [ $? = 0 ]; then ARRAYC+=('HNAME'); fi
 
+echo $FRM | grep "INSTKERNELS" > /dev/null
+if [ $? = 0 ]; then ARRAYC+=('INSTKERNELS'); fi
+
 echo $FRM | grep "REMKERNELS" > /dev/null
-if [ $? = 0 ]; then ARRAYC+=('KERNELS'); fi
+if [ $? = 0 ]; then ARRAYC+=('REMKERNELS'); fi
 
 echo $FRM | grep "KIOSKMODE" > /dev/null
 if [ $? = 0 ]; then ARRAYC+=('KIOSKMODE'); fi
@@ -355,8 +364,72 @@ echo "$_NEW_HOSTNAME" | egrep "^[[:space:]]*$|^#|[[:space:]]|*_.*" >/dev/null
   fi
 done
 }
+# kernel install tweak
+INSTKERNELS() {
+  TWEAK_LOGS
+  # variables
+  _ICON="/usr/share/icons/zenity-llcc.png"
+  _APPNAME="Kernel Installer"
+  _DL="Downloading and installing Kernel"
+  echo "# Kernel Installer..."
+
+  if eval "curl -sk google.com" >> /dev/null 2>&1; then :;
+     else # Prompt ERROR internet connection check failed and exit
+       zenity --info --width=320 --height=120 --ok-label="Close" --title="$_APPNAME - Aborted" \
+              --text="\n<b>Your computer is not connected to the internet</b> \n\n$APPNAME cannot continue. \nPlease check your Internet connection and try again." 2>/dev/null; exit 0
+  fi
+
+  zenity --question --width="270" --height="80" --title="$_APPNAME" --window-icon="$_ICON" --text="\nWe will now fetch the Updates list.\n\nClick <b>No</b> to exit now or <b>Yes</b> to continue." 2>/dev/null
+  if [ "$?" -ne "0" ]; then return; fi
+
+  APTUPDATE=$(grep '^deb' -c /etc/apt/sources.list) # Total of repositories registered, this is approximated
+  apt-get update 2>&1 | tee "$_LTLOGS" | awk -v total=$APTUPDATE '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (100*count/total);print (percentage < 90?percentage:90),"\n#",substr($0, 0, 128) }; fflush(stdout)}' \
+   | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
+
+  if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+    zenity --error --height="80" --ok-label="Close" --title="$_APPNAME - Error" --text="\n$_APPNAME couldn't fetch the package cache\ninformation lists." 2>/dev/null; return
+  fi
+  unset APTUPDATE
+  while (true); do
+  KERNLIST=$(zenity --title=" $_APPNAME" --height=300 --width="320" \
+                    --list --radiolist --text='<span font="Sans 11">         Select a Kernel to install</span>' --hide-column="2" --print-column="2" \
+                    --column="Pick" --column="SELACT" --column="Kernel version" \
+  FALSE "3.15.0" "Kernel 3.15.0" FALSE "3.16.0" "Kernel 3.16.0" FALSE "3.17.0" "Kernel 3.17.0" FALSE "3.18.0" "Kernel 3.18.0" FALSE "3.19.0" "Kernel 3.19.0" \
+  FALSE "4.0.0" "Kernel 4.0.0" FALSE "4.1.0" "Kernel 4.1.0" FALSE "4.2.0" "Kernel 4.2.0" FALSE "4.3.0" "Kernel 4.3.0" FALSE "4.4.0" "Kernel 4.4.0" \
+  FALSE "4.5.0" "Kernel 4.5.0" FALSE "4.6.0" "Kernel 4.6.0" FALSE "4.7.0" "Kernel 4.7.0" 2>/dev/null)
+
+  if [ "$?" -eq "1" ]; then return; fi
+  if [ -z "$KERNLIST" ]; then
+    zenity --info --width="225" --height="60" --ok-label="Go Back" --title=" $_APPNAME - Information" --text="\nNo kernel was selected for installation." 2>/dev/null; continue
+  fi
+
+  for selected_kernel in $KERNLIST
+    do
+      apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+      zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+  done
+
+  if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+    _FAILURE=$(zenity --question --icon-name="error" --window-icon="error" --width="280" --title="$_APPNAME - Error" \
+                      --text="\nAn error occurred while downloading and\ninstalling Kernel Version $selected_kernel.\n\nWould you like to review the logs?" 2>/dev/null ; echo $?)
+      if [ ${_FAILURE} -eq "1" ]; then rm -f "$_LTLOGS"; return; else
+         zenity --text-info --width="750" --height="400" --cancel-label="Quit" --ok-label="Save..." --title="  $_APPNAME - Log" --filename="$_LTLOGS" 2>/dev/null
+        if [ "$?" -eq "0" ]; then
+            # Save log
+            szSavePath=$(zenity --width="550" --height="380" --title=" Save log" --file-selection --filename="/home/$_MYLTUSER/$_LTLOGS" --file-filter='*.log' \
+                                --file-filter='All files | *' --save --confirm-overwrite 2>/dev/null)
+            sudo -u ${SUDO_USER:-$_MYLTUSER} cp "$_LTLOGS" "$szSavePath"; rm -f "$_LTLOGS"; return; else rm -f "$_LTLOGS"; return
+        fi
+      fi
+  else
+    zenity --info --width="350" --height="80" --window-icon="$_ICON" --title="$_APPNAME" \
+           --text="\nKernel Version $selected_kernel has been successfully installed.\nPlease reboot your system for changes to take effect." 2>/dev/null
+    rm -f "$_LTLOGS"; return
+  fi
+done
+}
 # kernel removal tweak
-KERNELS() {
+REMKERNELS() {
 while (true); do
 echo "#Kernel cleaner..."
 APPNAME="Kernel Cleaner"
@@ -793,7 +866,7 @@ if [ -z  "$(dpkg -l | grep -E '^ii' | grep zram-config)" ]; then
          answer=$?
   # Check Internet access
   if eval "curl -sk google.com" >> /dev/null 2>&1; then :; else # Prompt ERROR internet connection
-    (zenity --question --icon-name=info --width="360" --height="90" --ok-label="Continue" --cancel-label="Cancel" --title="$_LT - No Internet connection" \
+    (zenity --question --icon-name="info" --width="360" --height="90" --ok-label="Continue" --cancel-label="Cancel" --title="$_LT - No Internet connection" \
             --text="\n<b>Your computer is not connected to the internet</b> \n\n* $_LT will attempt to install zRAM package from the local cache if available.
 \n* If the package does not exist in your system cache, zRAM installation will fail.\n\nYou can always check your internet connection and try again at a later time." 2>/dev/null)
     answer=$?
