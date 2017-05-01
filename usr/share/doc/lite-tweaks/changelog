@@ -1,3 +1,10 @@
+lite-tweaks (2.0-0260-linuxlite) citrine; urgency=medium
+
+  * Added Kernel Installer tweak
+  * Added Kernel Installer failure logs
+
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Mon, 1 May 2017 04:11:58 +1200
+
 lite-tweaks (2.0-0250-linuxlite) citrine; urgency=medium
 
   * Update Hostname tweak to not longer require rebooting or logging out the session

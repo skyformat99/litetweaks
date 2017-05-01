@@ -403,6 +403,9 @@ if [ $? = 0 ]; then ARRAYB+=('CLEARMEM'); fi
 echo "$selection" | grep "Hostname" > /dev/null
 if [ $? = 0 ]; then ARRAYB+=('HOSTNAME'); fi
 
+echo "$selection" | grep "Kernel Installer" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('INSTKERNELS'); fi
+
 echo "$selection" | grep "Kernel Removal" > /dev/null
 if [ $? = 0 ]; then ARRAYB+=('REMKERNELS'); fi
 
@@ -611,6 +614,7 @@ FALSE "Display Disk Usage" "Information" "System" "Safe" "Display overall disk u
 "${firefox[@]}" \
 FALSE "Hibernate, Suspend" "Preferences" "Session" "Safe" "Hide or show these buttons on the Logout screen" \
 FALSE "Hostname" "Edit" "System" "Caution" "Change the computer hostname" \
+FALSE "Kernel Installer" "Administration" "System" "Caution" "Install specific kernels you wish to boot from" \
 FALSE "Kernel Removal" "Clean" "System" "Caution" "Remove kernels you no longer wish to boot from" \
 FALSE "Locate Large Files" "Information" "System" "Caution" "Find files in your system based on specified size ranges" \
 "${logarchive[@]}" \
