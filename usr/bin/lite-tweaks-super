@@ -12,7 +12,6 @@ if [ ! -z "$(pgrep gdebi-gtk)" ];then killall -9 gdebi-gtk; fi
 
 # variables
 _MYLTUSER=$(cat "/tmp/myltuser")
-
 _LT="Lite Tweaks"
 
 # common functions
@@ -414,13 +413,20 @@ while (true); do
     versions+=("  FALSE  "); versions+=("$version"); versions+=("  Linux Lite Kernel Version ${version}")
   done < "$_VERSIONS"
 
-  KERNLIST=$(zenity --title=" $_APPNAME" --height="360" --width="280" --hide-header --ok-label="Install" \
+  KERNLIST=$(zenity --width="280" --height="360" --window-icon="$_ICON" --title=" $_APPNAME" --hide-header --ok-label="Install" \
   --list --radiolist --text='<span font="Sans 11">         Select Kernel to install</span>\n' --hide-column="2" --print-column="2" \
   --column=" Pick " --column="select_ver" --column="Kernel version" "${versions[@]}" 2>/dev/null)
 
   if [ "$?" -eq "1" ]; then return; fi
   if [ -z "$KERNLIST" ]; then
     zenity --info --width="225" --height="60" --ok-label="Go Back" --title=" $_APPNAME" --text="\nNo kernel was selected for installation." 2>/dev/null; continue
+  fi
+
+  if [ "$KERNLIST" == "4.11.0" ]; then zenity --question --window-icon="warning" --icon-name="gtk-dialog-warning" --width="330" --height="80" --title="$_APPNAME - Important" \
+  --text="<b>WARNING</b>: If Nvidia or ATI proprietary graphics drivers are installed, this kernel may break its functionality.
+\nIf Nvidia or ATI proprietary graphics drivers are installed in the system and you decide to continue with this kernel install, you should be competent in repairing your graphics drivers \
+as well as at getting out of trouble from a TTY; otherwise DO NOT install this kernel.\n\nWould you like to continue with the installation?" 2>/dev/null
+      if [ "$?" -eq "1" ]; then continue; else :; fi
   fi
 
   if [ "$KERNLIST" != "4.11.0" ] || [ "$KERNLIST" != "4.12.0" ]; then
