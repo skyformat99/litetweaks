@@ -21,6 +21,10 @@ _LTLOGS="/tmp/ltlogs.log"
 touch "$_LTLOGS"; chown "$_MYLTUSER":"$_MYLTUSER" "$_LTLOGS"; chmod 600 "$_LTLOGS"
 }
 
+RUN_ICON () {
+run_icon="/usr/share/icons/Faenza/actions/32/system-run.png"
+}
+
 # Get input from a previous file
 FRM="$@"
 
@@ -367,6 +371,7 @@ done
 # kernel install tweak
 INSTKERNELS() {
 TWEAK_LOGS
+RUN_ICON
 # variables
 _ICON="/usr/share/icons/zenity-llcc.png"
 _APPNAME="Kernel Installer"
@@ -376,8 +381,9 @@ touch "$_VERSIONS"; chown "$_MYLTUSER":"$_MYLTUSER" "$_VERSIONS"; chmod 600 "$_V
 
 updates_list () {
   APTUPDATE=$(grep '^deb' -c /etc/apt/sources.list) # Total of repositories registered, this is approximated
-  apt-get update 2>&1 | tee "$_LTLOGS" | awk -v total=$APTUPDATE '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (100*count/total);print (percentage < 90?percentage:90),"\n#",substr($0, 0, 128) }; fflush(stdout)}' \
-    | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
+  apt-get update 2>&1 | tee "$_LTLOGS" |
+  awk -v total=$APTUPDATE '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (100*count/total);print (percentage < 90?percentage:90),"\n#",substr($0, 0, 128) }; fflush(stdout)}' \
+  | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       zenity --error --height="80" --ok-label="Close" --title="$_APPNAME - Error" --text="\n$_APPNAME couldn't fetch the package cache\ninformation lists." 2>/dev/null; return
@@ -420,14 +426,16 @@ while (true); do
   if [ "$KERNLIST" != "4.11.0" ] || [ "$KERNLIST" != "4.12.0" ]; then
     for selected_kernel in $KERNLIST
       do
-        apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
-        zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+        DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+        zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   else
     for selected_kernel in $KERNLIST
       do
-        apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
-        zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+        DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+        zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   fi
 
@@ -452,6 +460,8 @@ done
 }
 # kernel removal tweak
 REMKERNELS() {
+TWEAK_LOGS
+RUN_ICON
 while (true); do
 echo "#Kernel cleaner..."
 APPNAME="Kernel Cleaner"
@@ -496,8 +506,10 @@ okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --wid
   # Confirm kernel selection removal
   zenity --question --window-icon="$_ICON" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?" 2>/dev/null
   if [ "$?" -eq "0" ]; then
-    apt-get purge -y $okernel | zenity --progress --title='Removing Additional Kernels' --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
-    zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; return
+    echo "Removing kernels: ${okernel}" | tee "$_LTLOGS"
+    apt-get purge -y $okernel | tee -a "$_LTLOGS" | zenity --progress --window-icon="$run_icon" --title='Removing Additional Kernels' \
+                                                        --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
+    zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; rm -f "$_LTLOGS"; return
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed." 2>/dev/null; return

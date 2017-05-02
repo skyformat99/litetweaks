@@ -448,7 +448,7 @@ if [ $? = 0 ]; then ARRAYB+=('ZRAM'); fi
 
 RUN() {
 # Check if ARRAYA is empty. If empty, skip the execution
-run_icon=/usr/share/icons/Faenza/actions/32/system-run.png
+run_icon="/usr/share/icons/Faenza/actions/32/system-run.png"
 if [ ${#ARRAYA[@]} -ne 0 ]; then
     x=0
     for k in "${!ARRAYA[@]}"; do  x=$(( $x + 1 )); done  # Get the total number of selected items in array A
