@@ -366,48 +366,70 @@ done
 }
 # kernel install tweak
 INSTKERNELS() {
-  TWEAK_LOGS
-  # variables
-  _ICON="/usr/share/icons/zenity-llcc.png"
-  _APPNAME="Kernel Installer"
-  _DL="Downloading and installing Kernel"
-  echo "# Kernel Installer..."
+TWEAK_LOGS
+# variables
+_ICON="/usr/share/icons/zenity-llcc.png"
+_APPNAME="Kernel Installer"
+_DL="Downloading and installing Kernel"
+_VERSIONS="/tmp/ltkernvers"
+touch "$_VERSIONS"; chown "$_MYLTUSER":"$_MYLTUSER" "$_VERSIONS"; chmod 600 "$_VERSIONS"
 
-  if eval "curl -sk google.com" >> /dev/null 2>&1; then :;
-     else # Prompt ERROR internet connection check failed and exit
-       zenity --info --width=320 --height=120 --ok-label="Close" --title="$_APPNAME - Aborted" \
-              --text="\n<b>Your computer is not connected to the internet</b> \n\n$APPNAME cannot continue. \nPlease check your Internet connection and try again." 2>/dev/null; exit 0
-  fi
-
-  zenity --question --width="270" --height="80" --title="$_APPNAME" --window-icon="$_ICON" --text="\nWe will now fetch the Updates list.\n\nClick <b>No</b> to exit now or <b>Yes</b> to continue." 2>/dev/null
-  if [ "$?" -ne "0" ]; then return; fi
-
+updates_list () {
   APTUPDATE=$(grep '^deb' -c /etc/apt/sources.list) # Total of repositories registered, this is approximated
   apt-get update 2>&1 | tee "$_LTLOGS" | awk -v total=$APTUPDATE '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (100*count/total);print (percentage < 90?percentage:90),"\n#",substr($0, 0, 128) }; fflush(stdout)}' \
-   | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
+    | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
 
-  if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-    zenity --error --height="80" --ok-label="Close" --title="$_APPNAME - Error" --text="\n$_APPNAME couldn't fetch the package cache\ninformation lists." 2>/dev/null; return
-  fi
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+      zenity --error --height="80" --ok-label="Close" --title="$_APPNAME - Error" --text="\n$_APPNAME couldn't fetch the package cache\ninformation lists." 2>/dev/null; return
+    fi
   unset APTUPDATE
-  while (true); do
-  KERNLIST=$(zenity --title=" $_APPNAME" --height=300 --width="320" \
-                    --list --radiolist --text='<span font="Sans 11">         Select a Kernel to install</span>' --hide-column="2" --print-column="2" \
-                    --column="Pick" --column="SELACT" --column="Kernel version" \
-  FALSE "3.15.0" "Kernel 3.15.0" FALSE "3.16.0" "Kernel 3.16.0" FALSE "3.17.0" "Kernel 3.17.0" FALSE "3.18.0" "Kernel 3.18.0" FALSE "3.19.0" "Kernel 3.19.0" \
-  FALSE "4.0.0" "Kernel 4.0.0" FALSE "4.1.0" "Kernel 4.1.0" FALSE "4.2.0" "Kernel 4.2.0" FALSE "4.3.0" "Kernel 4.3.0" FALSE "4.4.0" "Kernel 4.4.0" \
-  FALSE "4.5.0" "Kernel 4.5.0" FALSE "4.6.0" "Kernel 4.6.0" FALSE "4.7.0" "Kernel 4.7.0" 2>/dev/null)
+}
+
+echo "# Kernel Installer..."
+
+if eval "curl -sk google.com" >> /dev/null 2>&1; then :;
+   else # Prompt ERROR internet connection check failed and exit
+     zenity --info --width=320 --height=120 --ok-label="Close" --title="$_APPNAME - Aborted" \
+            --text="\n<b>Your computer is not connected to the internet</b> \n\n$APPNAME cannot continue. \nPlease check your Internet connection and try again." 2>/dev/null; exit 0
+fi
+if [ ! -s "$_VERSIONS" ]; then
+  zenity --question --width="290" --height="80" --title="$_APPNAME" --window-icon="$_ICON" --ok-label="Continue" --cancel-label="Cancel" \
+         --text="\n$_APPNAME will now fetch the Updates list.\n\nClick <b>Cancel</b> to exit now or <b>Continue</b> to proceed." 2>/dev/null
+  if [ "$?" -ne "0" ]; then return; fi
+  # fetch updates list
+  updates_list
+  # create kernel version list
+  apt search linux-headers-linuxlite 2>/dev/null | cut -d'/' -f1 | sed -e '/Header/d' -e '/Linux/d' -e '/^$/d' | awk '{print $1}' | cut -c 25- | sort -t. -k1,1n -k2,2n | tail -n+3 > "$_VERSIONS"
+else :
+fi
+
+while (true); do
+  while read -r version; do
+    versions+=("  FALSE  "); versions+=("$version"); versions+=("  Linux Lite Kernel Version ${version}")
+  done < "$_VERSIONS"
+
+  KERNLIST=$(zenity --title=" $_APPNAME" --height="360" --width="280" --hide-header --ok-label="Install" \
+  --list --radiolist --text='<span font="Sans 11">         Select Kernel to install</span>\n' --hide-column="2" --print-column="2" \
+  --column=" Pick " --column="select_ver" --column="Kernel version" "${versions[@]}" 2>/dev/null)
 
   if [ "$?" -eq "1" ]; then return; fi
   if [ -z "$KERNLIST" ]; then
-    zenity --info --width="225" --height="60" --ok-label="Go Back" --title=" $_APPNAME - Information" --text="\nNo kernel was selected for installation." 2>/dev/null; continue
+    zenity --info --width="225" --height="60" --ok-label="Go Back" --title=" $_APPNAME" --text="\nNo kernel was selected for installation." 2>/dev/null; continue
   fi
 
-  for selected_kernel in $KERNLIST
-    do
-      apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
-      zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
-  done
+  if [ "$KERNLIST" != "4.11.0" ] || [ "$KERNLIST" != "4.12.0" ]; then
+    for selected_kernel in $KERNLIST
+      do
+        apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+        zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+      done
+  else
+    for selected_kernel in $KERNLIST
+      do
+        apt-get install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+        zenity --progress --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+      done
+  fi
 
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then
     _FAILURE=$(zenity --question --icon-name="error" --window-icon="error" --width="280" --title="$_APPNAME - Error" \

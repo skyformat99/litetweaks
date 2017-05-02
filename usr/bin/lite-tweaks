@@ -20,6 +20,12 @@ elif [ -f "$_DRYAPT" ] && [ "$(cat "$_DRYAPT" | head -n+1)" -eq 0 ]; then
 else bash -c "/usr/local/sbin/dryapt" &
 fi
 
+# function - clean up common files
+_clean_up() {
+  rm -f "$TMPLTF"
+  [ -e /tmp/ltlogs.log ] && rm -f /tmp/ltlogs.log
+}
+
 # Chrome Cache tweak
 CHROME() {
   echo "#⚫ Removing Google Chrome browser cache..." && sleep 1 ; rm -rf "$HOME/.cache/google-chrome/"
@@ -634,7 +640,7 @@ FALSE "Package System Repair" "Fix" "Repair" "Caution" "Restore the package mana
 "${whisker_recent[@]}" \
 "${zram[@]}" 2>/dev/null )
 
-if [ "${PIPESTATUS[0]}" -ne "0" ]; then rm -f "$TMPLTF"; exit 0 ; fi # If Quit is clicked then exit
+if [ "${PIPESTATUS[0]}" -ne "0" ]; then _clean_up; exit 0 ; fi # If Quit is clicked then exit
 
 echo "$selection" | grep '[a-zA-Z0-9]' # Check if anything is selected
 if [ "${PIPESTATUS[1]}" -ne "0" ]; then
