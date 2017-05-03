@@ -434,14 +434,14 @@ as well as at getting out of trouble from a TTY; otherwise DO NOT install this k
       do
         DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
          install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
-        zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+        zenity --progress --window-icon="$run_icon" --width="360" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   else
     for selected_kernel in $KERNLIST
       do
         DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
          install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
-        zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
+        zenity --progress --window-icon="$run_icon" --width="360" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   fi
 
@@ -512,8 +512,8 @@ okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --wid
   zenity --question --window-icon="$_ICON" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?" 2>/dev/null
   if [ "$?" -eq "0" ]; then
     echo "Removing kernels: ${okernel}" | tee "$_LTLOGS"
-    apt-get purge -y $okernel | tee -a "$_LTLOGS" | zenity --progress --window-icon="$run_icon" --title='Removing Additional Kernels' \
-                                                           --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
+    apt-get purge -y $okernel | tee -a "$_LTLOGS" | zenity --progress --width="400" --window-icon="$run_icon" --title=" $APPNAME" --no-cancel --pulsate --auto-close --auto-kill \
+                                                           --text="Removing selected kernels, please wait..." 2>/dev/null
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       _FAILURE=$(zenity --question --icon-name="error" --window-icon="error" --width="240" --height="60" --title="$APPNAME Error" \
                         --text="\nAn error occurred while removing selected kernels.\n\nWould you like to review the logs?" 2>/dev/null ; echo $?)
