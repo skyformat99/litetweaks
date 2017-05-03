@@ -429,18 +429,18 @@ as well as at getting out of trouble from a TTY; otherwise DO NOT install this k
       if [ "$?" -eq "1" ]; then continue; else :; fi
   fi
 
-  if [ "$KERNLIST" != "4.11.0" ] || [ "$KERNLIST" != "4.12.0" ]; then
+  if [[ "$KERNLIST" =~ ^(4.11.0|4.12.0)$ ]]; then
     for selected_kernel in $KERNLIST
       do
         DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
         zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   else
     for selected_kernel in $KERNLIST
       do
         DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
+         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | tee -a "$_LTLOGS" |
         zenity --progress --window-icon="$run_icon" --width="340" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --pulsate --no-cancel --auto-close 2>/dev/null
       done
   fi
@@ -469,40 +469,39 @@ REMKERNELS() {
 TWEAK_LOGS
 RUN_ICON
 while (true); do
-echo "#Kernel cleaner..."
-APPNAME="Kernel Cleaner"
+echo "#Kernel removal..."
+APPNAME=" Kernel Removal"
 # Check current Kernel
 CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 # Define what Kernel packages to look for
-LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
-METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
+LINUXPKG="linux-(image|headers|firmware-image|ubuntu-modules|restricted-modules)"
+METALINUXPKG="linux-(image|headers|firmware-image|restricted-modules)-(generic|i386|i686|server|common|rt|xen)"
 # Find old Kernels
-OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
+OLDKERNELS=$(dpkg -l|awk '{print $2}' | grep -E $LINUXPKG | grep -vE $METALINUXPKG | grep -v $CURKERNEL)
 # Check if there are old Kernels
 echo $OLDKERNELS | grep linux*
   if [ "${PIPESTATUS[1]}" -ne "0" ]; then
         zenity --info --width="225" --height="60" --title=" $APPNAME - Information" --text="\nNo additional kernels were found in your system for removal." 2>/dev/null; return
   fi
 # sed command adds all FALSE entries in the column 'Select'
-zen=(`echo "$OLDKERNELS" | sort | sed -e  's/^/FALSE\n/'`)
+zen=(`echo "$OLDKERNELS" | sort -t. -k1,1n -k2,2n | sed -e  's/^/FALSE\n/'`)
 
 # Main dialog window
-DIALOG_TEXT="List of previous kernel (currently unused) you may not longer wish to keep in your system
-\n<b>*</b>  Be sure to select both, the header and image of each kernel version you wish to remove.
-<b>*</b>  After clicking <b>Remove</b>, a list of selected kernels shows for reviewing before removal.\n
-<i>** The removal process will not begin until your selection is reviewed and confirmed.**</i>\n"
+DIALOG_TEXT='<span font="Sans 10">  For each kernel version to remove, select its:\n\n    <b>headers</b>\n    <b>image</b>\n    <b>image-extra</b>\n    <b>firmware</b> (if any)</span>\n
+<span font="Sans 9">  The removal process will not begin until your selection\n  is reviewed and confirmed.</span>\n'
 
 # Call the dialog. Don't change the separator here!
-okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --width=540 --height=380   --column="Select" --column="Kernel List" \
-                 --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" --cancel-label="Quit" "${zen[@]}" 2>/dev/null)
+okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --width=360 --height=400 --column="Select" --column="Kernels available for removal" \
+                 --text="${DIALOG_TEXT}" --title="$APPNAME" --ok-label="Remove" "${zen[@]}" 2>/dev/null)
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi # If cancel is clicked then exit
 
   # Check if anything is selected
   echo $okernel | grep linux*
   if [ "${PIPESTATUS[1]}" -ne "0" ]; then
-    zenity --info --width="260" --height="60" --window-icon="$_ICON" --title=" $APPNAME" \
-           --text="\nNo kernel header and image were selected for removal. Try again." 2>/dev/null; continue
+    zenity --info --width="260" --height="60" --window-icon="$_ICON" --title=" $APPNAME" --ok-label="Go Back" \
+           --text="\nNo kernel headers and image were selected for removal. Try again." 2>/dev/null; continue
   fi
+  
   # Split kernel selection
   selection_array=($okernel)
   KN_NAMES=""
