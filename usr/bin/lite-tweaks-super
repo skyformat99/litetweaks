@@ -501,7 +501,7 @@ okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --wid
     zenity --info --width="260" --height="60" --window-icon="$_ICON" --title=" $APPNAME" --ok-label="Go Back" \
            --text="\nNo kernel headers and image were selected for removal. Try again." 2>/dev/null; continue
   fi
-  
+
   # Split kernel selection
   selection_array=($okernel)
   KN_NAMES=""
@@ -513,11 +513,21 @@ okernel=$(zenity --window-icon="$_ICON" --list --checklist --separator=" " --wid
   if [ "$?" -eq "0" ]; then
     echo "Removing kernels: ${okernel}" | tee "$_LTLOGS"
     apt-get purge -y $okernel | tee -a "$_LTLOGS" | zenity --progress --window-icon="$run_icon" --title='Removing Additional Kernels' \
-                                                        --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
-    zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; rm -f "$_LTLOGS"; return
-
+                                                           --text='Removing...' --no-cancel --pulsate --width=400 --auto-close --auto-kill 2>/dev/null
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
-      zenity --error --width="180" --height="60" --title="    Error" --text="\n$APPNAME has failed." 2>/dev/null; return
+      _FAILURE=$(zenity --question --icon-name="error" --window-icon="error" --width="240" --height="60" --title="$APPNAME Error" \
+                        --text="\nAn error occurred while removing selected kernels.\n\nWould you like to review the logs?" 2>/dev/null ; echo $?)
+      if [ ${_FAILURE} -eq "1" ]; then rm -f "$_LTLOGS"; return; else
+         zenity --text-info --width="750" --height="400" --cancel-label="Quit" --ok-label="Save..." --title="  $_APPNAME - Log" --filename="$_LTLOGS" 2>/dev/null
+        if [ "$?" -eq "0" ]; then
+            # Save log
+            szSavePath=$(zenity --width="550" --height="380" --title=" Save log" --file-selection --filename="/home/$_MYLTUSER/$_LTLOGS" --file-filter='*.log' \
+                                --file-filter='All files | *' --save --confirm-overwrite 2>/dev/null)
+            sudo -u ${SUDO_USER:-$_MYLTUSER} cp "$_LTLOGS" "$szSavePath"; rm -f "$_LTLOGS"; return; else rm -f "$_LTLOGS"; return
+        fi
+      fi
+    else
+      zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; rm -f "$_LTLOGS"; return
     fi
   fi
 done
