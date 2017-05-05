@@ -2,15 +2,21 @@ lite-tweaks (2.0-0260-linuxlite) citrine; urgency=medium
 
   * Added Kernel Installer tweak
   * Added Kernel Installer logging
-    - Prompt user to review log on error
-    - Allow error log to be saved
+    - prompt user to review log on error
+    - allow error log to be saved
+    - add tweak name on error log header
   * Update Kernel Removal tweak 
-    - Updated dialog context and size
-    - Sort kernel listing in a more organized way
-    - List kernel firmware in selection list for removal
-    - Added Kernel Removal logging
-    - Prompt user to review log on error
-    - Allow error log to be saved
+    - updated dialog context and size
+    - sort kernel listing in a more organized way
+    - list kernel firmware in selection list for removal
+    - added Kernel Removal logging
+    - prompt user to review log on error
+    - allow error log to be saved
+    - add tweak name on error log header
+  * Added Package System Repair Stage 1 logging
+    - revert Stage 1 when error occurs
+    - prompt user to review log on error
+    - allow error log to be saved
 
  -- Jerry Bezencon <valtam@linuxliteos.com>  Mon, 1 May 2017 04:11:58 +1200
 
