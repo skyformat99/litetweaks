@@ -456,19 +456,21 @@ as well as at getting out of trouble from a TTY; otherwise DO NOT install this k
 
 SHOWPROGINST=$(grep '^deb' -c /etc/apt/sources.list)
   if [[ "$KERNLIST" =~ ^(4.11.0|4.12.0)$ ]]; then
-    for selected_kernel in $KERNLIST
-      do
-        DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 | awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' | tee -a "$_LTLOGS" |
-        zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
-      done
+    for selected_kernel in "$KERNLIST"; do
+      DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+      install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 |
+      awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' |
+      tee -a "$_LTLOGS" |
+      zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
+    done
   else
-    for selected_kernel in $KERNLIST
-      do
-        DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-         install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 | awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' | tee -a "$_LTLOGS" |
-        zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
-      done
+    for selected_kernel in "$KERNLIST"; do
+      DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+      install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 |
+      awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' |
+      tee -a "$_LTLOGS" |
+      zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
+    done
   fi
 
   if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -480,6 +482,7 @@ Kernel Installer Error log\
 An error occurred while downloading and installing Kernel Version '${selected_kernel}'.\
 Go to https://www.linuxliteos.com/forums/ and paste the log below into a new or existing thread for assistance.\n\
 ============ Log ===========\n' "$_LTLOGS"
+    sed -i '/^\<0\>[[:space:]]/d' "$_LTLOGS"
     VIEW_SAVE_LOG; return
   else
     zenity --info --width="350" --height="80" --window-icon="$_ICON" --title="$_APPNAME" \
@@ -537,8 +540,10 @@ SHOWPROGREM=$(grep '^deb' -c /etc/apt/sources.list)
   zenity --question --window-icon="$_ICON" --width="280" --height="60" --title=" $APPNAME"  --text="\nYou are about to remove:<b>\n\n$KN_NAMES </b>\nDo you want to proceed?" 2>/dev/null
   if [ "$?" -eq "0" ]; then
     echo "Removing kernels: ${okernel}" | tee "$_LTLOGS"
-    apt-get purge -y $okernel | awk -v total=$SHOWPROGREM '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' | tee -a "$_LTLOGS" | zenity --progress --width="620" --height="80" --window-icon="$run_icon" --title=" $APPNAME" --percentage="0" --no-cancel --pulsate --auto-close --auto-kill \
-                                                           --text="Removing selected kernels, please wait..." 2>/dev/null
+    apt-get purge -y $okernel |
+    awk -v total=$SHOWPROGREM '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' |
+    tee -a "$_LTLOGS" | zenity --progress --width="620" --height="80" --window-icon="$run_icon" --title=" $APPNAME" --percentage="0" --no-cancel --pulsate --auto-close --auto-kill \
+                               --text="Removing selected kernels, please wait..." 2>/dev/null
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       _FAILURE=$(zenity --question --icon-name="error" --window-icon="error" --width="240" --height="60" --title="$APPNAME Error" \
                         --text="\nAn error occurred while removing selected kernels.\n\nWould you like to review the logs?" 2>/dev/null ; echo $?)
@@ -548,6 +553,7 @@ Kernel Remover Error log\
 An error occurred while removing selected kernels.\
 Go to https://www.linuxliteos.com/forums/ and paste the log below into a new or existing thread for assistance.\n\
 ============ Log ===========\n' "$_LTLOGS"
+      sed -i '/^\<0\>[[:space:]]/d' "$_LTLOGS"
       VIEW_SAVE_LOG; return
     else
       zenity --info --width="270" --title="$APPNAME" --window-icon="$_ICON" --text="\nSelected kernels were successfully removed." 2>/dev/null; rm -f "$_LTLOGS"; return
