@@ -376,10 +376,13 @@ _ICON="/usr/share/icons/zenity-llcc.png"
 _APPNAME="Kernel Installer"
 _DL="Downloading and installing Kernel"
 _VERSIONS="/tmp/ltkernvers"
-touch "$_VERSIONS"; chown "$_MYLTUSER":"$_MYLTUSER" "$_VERSIONS"; chmod 600 "$_VERSIONS"
+touch "$_VERSIONS"; chmod 600 "$_VERSIONS"
 
 updates_list () {
-  APTUPDATE=$(grep '^deb' -c /etc/apt/sources.list) # Total of repositories registered, this is approximated
+  # Repositories registered
+  _SLIST=$(grep '^deb ' -c /etc/apt/sources.list)
+  _SLISTD=$(grep -R --exclude="*.save" '^deb ' -c /etc/apt/sources.list.d/ | grep -c /)
+  APTUPDATE=$(($_SLIST + $_SLISTD)) # Total of repositories registered, this is approximated
   apt-get update 2>&1 | tee "$_LTLOGS" |
   awk -v total=$APTUPDATE '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (100*count/total);print (percentage < 90?percentage:90),"\n#",substr($0, 0, 128) }; fflush(stdout)}' \
   | zenity --progress --pulsate --width="600" --text="Updating package lists..." --window-icon="$_ICON" --title="Updating Software Sources - please wait..." --percentage="0" --no-cancel --auto-close 2>/dev/null
