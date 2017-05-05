@@ -364,7 +364,7 @@ echo "$_NEW_HOSTNAME" | egrep "^[[:space:]]*$|^#|[[:space:]]|*_.*" >/dev/null
            --text="\nThe new hostname must not be empty, or start with hashtags, or contain white spaces or underscores.\n\nThe hostname cannot be changed." 2>/dev/null; continue
   # If old hostname and new hostname are the same, warn and loop
   elif [ "$_NEW_HOSTNAME" = "$_HOSTNAME" ]; then zenity --info --width="300" --height="60" --timeout="5" --ok-label="Back" \
-    --title=" Hostname not changed" --text="\nNo new hostname was entered changed. Please try again." 2>/dev/null; continue
+    --title=" Hostname not changed" --text="\nNo new hostname was entered. Please try again." 2>/dev/null; continue
   else
     echo "#⚫ Changing hostname to ' $_NEW_HOSTNAME ' " && sleep 1
     echo "$_NEW_HOSTNAME" > /proc/sys/kernel/hostname
