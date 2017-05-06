@@ -448,9 +448,9 @@ while (true); do
   fi
 
   if [ "$KERNLIST" == "4.11.0" ]; then zenity --question --window-icon="warning" --icon-name="gtk-dialog-warning" --width="330" --height="80" --title="$_APPNAME - Important" \
-  --text="<b>WARNING</b>: If Nvidia or ATI proprietary graphics drivers are installed, this kernel may break its functionality.
-\nIf Nvidia or ATI proprietary graphics drivers are installed in the system and you decide to continue with this kernel install, you should be competent in repairing your graphics drivers \
-as well as at getting out of trouble from a TTY; otherwise DO NOT install this kernel.\n\nWould you like to continue with the installation?" 2>/dev/null
+  --text="<b>WARNING:</b>\n\nIf <b>NVIDIA or ATI</b> proprietary graphics drivers are installed, this Kernel may break their functionality.
+\nIf you decide to continue with this Kernel install, you should be competent in repairing your graphics drivers \
+as well as at getting out of trouble from a TTY, otherwise <b>DO NOT</b> install this Kernel.\n\nAre you sure you want to continue with the installation?" 2>/dev/null
       if [ "$?" -eq "1" ]; then continue; else :; fi
   fi
 
@@ -461,7 +461,7 @@ SHOWPROGINST=$(grep '^deb' -c /etc/apt/sources.list)
       install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" linux-firmware-image-linuxlite-"$selected_kernel" -y 2>&1 |
       awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' |
       tee -a "$_LTLOGS" |
-      zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
+      zenity --progress --window-icon="$run_icon" --width="680" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
     done
   else
     for selected_kernel in "$KERNLIST"; do
@@ -469,7 +469,7 @@ SHOWPROGINST=$(grep '^deb' -c /etc/apt/sources.list)
       install linux-headers-linuxlite-"$selected_kernel" linux-image-linuxlite-"$selected_kernel" -y 2>&1 |
       awk -v total=$SHOWPROGINST '/^Ign|^ Get/{count++;$1=""} FNR { if (total != 0){percentage=int (1000*count/total);print (percentage < 90?percentage:99),"\n#",substr($0, 0, 128) }; fflush(stdout)}' |
       tee -a "$_LTLOGS" |
-      zenity --progress --window-icon="$run_icon" --width="660" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
+      zenity --progress --window-icon="$run_icon" --width="680" --height="80" --title="$_APPNAME" --text="$_DL $selected_kernel, please standby..." --percentage="0" --no-cancel --pulsate --auto-close 2>/dev/null
     done
   fi
 
