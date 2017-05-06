@@ -420,7 +420,7 @@ echo "# Kernel Installer..."
 if eval "curl -sk google.com" >> /dev/null 2>&1; then :;
    else # Prompt ERROR internet connection check failed and exit
      zenity --info --width=320 --height=120 --ok-label="Close" --title="$_APPNAME - Aborted" \
-            --text="\n<b>Your computer is not connected to the internet</b> \n\n$APPNAME cannot continue. \nPlease check your Internet connection and try again." 2>/dev/null; exit 0
+            --text="\n<b>Your computer is not connected to the internet</b> \n\n$_APPNAME cannot continue. \nPlease check your Internet connection and try again." 2>/dev/null; exit 0
 fi
 if [ ! -s "$_VERSIONS" ]; then
   zenity --question --width="290" --height="80" --title="$_APPNAME" --window-icon="$_ICON" --ok-label="Continue" --cancel-label="Cancel" \
