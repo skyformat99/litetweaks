@@ -491,13 +491,13 @@ Go to https://www.linuxliteos.com/forums/ and paste the log below into a new or 
   fi
 done
 }
-# kernel removal tweak
+# kernel remover tweak
 REMKERNELS() {
 TWEAK_LOGS
 RUN_ICON
 while (true); do
-echo "#Kernel removal..."
-APPNAME=" Kernel Removal"
+echo "#Kernel remover..."
+APPNAME=" Kernel Remover"
 # Check current Kernel
 CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 # Define what Kernel packages to look for
