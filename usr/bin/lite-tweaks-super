@@ -377,7 +377,9 @@ echo "$_NEW_HOSTNAME" | egrep "^[[:space:]]*$|^#|[[:space:]]|*_.*" >/dev/null
     # update netbios name = hostname in Samba smb.conf
     _SMBCONF="/etc/samba/smb.conf"
     sed -i "s/netbios name =.*/netbios name = "$_NEW_HOSTNAME"/" "$_SMBCONF"
-    systemctl restart smbd nmbd # restart samba services
+    echo "#⚫ Updating services, please wait..." && sleep 1
+    systemctl reload smbd && systemctl restart nmbd # restart/reload samba services
+    systemctl reload network-manager
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
       zenity --error --width="290" --height="60" --ok-label="Close" \
