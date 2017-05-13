@@ -1,6 +1,7 @@
 lite-tweaks (2.0-0270-linuxlite) citrine; urgency=medium
 
   * Update Kernel Remover tweak dialogs title
+  * Bug fix - Update 'netbios name' in smb.conf to match new hostname set by Hostname tweak
 
  -- Jerry Bezencon <valtam@linuxliteos.com>  Sun, 07 May 2017 00:35:40 +1200
 
