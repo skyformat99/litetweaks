@@ -1,8 +1,14 @@
-lite-tweaks (2.0-0280-linuxlite) citrine; urgency=medium
+lite-tweaks (2.0-0290-linuxlite) citrine; urgency=medium
 
   * placeholder
 
- -- Jerry Bezencon <valtam@linuxliteos.com>  Sun, 13 May 2017 19:06:51 +1200
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Sat, 29 Jul 2017 19:23:03 +1200
+
+lite-tweaks (2.0-0280-linuxlite) citrine; urgency=medium
+
+  * Update code for 3.6 release
+
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Sat, 29 Jul 2017 19:23:03 +1200
 
 lite-tweaks (2.0-0270-linuxlite) citrine; urgency=high
 
