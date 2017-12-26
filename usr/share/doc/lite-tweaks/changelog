@@ -1,3 +1,9 @@
+lite-tweaks (2.0-0290-linuxlite) citrine; urgency=medium
+
+  * Added TLP tweak
+
+ -- Jerry Bezencon <valtam@linuxliteos.com>  Wed, 27 Dec 2017 00:19:40 +1200
+
 lite-tweaks (2.0-0280-linuxlite) citrine; urgency=medium
 
   * Update code for 3.6 release
