@@ -449,6 +449,9 @@ if [ $? = 0 ]; then ARRAYB+=('PRELOAD'); fi
 echo "$selection" | grep "RESIDCONFIG" > /dev/null
 if [ $? = 0 ]; then ARRAYB+=('RESIDCONFIG'); fi
 
+echo "$selection" | grep "TLP" > /dev/null
+if [ $? = 0 ]; then ARRAYB+=('TLP'); fi
+
 echo "$selection" | grep "ZRAM" > /dev/null
 if [ $? = 0 ]; then ARRAYB+=('ZRAM'); fi
 }
@@ -643,6 +646,7 @@ FALSE "FIXAPT" """$(gettext "Package System Repair")" """$(gettext "Fix")" """$(
 "${preload[@]}" \
 "${resconfig[@]}" \
 "${thumbn[@]}" \
+FALSE "TLP" """$(gettext "TLP (Laptops only)")" """$(gettext "Performance")" """$(gettext "System")" """$(gettext "Caution")" """$(gettext "TLP may help improve battery life in Laptops")" \
 "${trash[@]}" \
 "${vivaldi[@]}" \
 "${whisker_recent[@]}" \

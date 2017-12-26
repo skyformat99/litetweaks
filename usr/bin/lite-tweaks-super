@@ -85,6 +85,9 @@ if [ $? = 0 ]; then ARRAYC+=('RCONFIG'); fi
 echo $FRM | grep "AUTOREMOVE" > /dev/null
 if [ $? = 0 ]; then ARRAYC+=('REMOVE'); fi
 
+echo $FRM | grep "TLP" > /dev/null
+if [ $? = 0 ]; then ARRAYC+=('TLP'); fi
+
 echo $FRM | grep "ZRAM" > /dev/null
 if [ $? = 0 ]; then ARRAYC+=('ZRAM'); fi
 
@@ -928,6 +931,73 @@ _DATE=$(date "+%Y-%m-%d %H")
 echo "0" > "/home/$_MYLTUSER/.local/share/.dryapt"
 echo "$_DATE" >> "/home/$_MYLTUSER/.local/share/.dryapt"
 echo "#✔ Unneeded packages cleared" && sleep 1
+}
+
+TLP() {
+echo "#⚫ Getting TLP status. Please wait..." && sleep 1
+APPNAME="   $_LT - TLP"
+LITEAPPSICONS=/usr/share/liteappsicons/litetweaks
+appicon3=/usr/share/liteappsicons/litesoftware/ll-remove-software_32x32.png
+# the loop
+while (true); do
+# Is TLP installed?
+if [ -z  "$(dpkg -l | grep -E '^ii' | grep tlp)" ]; then
+  # if not installed, then prompt user for installation
+  zenity --question --width="300" --height="80" --title="    $APPNAME" \
+         --text="\nTLP is currently not enabled in your system.\n Would you like to enable TLP support now?" 2>/dev/null
+         answer=$?
+  # Check Internet access
+  if eval "curl -sk google.com" >> /dev/null 2>&1; then :; else # Prompt ERROR internet connection
+    (zenity --question --icon-name="info" --width="360" --height="90" --ok-label="Continue" --cancel-label="Cancel" --title="$_LT - No Internet connection" \
+            --text="\n<b>Your computer is not connected to the internet</b> \n\n* $_LT will attempt to install TLP package from the local cache if available.
+\n* If the package does not exist in your system cache, TLP installation will fail.\n\nYou can always check your internet connection and try again at a later time." 2>/dev/null)
+    answer=$?
+  fi
+  if [ "$answer" -eq "0" ]; then echo "#⚫ Installing and Starting the TLP service. Please wait..." && sleep 2
+    apt-get install tlp tlp-rdw smartmontools ethtool -y # install TLP
+      if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
+        zenity --error --width="260" --height="80" --title="    Error" --text="\nAn error occurred while installing TLP!" 2>/dev/null; return
+      else
+        echo "#✔ TLP successfully installed and started." && sleep 2 && tlp start ; continue
+      fi
+  else exit 0 # when user refuses installation, exit out TLP Tweak
+  fi
+fi
+
+# Check if TLP service is running and assign variables
+if [ -z  "$(tlp-stat | grep "power save = enabled")" ]; then appicon1=$LITEAPPSICONS/appicon1-on.png ; appicon2=$LITEAPPSICONS/appicon3-off.png
+else appicon1=$LITEAPPSICONS/appicon1-off.png ; appicon2=$LITEAPPSICONS/appicon3-on.png
+fi
+
+# TLP Status Main dialog
+sTLP=$(zenity --list --imagelist --width="365" --height=238 --cancel-label="Quit" --ok-label="Change Status" --window-icon="$_ICON" --title="$APPNAME" \
+               --text='                          <span font="Sans Bold 11">      TLP Status</span>\n\n         • <span font="Sans 9">The TLP service is always started during boot up</span>' \
+               --print-column=2 --column="  " --column="TLP" --column="Description" \
+               $appicon1 "Running" "TLP service is currently running" \
+               $appicon3 "Remove" "Uninstall TLP" 2>/dev/null)
+
+if [ "${PIPESTATUS[0]}" -ne "0" ]; then return; fi
+if [[ $sTLP =~ Running ]]; then # Start
+  if [ -z  "$(tlp-stat | grep "power save = enabled")" ]; then echo "#⚫ TLP is already running. No changes needed." && sleep 2 ; continue
+  else
+    echo "#⚫ Starting TLP..." && sleep .5 && tlp start
+    echo "#✔ TLP has been started." && sleep 1 ; continue
+  fi
+
+elif [[ $sTLP =~ Remove ]]; then # Remove TLP
+  zenity --question --width="265" --title="$APPNAME" --text="\nAre you sure you want to remove TLP?" 2>/dev/null
+  if [ "$?" -eq "0" ]; then
+    echo "#⚫ Removing TLP. Please wait..." && apt-get remove tlp tlp-rdw smartmontools ethtool -y
+    if [ "${PIPESTATUS[0]}" -ne "0" ]; then echo "#Error..." && sleep 1
+      zenity --error --width="260" --height="80" --title="  Error" --text="\nAn error occurred while removing TLP!" 2>/dev/null; return
+    else
+      echo "#✔ TLP successfully removed." && sleep 2 ; return
+    fi
+  fi
+else
+  zenity  --info --height="40" --title=" $APPNAME" --text="\nYou did not select an option. Please try again."
+fi
+done
 }
 
 ZRAM() {
